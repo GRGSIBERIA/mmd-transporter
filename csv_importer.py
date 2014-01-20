@@ -2,8 +2,7 @@
 import csv
 
 class CSVImporter:
-  def __init__(self):
-    path = "C:/"
+  def __init__(self, path):
     self.vertices = ReadFrom3Float(path + "out_vertices.csv")
     self.normals  = ReadFrom3Float(path + "out_normals.csv")
     self.indices  = ReadFrom3Int(path + "out_indices.csv")
