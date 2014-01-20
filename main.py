@@ -22,12 +22,16 @@ class simplePoly1(maya.OpenMayaMPx.MPxNode):
 
         csv = CSVImporter("C:/")
 
+        # 各種データ型の作成
         points = maker.MakePoints(csv.vertices)
         connects = maker.MakeFaceConnects(csv.indices)
         counts = maker.MakeFaceCounts(csv.indices)
+        normals = maker.MakeNormals(csv.normals)
+        indices = maker.MakeIndices()
 
         meshFS = maya.OpenMaya.MFnMesh()
         newMesh = meshFS.create(points.length, counts.length, points, counts, connects, outData)
+        meshFS.setVertexNormals(normals, indices)
         return newMesh
 
     def compute(self, plug, data):

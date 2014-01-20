@@ -11,7 +11,7 @@ class ArrayMaker:
     points.setLength(len(array))
     for i in range(len(array)):
       vtx = maya.OpenMaya.MFloatPoint(array[i][0], array[i][1], array[i][2])
-      points.set(vtx ,i)
+      points.set(vtx, i)
     return points
 
   def MakeFaceConnects(self, array):
@@ -28,3 +28,16 @@ class ArrayMaker:
     for i in range(len(array)):
       counts.set(i, 3)
     return counts
+
+  def MakeIndices(self, vtx_count):
+    indices = maya.OpenMaya.MIntArray()
+    for i in range(vtx_count):
+      indices.set(i, i)
+    return indices
+
+  def MakeNormals(self, array):
+    normals = maya.OpenMaya.MVectorArray()
+    normals.setLength(len(array))
+    for i in range(len(array)):
+      normals.set(array[i], i)
+    return normals
