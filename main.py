@@ -4,7 +4,7 @@ import maya.OpenMaya
 import maya.OpenMayaMPx
 
 kPluginNodeName = 'simplePoly1'
-kPluginNodeId = maya.OpenMaya.MTypeId(0x87007)
+kPluginNodeId = maya.OpenMaya.MTypeId(0x03939)
 
 class simplePoly1(maya.OpenMayaMPx.MPxNode):
     widthHeight = maya.OpenMaya.MObject()
