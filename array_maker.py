@@ -16,17 +16,16 @@ class ArrayMaker:
 
   def MakeFaceConnects(self, array):
     connects = maya.OpenMaya.MIntArray()
-    connects.setLength(len(array)*3)
+    connects.setLength(len(array))
     for i in range(len(array)):
-      for j in range(3):
-        connects[i*3+j] = array[i*3+j]
+        connects[i] = array[i]
     return connects
 
   def MakeFaceCounts(self, array):
     counts = maya.OpenMaya.MIntArray()
     counts.setLength(len(array))
     for i in range(len(array)):
-      counts.set(i, 3)
+      counts.set(3, i)
     return counts
 
   def MakeIndices(self, vtx_count):
@@ -39,5 +38,6 @@ class ArrayMaker:
     normals = maya.OpenMaya.MVectorArray()
     normals.setLength(len(array))
     for i in range(len(array)):
-      normals.set(array[i], i)
+      vec = maya.OpenMaya.MVector(array[i][0], array[i][1], array[i][2])
+      normals.set(vec, i)  # もしかするとこれはだめ？
     return normals

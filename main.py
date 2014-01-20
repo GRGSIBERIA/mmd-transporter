@@ -3,12 +3,13 @@ import sys
 import maya.OpenMaya
 import maya.OpenMayaMPx
 
-import csv_importer
-import array_maker
+from array_maker import *
+from csv_importer import *
 
 
 kPluginNodeName = 'simplePoly1'
 kPluginNodeId = maya.OpenMaya.MTypeId(0x03939)
+
 
 class simplePoly1(maya.OpenMayaMPx.MPxNode):
     widthHeight = maya.OpenMaya.MObject()
@@ -17,21 +18,40 @@ class simplePoly1(maya.OpenMayaMPx.MPxNode):
     def __init__(self):
         maya.OpenMayaMPx.MPxNode.__init__(self)
 
-    def _createMesh(self, planeSize, outData):
+    def _createMesh(self, outData):
         maker = ArrayMaker()
-
         csv = CSVImporter("C:/")
 
-        # 各種データ型の作成
-        points = maker.MakePoints(csv.vertices)
-        connects = maker.MakeFaceConnects(csv.indices)
-        counts = maker.MakeFaceCounts(csv.indices)
-        normals = maker.MakeNormals(csv.normals)
-        indices = maker.MakeIndices()
+        
+
+        vtxs = []
+        for vtx in csv.vertices:
+            vtxs.append(maya.OpenMaya.MFloatPoint(vtx[0], vtx[1], -vtx[2]))
+        numVertices = len(vtxs)
+
+        points = maya.OpenMaya.MFloatPointArray()
+        points.setLength(numVertices)
+        for i in range(numVertices):
+            points.set(vtxs[i], i)
+        print "points: " + str(points.length())
+
+        numConnects = len(csv.indices)
+        numFaces = len(csv.indices) / 3
+
+        faceConnects = maya.OpenMaya.MIntArray()
+        faceConnects.setLength(numConnects)
+        for i in range(numConnects):
+            faceConnects[i] = csv.indices[i]
+        print "faceConnects: " + str(faceConnects.length())
+
+        faceCounts = maya.OpenMaya.MIntArray()
+        faceCounts.setLength(numFaces)
+        for i in range(numFaces):
+            faceCounts[i] = 3
+        print "faceCounts: " + str(faceCounts.length())
 
         meshFS = maya.OpenMaya.MFnMesh()
-        newMesh = meshFS.create(points.length, counts.length, points, counts, connects, outData)
-        meshFS.setVertexNormals(normals, indices)
+        newMesh = meshFS.create(points.length(), faceCounts.length(), points, faceCounts, faceConnects, outData)
         return newMesh
 
     def compute(self, plug, data):
@@ -41,7 +61,7 @@ class simplePoly1(maya.OpenMayaMPx.MPxNode):
 
             dataCreator = maya.OpenMaya.MFnMeshData()
             newOutputData = dataCreator.create()
-            self._createMesh(size, newOutputData)
+            self._createMesh(newOutputData)
 
             outputHandle = data.outputValue(simplePoly1.outputMesh)
             outputHandle.setMObject(newOutputData)
