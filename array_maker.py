@@ -6,26 +6,26 @@ class ArrayMaker:
   def __init__(self):
     pass
 
-  def MakePoints(self, array):
+  def MakePoints(self, vertices):
     points = maya.OpenMaya.MFloatPointArray()
-    points.setLength(len(array))
-    for i in range(len(array)):
-      vtx = maya.OpenMaya.MFloatPoint(array[i][0], array[i][1], array[i][2])
+    points.setLength(len(vertices))
+    for i in range(len(vertices)):
+      vtx = maya.OpenMaya.MFloatPoint(vertices[i][0], vertices[i][1], -vertices[i][2])
       points.set(vtx, i)
     return points
 
-  def MakeFaceConnects(self, array):
-    connects = maya.OpenMaya.MIntArray()
-    connects.setLength(len(array))
-    for i in range(len(array)):
-        connects[i] = array[i]
-    return connects
+  def MakeFaceConnects(self, indices):
+    faceConnects = maya.OpenMaya.MIntArray()
+    faceConnects.setLength(len(indices))
+    for i in range(len(indices)):
+        faceConnects[i] = indices[i]
+    return faceConnects
 
-  def MakeFaceCounts(self, array):
+  def MakeFaceCounts(self, triangle_count):
     counts = maya.OpenMaya.MIntArray()
-    counts.setLength(len(array))
-    for i in range(len(array)):
-      counts.set(3, i)
+    counts.setLength(triangle_count)
+    for i in range(triangle_count):
+      counts[i] = 3
     return counts
 
   def MakeIndices(self, vtx_count):

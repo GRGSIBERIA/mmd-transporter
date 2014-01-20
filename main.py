@@ -22,33 +22,9 @@ class simplePoly1(maya.OpenMayaMPx.MPxNode):
         maker = ArrayMaker()
         csv = CSVImporter("C:/")
 
-        
-
-        vtxs = []
-        for vtx in csv.vertices:
-            vtxs.append(maya.OpenMaya.MFloatPoint(vtx[0], vtx[1], -vtx[2]))
-        numVertices = len(vtxs)
-
-        points = maya.OpenMaya.MFloatPointArray()
-        points.setLength(numVertices)
-        for i in range(numVertices):
-            points.set(vtxs[i], i)
-        print "points: " + str(points.length())
-
-        numConnects = len(csv.indices)
-        numFaces = len(csv.indices) / 3
-
-        faceConnects = maya.OpenMaya.MIntArray()
-        faceConnects.setLength(numConnects)
-        for i in range(numConnects):
-            faceConnects[i] = csv.indices[i]
-        print "faceConnects: " + str(faceConnects.length())
-
-        faceCounts = maya.OpenMaya.MIntArray()
-        faceCounts.setLength(numFaces)
-        for i in range(numFaces):
-            faceCounts[i] = 3
-        print "faceCounts: " + str(faceCounts.length())
+        points = maker.MakePoints(csv.vertices)
+        faceConnects = maker.MakeFaceConnects(csv.indices)
+        faceCounts = maker.MakeFaceCounts(len(csv.indices) / 3)
 
         meshFS = maya.OpenMaya.MFnMesh()
         newMesh = meshFS.create(points.length(), faceCounts.length(), points, faceCounts, faceConnects, outData)
