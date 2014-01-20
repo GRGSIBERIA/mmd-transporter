@@ -3,6 +3,9 @@ import sys
 import maya.OpenMaya
 import maya.OpenMayaMPx
 
+import import_from_csv
+
+
 kPluginNodeName = 'simplePoly1'
 kPluginNodeId = maya.OpenMaya.MTypeId(0x03939)
 
