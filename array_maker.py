@@ -21,3 +21,10 @@ class ArrayMaker:
       for j in range(3):
         connects[i*3+j] = array[i*3+j]
     return connects
+
+  def MakeFaceCounts(self, array):
+    counts = maya.OpenMaya.MIntArray()
+    counts.setLength(len(array))
+    for i in range(len(array)):
+      counts.set(i, 3)
+    return counts
