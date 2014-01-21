@@ -30,6 +30,7 @@ class MMDTransporter(maya.OpenMayaMPx.MPxNode):
         newMesh = meshFS.create(points.length(), faceCounts.length(), points, faceCounts, faceConnects, outData)
         return newMesh
 
+
     def compute(self, plug, data):
         if plug == MMDTransporter.outputMesh:
             dataHandle = data.inputValue(MMDTransporter.widthHeight)
@@ -45,8 +46,10 @@ class MMDTransporter(maya.OpenMayaMPx.MPxNode):
         else:
             return maya.OpenMaya.kUnknownParameter
 
+
 def nodeCreator():
     return maya.OpenMayaMPx.asMPxPtr(MMDTransporter())
+
 
 def nodeInitializer():
     nAttr = maya.OpenMaya.MFnNumericAttribute()
@@ -67,6 +70,7 @@ def initializePlugin(mobject):
     except:
         sys.stderr.write('Failed to register node: %s' % kPluginNodeName)
         raise
+
 
 def uninitializePlugin(mobject):
     mplugin = maya.OpenMayaMPx.MFnPlugin(mobject)

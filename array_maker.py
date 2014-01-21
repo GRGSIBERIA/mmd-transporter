@@ -39,5 +39,5 @@ class ArrayMaker:
     normals.setLength(len(array))
     for i in range(len(array)):
       vec = maya.OpenMaya.MVector(array[i][0], array[i][1], array[i][2])
-      normals.set(vec, i)  # もしかするとこれはだめ？
+      normals[i] = vec
     return normals
