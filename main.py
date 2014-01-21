@@ -7,11 +7,11 @@ from array_maker import *
 from csv_importer import *
 
 
-kPluginNodeName = 'simplePoly1'
+kPluginNodeName = 'transportedMMD1'
 kPluginNodeId = maya.OpenMaya.MTypeId(0x03939)
 
 
-class simplePoly1(maya.OpenMayaMPx.MPxNode):
+class MMDTransporter(maya.OpenMayaMPx.MPxNode):
     widthHeight = maya.OpenMaya.MObject()
     outputMesh = maya.OpenMaya.MObject()
 
@@ -31,33 +31,33 @@ class simplePoly1(maya.OpenMayaMPx.MPxNode):
         return newMesh
 
     def compute(self, plug, data):
-        if plug == simplePoly1.outputMesh:
-            dataHandle = data.inputValue(simplePoly1.widthHeight)
+        if plug == MMDTransporter.outputMesh:
+            dataHandle = data.inputValue(MMDTransporter.widthHeight)
             size = dataHandle.asFloat()
 
             dataCreator = maya.OpenMaya.MFnMeshData()
             newOutputData = dataCreator.create()
             self._createMesh(newOutputData)
 
-            outputHandle = data.outputValue(simplePoly1.outputMesh)
+            outputHandle = data.outputValue(MMDTransporter.outputMesh)
             outputHandle.setMObject(newOutputData)
             data.setClean(plug)
         else:
             return maya.OpenMaya.kUnknownParameter
 
 def nodeCreator():
-    return maya.OpenMayaMPx.asMPxPtr(simplePoly1())
+    return maya.OpenMayaMPx.asMPxPtr(MMDTransporter())
 
 def nodeInitializer():
     nAttr = maya.OpenMaya.MFnNumericAttribute()
-    simplePoly1.widthHeight = nAttr.create('widthHeight', 'wh', maya.OpenMaya.MFnNumericData.kFloat, 1.0)
+    MMDTransporter.widthHeight = nAttr.create('widthHeight', 'wh', maya.OpenMaya.MFnNumericData.kFloat, 1.0)
     nAttr.setStorable(1)
 
     typedAttr = maya.OpenMaya.MFnTypedAttribute()
-    simplePoly1.outputMesh = typedAttr.create('outputMesh', 'out', maya.OpenMaya.MFnData.kMesh)
-    simplePoly1.addAttribute(simplePoly1.widthHeight)
-    simplePoly1.addAttribute(simplePoly1.outputMesh)
-    simplePoly1.attributeAffects(simplePoly1.widthHeight, simplePoly1.outputMesh)
+    MMDTransporter.outputMesh = typedAttr.create('outputMesh', 'out', maya.OpenMaya.MFnData.kMesh)
+    MMDTransporter.addAttribute(MMDTransporter.widthHeight)
+    MMDTransporter.addAttribute(MMDTransporter.outputMesh)
+    MMDTransporter.attributeAffects(MMDTransporter.widthHeight, MMDTransporter.outputMesh)
 
 
 def initializePlugin(mobject):
