@@ -1,5 +1,6 @@
 #-*- encoding: utf-8
 import sys
+import os
 import maya.OpenMaya
 import maya.OpenMayaMPx
 import maya.cmds as cmds

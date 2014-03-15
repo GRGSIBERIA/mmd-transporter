@@ -37,16 +37,17 @@ class MaterialGenerator:
 
   def generate(self, model):
     for name, mat in self.material_dict.items():
-      nodes = self.createNode(model, name)
+      material_node = self.createNode(model, name)
       file_node = self.createTexture()
       self.setTexture(file_node, mat)
+      self.setMaterial(material_node, file_node, mat)
 
   def createNode(self, model, name):
     material = cmds.shadingNode("blinn", asShader=1)
     shader_group = cmds.sets(renderable=1, noSurfaceShader=1, empty=1, name='%sSG' % material)
     cmds.sets(model, e=1, forceElement=shader_group)
     cmds.connectAttr("%s.outColor" % material, "%s.surfaceShader" % shader_group, f=1)
-    return [material, shader_group]
+    return material
 
   def createTexture(self):
     file_node = cmds.shadingNode("file", asTexture=1)
@@ -74,10 +75,14 @@ class MaterialGenerator:
   def setTexture(self, file_node, material):
     cmds.setAttr(type="string", "%s.fileTextureName" % file_node, self.directory + material.texture)
 
-  def setMaterial(self, mat_node, material):
+  def setMaterial(self, mat_node, file_node, material):
     cmds.setAttr("%s.color" % mat_node, material.diffuse[0], material.diffuse[1], material.diffuse[2], type="double3")
     cmds.setAttr("%s.transparency" % mat_node, material.transparent, material.transparent, material.transparent, type="double3")
     cmds.setAttr("%s.ambientColor" % mat_node, material.ambient_color[0], material.ambient_color[1], material.ambient_color[2], type="double3")
     cmds.setAttr("%s.specularColor" % mat_node, material.specular_color[0], material.specular_color[1], material.specular_color[2], type="double3")
     cmds.setAttr("%s.eccentricity" % mat_node, material.specularity)
     cmds.setAttr("%s.specularRollOff" % mat_node, material.specularity)
+
+    ext = os.path.splitext(material.texture)[1]
+    if material.transparent > 0.0 and (ext == ".png" or ext == ".tga"):
+      cmds.connectAttr("%s.outTransparency" % file_node, "%s.transparency" % mat_node)
