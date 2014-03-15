@@ -27,3 +27,12 @@ class MaterialImporter:
           mat_name = splited[1]
           dic[mat_name] = Material(splited)
     return dic
+
+
+class MaterialGenerator:
+  def __init__(self, directory):
+    self.importer = MaterialImporter(directory)
+    self.material_dict = self.importer.import_csv()
+
+  def generate(self):
+    pass
