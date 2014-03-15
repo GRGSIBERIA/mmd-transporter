@@ -7,7 +7,7 @@ import maya.cmds as cmds
 
 from array_maker import *
 from csv_importer import *
-
+from material_importer import * 
 
 # directory = cmds.fileDialog2(dialogStyle=2, fileMode=3, okCaption="Select")
 
