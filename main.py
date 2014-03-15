@@ -2,6 +2,7 @@
 import sys
 import maya.OpenMaya
 import maya.OpenMayaMPx
+import maya.cmds as cmds
 
 from array_maker import *
 from csv_importer import *

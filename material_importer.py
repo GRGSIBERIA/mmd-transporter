@@ -18,7 +18,7 @@ class MaterialImporter:
   def __init__(self, directory):
     self.directory = directory
 
-  def import_csv(self):
+  def importCSV(self):
     with open(self.directory + "out_material.csv") as f:
       dic = {}
       for line in f:
@@ -32,7 +32,15 @@ class MaterialImporter:
 class MaterialGenerator:
   def __init__(self, directory):
     self.importer = MaterialImporter(directory)
-    self.material_dict = self.importer.import_csv()
+    self.material_dict = self.importer.importCSV()
 
-  def generate(self):
-    pass
+  def generate(self, model):
+    for name, mat in self.material_dict.items():
+      nodes = self.createNode(model, name)
+
+  def createNode(self, model, name):
+    material = cmds.shadingNode("blinn", asShader=1)
+    shader_group = cmds.sets(renderable=1, noSurfaceShader=1, empty=1, name='%sSG' % material)
+    cmds.sets(model, e=1, forceElement=shader_group)
+    cmds.connectAttr("%s.outColor" % material, "%s.surfaceShader" % shader_group, f=1)
+    return [material, shader_group]
