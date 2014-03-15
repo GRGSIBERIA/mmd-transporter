@@ -69,7 +69,7 @@ class MaterialGenerator:
     cmds.connectAttr(f=True, "%s.vertexUvThree" % placed2d, "%s.vertexUvThree" % file_node)
     cmds.connectAttr(f=True, "%s.vertexCameraOne" % placed2d, "%s.vertexCameraOne" % file_node)
     cmds.connectAttr("%s.outUV" % placed2d, "%s.uv" % file_node)
-    cmds.connectAttr("%s.outUvFilterSize", "%s.uvFi % placed2dlterSize" % file_node)
+    cmds.connectAttr("%s.outUvFilterSize" % placed2d, "%s.uvFilterSize" % file_node)
     return file_node
 
   def setTexture(self, file_node, material):
