@@ -15,11 +15,11 @@ class Material:
 
 
 class MaterialImporter:
-  def __init__(self):
-    pass
+  def __init__(self, directory):
+    self.directory = directory
 
   def import_csv(self):
-    with open("c:/out_material.csv") as f:
+    with open(self.directory + "out_material.csv") as f:
       dic = {}
       for line in f:
         splited = f.split(',')
