@@ -9,6 +9,9 @@ from array_maker import *
 from csv_importer import *
 
 
+# directory = cmds.fileDialog2(dialogStyle=2, fileMode=3, okCaption="Select")
+
+
 kPluginNodeName = 'transportedMMD1'
 kPluginNodeId = maya.OpenMaya.MTypeId(0x03939)
 

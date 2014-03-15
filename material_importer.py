@@ -37,7 +37,7 @@ class MaterialGenerator:
     self.material_dict = self.importer.importCSV()
 
   # ShaderGroupを返す，SGはcmds.setsで利用する
-  def generate(self, model):
+  def generate(self):
     shader_group_for_mesh = {}
     for name, mat in self.material_dict.items():
       material_node, shader_group = self.createNode(model, name)
