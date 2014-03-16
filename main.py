@@ -5,13 +5,14 @@ import maya.OpenMaya
 import maya.OpenMayaMPx
 import maya.cmds as cmds
 
-from array_maker import *
 from csv_importer import *
+from model_importer import *
+from array_maker import *
 from material_importer import * 
 from face_material_importer import *
 
 # directory = cmds.fileDialog2(dialogStyle=2, fileMode=3, okCaption="Select")
-
+csv_file_path = cmds.fileDialog2(dialogStyle=2, selectFileFilter="*.csv", okCaption="Select")
 
 kPluginNodeName = 'transportedMMD1'
 kPluginNodeId = maya.OpenMaya.MTypeId(0x03939)
@@ -81,7 +82,7 @@ def initializePlugin(mobject):
 def uninitializePlugin(mobject):
   mplugin = maya.OpenMayaMPx.MFnPlugin(mobject)
   try:
-    mplugin.deregisterNode( kPluginNodeId )
+    mplugin.deregisterNode(kPluginNodeId)
   except:
     sys.stderr.write('Failed to deregister node: %s' % kPluginNodeName)
     raise
