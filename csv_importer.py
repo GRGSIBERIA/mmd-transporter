@@ -25,3 +25,14 @@ class CSVImporter:
         if len(row) > 0:
           arr.append(int(row[0]))
     return arr
+
+class CSVSplitter:
+  def __init__(self):
+    pass
+
+  def toLineList(self, path):
+    lines = []
+    with open(path, "r") as f:
+      for line in f:
+        lines.append(line)
+    return lines
