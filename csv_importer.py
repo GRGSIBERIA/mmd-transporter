@@ -26,6 +26,7 @@ class CSVImporter:
           arr.append(int(row[0]))
     return arr
 
+
 class CSVSplitter:
   def __init__(self):
     pass
