@@ -21,8 +21,7 @@ class MaterialImporter:
 
   def importCSV(self, lines):
     dic = {}
-    for line in lines:
-      splited = line.split(',')
+    for splited in lines:
       if splited[0] == "Material":
         mat_name = splited[1]
         dic[mat_name] = Material(splited)

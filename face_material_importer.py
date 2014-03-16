@@ -12,8 +12,7 @@ class FaceMaterialImporter:
 
   def importCSV(self, lines):
     faces = []
-    for line in lines:
-      splited = line.split(",")
+    for splited in lines:
       if splited[0] == "Face":  # 材質ごとに;Face行が存在するためそれは無視する
         self.faces.append(FaceMaterial(splited))
     return faces

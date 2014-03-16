@@ -5,9 +5,10 @@ class CSVSplitter:
   def __init__(self):
     pass
 
-  def toLineList(self, path):
-    lines = []
+  def toRowList(self, path):
+    rows = []
     with open(path, "r") as f:
-      for line in f:
-        lines.append(line)
-    return lines
+      reader = csv.reader(f)
+      for row in reader:
+        rows.append(row)
+    return rows
