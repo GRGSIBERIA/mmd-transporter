@@ -41,3 +41,10 @@ class ArrayMaker:
       vec = maya.OpenMaya.MVector(array[i][0], array[i][1], array[i][2])
       normals[i] = vec
     return normals
+
+  def MakeSingles(self, array):
+    singles = maya.OpenMaya.MFloatArray()
+    singles.setLength(len(array))
+    for i in range(len(array)):
+      singles[i] = maya.OpenMaya.MFloat(array[i])
+    return singles
