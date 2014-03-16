@@ -13,6 +13,7 @@ from face_material_importer import *
 
 # directory = cmds.fileDialog2(dialogStyle=2, fileMode=3, okCaption="Select")
 csv_file_path = cmds.fileDialog2(dialogStyle=2, selectFileFilter="*.csv", okCaption="Select")
+print csv_file_path
 
 kPluginNodeName = 'transportedMMD1'
 kPluginNodeId = maya.OpenMaya.MTypeId(0x03939)
@@ -27,11 +28,12 @@ class MMDTransporter(maya.OpenMayaMPx.MPxNode):
 
   def _createMesh(self, outData):
     maker = ArrayMaker()
-    csv = CSVImporter("C:/")
+    records = CSVImporter().toRowList(csv_file_path)
+    model_imp = ModelImporter(records)
 
-    points = maker.MakePoints(csv.vertices)
-    faceConnects = maker.MakeFaceConnects(csv.indices)
-    faceCounts = maker.MakeFaceCounts(len(csv.indices) / 3)
+    points = maker.MakePoints(model_imp.vertices)
+    faceConnects = maker.MakeFaceConnects(model_imp.indices)
+    faceCounts = maker.MakeFaceCounts(len(model_imp.indices) / 3)
 
     meshFS = maya.OpenMaya.MFnMesh()
     newMesh = meshFS.create(points.length(), faceCounts.length(), points, faceCounts, faceConnects, outData)
