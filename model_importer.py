@@ -3,9 +3,11 @@ import csv
 
 class ModelImporter:
   def __init__(self, records):
-    self.vertices = self._GetElement3s(records, u"Vertex", "f", 2)
-    self.normals = self._GetElement3s(records, u"Vertex", "f", 5)
-    self.indices = self._GetElement3s(records, u"Face", "i", 3)
+    self.vertices = []
+    self.normals = []
+    self.indices = []
+    self.us = []
+    self.vs = []
 
   def _ToFloat3(self, r, start_index):
     return [float(r[start_index]), float(r[start_index+1]), float(r[start_index+2])]
@@ -13,12 +15,12 @@ class ModelImporter:
   def _ToInt3(self, r, start_index):
     return [int(r[start_index]), int(r[start_index+1]), int(r[start_index+2])]
 
-  def _GetElement3s(self, records, rtype, atype, start_index):
-    buf = []
-    for r in records:
-      if r[0].decode("utf-8") == rtype:
-        if atype == "f":
-          buf.append(self._ToFloat3(r, start_index))
-        elif atype == "i":
-          buf.extend(self._ToInt3(r, start_index))
-    return buf
+  def loadRecords(self, records):
+    for row in records:
+      if row[0] == "Vertex":
+        self.vertices.append(self._ToFloat3(row, 2))
+        self.normals.append(self._ToFloat3(row, 5))
+        self.us.append(float(row[9]))
+        self.vs.append(float(row[10]))
+      elif row[0] == "Face":
+        self.indices.extend(self._ToInt3(row, 3))
