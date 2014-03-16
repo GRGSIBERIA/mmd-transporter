@@ -10,13 +10,12 @@ class FaceMaterialImporter:
   def __init__(self, directory):
     self.directory = directory
 
-  def importCSV():
+  def importCSV(self, lines):
     faces = []
-    with open(self.directory + "/out_face_material.csv") as f:
-      for line in f:
-        splited = line.split(",")
-        if splited[0] == "Face":
-          self.faces.append(FaceMaterial(splited))
+    for line in lines:
+      splited = line.split(",")
+      if splited[0] == "Face":  # 材質ごとに;Face行が存在するためそれは無視する
+        self.faces.append(FaceMaterial(splited))
     return faces
 
 

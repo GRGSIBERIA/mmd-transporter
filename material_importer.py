@@ -19,14 +19,13 @@ class MaterialImporter:
   def __init__(self, directory):
     self.directory = directory
 
-  def importCSV(self):
-    with open(self.directory + "out_material.csv") as f:
-      dic = {}
-      for line in f:
-        splited = line.split(',')
-        if splited[0] == "Material":
-          mat_name = splited[1]
-          dic[mat_name] = Material(splited)
+  def importCSV(self, lines):
+    dic = {}
+    for line in lines:
+      splited = line.split(',')
+      if splited[0] == "Material":
+        mat_name = splited[1]
+        dic[mat_name] = Material(splited)
     return dic
 
 
