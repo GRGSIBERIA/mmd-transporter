@@ -2,41 +2,26 @@
 import csv
 
 class ModelImporter:
-  # def __init__(self, path):
-  #   self.vertices = self.ReadFrom3Float(path + "out_vertices.csv")
-  #   self.normals  = self.ReadFrom3Float(path + "out_normals.csv")
-  #   self.indices  = self.ReadFrom3Int(path + "out_indices.csv")
-
-  # def ReadFrom3Float(self, path):
-  #   arr = []
-  #   with open(path, "r") as f:
-  #     reader = csv.reader(f)
-  #     for row in reader:
-  #       if len(row) > 0:
-  #         append_arr = [float(row[0]), float(row[1]), float(row[2])]
-  #         arr.append(append_arr)
-  #   return arr
-
-  # def ReadFrom3Int(self, path):
-  #   arr = []
-  #   with open(path, "r") as f:
-  #     reader = csv.reader(f)
-  #     for row in reader:
-  #       if len(row) > 0:
-  #         arr.append(int(row[0]))
-  #   return arr
   def __init__(self, records):
-    self.vertices = self.readVertices(records)
+    self.vertices = self._GetElement3s(records, "Vertex", "f", 1, 2)
+    self.normals = self._GetElement3s(records, "Vertex", "f", 1, 5)
+    self.indices = self._GetElement3s(records, "Face", "i", 2, 3)
 
-  def readVertices(self, records):
-    vertex_buffer = {}
+  def _ToFloat3(self, r, start_index):
+    return [float(r[start_index]), float(r[start_index+1]), float(r[start_index+2])]
+
+  def _ToInt3(self, r, start_index):
+    return [int(r[start_index]), int(r[start_index+1]), int(r[start_index+2])]
+
+  def _GetElement3s(self, records, rtype, atype, ri, start_index):
+    buf = {}
     for r in records:
-      if r[0] == "Vertex":
-        index = int(r[1])
-        vtx = [float(r[2]), float(r[3]), float(r[4])]
-        vertex_buffer[index] = vtx
-
-    vertices = []
-    for i, vtx in sorted(dict.items())
-      vertices.append(vtx)
-    return vertices
+      if r[0] == rtype:
+        index = int(r[ri])
+        e3 = self._ToFloat3(r) if atype == "f" else self._ToInt3(r)
+        buf[index] = e3
+    
+    arr = []
+    for i, e in sorted(buf.items()):
+      arr.append(e)
+    return arr
