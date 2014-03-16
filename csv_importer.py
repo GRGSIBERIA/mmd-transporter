@@ -1,7 +1,7 @@
 #-*- encoding: utf-8
 import csv
 
-class CSVSplitter:
+class CSVImporter:
   def __init__(self):
     pass
 
