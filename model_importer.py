@@ -8,6 +8,7 @@ class ModelImporter:
     self.indices = []
     self.us = []
     self.vs = []
+    self._loadRecords(records)
 
   def _ToFloat3(self, r, start_index):
     return [float(r[start_index]), float(r[start_index+1]), float(r[start_index+2])]
@@ -15,7 +16,7 @@ class ModelImporter:
   def _ToInt3(self, r, start_index):
     return [int(r[start_index]), int(r[start_index+1]), int(r[start_index+2])]
 
-  def loadRecords(self, records):
+  def _loadRecords(self, records):
     for row in records:
       if row[0] == "Vertex":
         self.vertices.append(self._ToFloat3(row, 2))

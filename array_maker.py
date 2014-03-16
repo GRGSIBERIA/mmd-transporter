@@ -46,5 +46,5 @@ class ArrayMaker:
     singles = maya.OpenMaya.MFloatArray()
     singles.setLength(len(array))
     for i in range(len(array)):
-      singles[i] = maya.OpenMaya.MFloat(array[i])
+      singles[i] = array[i]
     return singles
