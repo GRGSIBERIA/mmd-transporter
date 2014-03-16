@@ -12,7 +12,7 @@ from material_importer import *
 from face_material_importer import *
 
 # directory = cmds.fileDialog2(dialogStyle=2, fileMode=3, okCaption="Select")
-csv_file_path = cmds.fileDialog2(dialogStyle=2, selectFileFilter="*.csv", okCaption="Select")
+csv_file_path = cmds.fileDialog2(dialogStyle=2, selectFileFilter="*.csv", okCaption="Select")[0]
 print csv_file_path
 
 kPluginNodeName = 'transportedMMD1'
