@@ -34,8 +34,11 @@ class MMDTransporter(maya.OpenMayaMPx.MPxNode):
     points = maker.MakePoints(model_imp.vertices)
     faceConnects = maker.MakeFaceConnects(model_imp.indices)
     faceCounts = maker.MakeFaceCounts(len(model_imp.indices) / 3)
+    #uArray = maker.MakeSingles(model_imp.us)
+    #vArray = maker.MakeSingles(model_imp.vs)
 
     meshFS = maya.OpenMaya.MFnMesh()
+    #newMesh = meshFS.create(points.length(), faceCounts.length(), points, faceCounts, faceConnects, uArray, vArray, outData)
     newMesh = meshFS.create(points.length(), faceCounts.length(), points, faceCounts, faceConnects, outData)
     return newMesh
 
