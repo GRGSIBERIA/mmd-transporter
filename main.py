@@ -34,6 +34,7 @@ class MMDTransporter(maya.OpenMayaMPx.MPxNode):
     points = maker.MakePoints(model_imp.vertices)
     faceConnects = maker.MakeFaceConnects(model_imp.indices)
     faceCounts = maker.MakeFaceCounts(len(model_imp.indices) / 3)
+    print points[0]
     #uArray = maker.MakeSingles(model_imp.us)
     #vArray = maker.MakeSingles(model_imp.vs)
 
