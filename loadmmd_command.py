@@ -12,8 +12,7 @@ class LoadMMDCommand(maya.OpenMayaMPx.MPxCommand):
     return maya.OpenMayaMPx.asMPxPtr(cls())
 
   def doIt(self, args):
-    csv_file_path = cmds.fileDialog2(dialogStyle=2, selectFileFilter="*.csv", okCaption="Select")[0]
-
+    MMDTransporter.csvFilePath = cmds.fileDialog2(dialogStyle=2, selectFileFilter="*.csv", okCaption="Select")[0]
     poly = maya.cmds.createNode('transform')
     mesh = maya.cmds.createNode('mesh', parent=poly)
     maya.cmds.sets(mesh, add='initialShadingGroup')
