@@ -1,12 +1,14 @@
 #-*- encoding: utf-8
+import os
+
 class Material:
-  def __init__(self, splited):
-    self.diffuse_color  = self.to_floats(splited[3:6])
-    self.transparent    = 1.0 - float(splited[6])   # 0が透明
-    self.specular_color = self.to_floats(splited[7:10])
-    self.specularity    = float(splited[10])
-    self.ambient_color  = self.to_floats(splited[11:14])
-    self.texture = splited[26]
+  def __init__(self, rows):
+    self.diffuse_color  = self.to_floats(rows[3:6])
+    self.transparent    = 1.0 - float(rows[6])   # 0が透明
+    self.specular_color = self.to_floats(rows[7:10])
+    self.specularity    = float(rows[10])
+    self.ambient_color  = self.to_floats(rows[11:14])
+    self.texture = rows[26]
 
   def to_floats(self, arr):
     retarr = []
@@ -16,21 +18,21 @@ class Material:
 
 
 class MaterialImporter:
-  def __init__(self, directory):
-    self.directory = directory
+  def __init__(self):
+    pass
 
-  def importCSV(self, lines):
+  def importCSV(self, records):
     dic = {}
-    for splited in lines:
-      if splited[0] == "Material":
-        mat_name = splited[1]
-        dic[mat_name] = Material(splited)
+    for rows in records:
+      if rows[0] == "Material":
+        mat_name = rows[1]
+        dic[mat_name] = Material(rows)
     return dic
 
 
 class MaterialGenerator:
-  def __init__(self, directory):
-    self.directory = directory
+  def __init__(self, csv_file_path):
+    self.directory = os.path.dirname(csv_file_path)
     self.importer = MaterialImporter(directory)
     self.material_dict = self.importer.importCSV()
 
@@ -76,7 +78,7 @@ class MaterialGenerator:
     return file_node
 
   def setTexture(self, file_node, material):
-    cmds.setAttr("%s.fileTextureName" % file_node, self.directory + "texture/" + material.texture, type="string")
+    cmds.setAttr("%s.fileTextureName" % file_node, self.directory + material.texture, type="string")
 
   def setMaterial(self, mat_node, file_node, material):
     cmds.setAttr("%s.color" % mat_node, material.diffuse_color[0], material.diffuse_color[1], material.diffuse_color[2], type="double3")
