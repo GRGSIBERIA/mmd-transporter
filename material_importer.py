@@ -95,5 +95,5 @@ class MaterialGenerator:
       cmds.setAttr("%s.color" % mat_node, material.diffuse_color[0], material.diffuse_color[1], material.diffuse_color[2], type="double3")
 
     ext = os.path.splitext(material.texture)[1]
-    if material.transparent > 0.0 and (ext == ".png" or ext == ".tga"):
+    if ext == ".png" or ext == ".tga":
       cmds.connectAttr("%s.outTransparency" % file_node, "%s.transparency" % mat_node)
