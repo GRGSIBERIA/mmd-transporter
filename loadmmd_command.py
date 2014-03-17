@@ -14,7 +14,7 @@ class LoadMMDCommand(maya.OpenMayaMPx.MPxCommand):
     return maya.OpenMayaMPx.asMPxPtr(cls())
 
   def doIt(self, args):
-    csv_file_path = cmds.fileDialog2(dialogStyle=2, selectFileFilter="*.csv", okCaption="Select")[0]
+    csv_file_path = cmds.fileDialog2(dialogStyle=2, fileFilter="*.csv", okCaption="Select")[0]
 
     MMDTransporter.csvFilePath = csv_file_path
     poly = maya.cmds.createNode('transform')
@@ -22,6 +22,8 @@ class LoadMMDCommand(maya.OpenMayaMPx.MPxCommand):
     maya.cmds.sets(mesh, add='initialShadingGroup')
     spoly = maya.cmds.createNode('transportedMMD1')
     maya.cmds.connectAttr(spoly + '.outputMesh', mesh + '.inMesh')
+    #polyNormal -normalMode 0 -userNormalMode 0 -ch 1 transform1;
+    maya.cmds.polyNormal(poly, normalMode=0, userNormalMode=0, ch=1)  # 表示が変になるのでノーマルを逆転
 
     records = CSVImporter().toRowList(csv_file_path)
     mg = MaterialGenerator(records, csv_file_path)
