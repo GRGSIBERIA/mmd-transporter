@@ -3,6 +3,8 @@ import maya.OpenMaya
 import maya.OpenMayaMPx
 import maya.cmds as cmds
 
+from transporter import *
+
 class LoadMMDCommand(maya.OpenMayaMPx.MPxCommand):
   def __init__(self):
     maya.OpenMayaMPx.MPxCommand.__init__(self)
