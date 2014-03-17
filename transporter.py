@@ -9,19 +9,36 @@ from array_maker import *
 from material_importer import * 
 from face_material_importer import *
 
-csv_file_path = cmds.fileDialog2(dialogStyle=2, selectFileFilter="*.csv", okCaption="Select")[0]
-print csv_file_path
 
 class MMDTransporter(maya.OpenMayaMPx.MPxNode):
   widthHeight = maya.OpenMaya.MObject()
   outputMesh = maya.OpenMaya.MObject()
 
-  def __init__(self):
+  @classmethod
+  def nodeCreator():
+    csv_file_path = cmds.fileDialog2(dialogStyle=2, selectFileFilter="*.csv", okCaption="Select")[0]
+    return maya.OpenMayaMPx.asMPxPtr(MMDTransporter(csv_file_path))
+
+  @classmethod
+  def nodeInitializer():
+    nAttr = maya.OpenMaya.MFnNumericAttribute()
+    MMDTransporter.widthHeight = nAttr.create('widthHeight', 'wh', maya.OpenMaya.MFnNumericData.kFloat, 1.0)
+    nAttr.setStorable(1)
+
+    typedAttr = maya.OpenMaya.MFnTypedAttribute()
+    MMDTransporter.outputMesh = typedAttr.create('outputMesh', 'out', maya.OpenMaya.MFnData.kMesh)
+    MMDTransporter.addAttribute(MMDTransporter.widthHeight)
+    MMDTransporter.addAttribute(MMDTransporter.outputMesh)
+    MMDTransporter.attributeAffects(MMDTransporter.widthHeight, MMDTransporter.outputMesh)
+
+  def __init__(self, csv_file_path):
+    self.csv_file_path = csv_file_path
     maya.OpenMayaMPx.MPxNode.__init__(self)
+    
 
   def _createMesh(self, outData):
     maker = ArrayMaker()
-    records = CSVImporter().toRowList(csv_file_path)
+    records = CSVImporter().toRowList(self.csv_file_path)
     model_imp = ModelImporter(records)
 
     points = maker.MakePoints(model_imp.vertices)
