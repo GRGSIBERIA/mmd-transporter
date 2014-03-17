@@ -94,10 +94,6 @@ class MaterialGenerator:
     else:
       cmds.setAttr("%s.color" % mat_node, material.diffuse_color[0], material.diffuse_color[1], material.diffuse_color[2], type="double3")
 
-    # 反転させる
     ext = os.path.splitext(material.texture)[1]
     if ext == ".png" or ext == ".tga":
-      reverse_node = cmds.createNode("reverse")
-      cmds.connectAttr("%s.outTransparency" % file_node, "%s.input" % reverse_node)
-      cmds.connectAttr("%s.output" % reverse_node, "%s.transparency" % mat_node)
-      # 失敗する気がする
+      cmds.connectAttr("%s.outTransparency" % file_node, "%s.transparency" % mat_node)
