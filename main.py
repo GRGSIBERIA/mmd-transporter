@@ -39,7 +39,12 @@ class MMDTransporter(maya.OpenMayaMPx.MPxNode):
 
     meshFS = maya.OpenMaya.MFnMesh()
     newMesh = meshFS.create(points.length(), faceCounts.length(), points, faceCounts, faceConnects, uArray, vArray, outData)
-    #newMesh = meshFS.create(points.length(), faceCounts.length(), points, faceCounts, faceConnects, outData)
+    
+    # たぶんこれでUVを代入できるはず……
+    for face_ind in range(faceCounts.length()):
+      vtxs = [faceConnects[face_ind*3], faceConnects[face_ind*3+1], faceConnects[face_ind*3+2]]
+      for vtx_ind in vtxs:
+        meshFS.assignUV(face_ind, vtx_ind, vtx_ind)
     return newMesh
 
 
