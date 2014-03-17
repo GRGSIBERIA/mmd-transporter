@@ -1,4 +1,5 @@
 #-*- encoding: utf-8
+import maya.cmds as cmds
 
 class FaceMaterialGenerator:
   def __init__(self):
