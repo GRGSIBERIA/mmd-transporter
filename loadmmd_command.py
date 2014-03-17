@@ -14,9 +14,17 @@ class LoadMMDCommand(maya.OpenMayaMPx.MPxCommand):
     return maya.OpenMayaMPx.asMPxPtr(cls())
 
   def doIt(self, args):
-    MMDTransporter.csvFilePath = cmds.fileDialog2(dialogStyle=2, selectFileFilter="*.csv", okCaption="Select")[0]
+    csv_file_path = cmds.fileDialog2(dialogStyle=2, selectFileFilter="*.csv", okCaption="Select")[0]
+
+    MMDTransporter.csvFilePath = csv_file_path
     poly = maya.cmds.createNode('transform')
     mesh = maya.cmds.createNode('mesh', parent=poly)
     maya.cmds.sets(mesh, add='initialShadingGroup')
     spoly = maya.cmds.createNode('transportedMMD1')
     maya.cmds.connectAttr(spoly + '.outputMesh', mesh + '.inMesh')
+
+    records = CSVImporter().toRowList(csv_file_path)
+    mg = MaterialGenerator(records, csv_file_path)
+    shader_groups = mg.generate()
+    fmg = FaceMaterialGenerator()
+    fmg.generate(records, mesh, shader_groups)
