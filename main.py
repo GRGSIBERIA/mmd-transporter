@@ -35,11 +35,3 @@ def uninitializePlugin(mobject):
   except:
     sys.stderr.write('Failed to deregister node: %s' % kPluginNodeName)
     raise
-
-
-def loadMMDTransporter():
-  poly = maya.cmds.createNode('transform')
-  mesh = maya.cmds.createNode('mesh', parent=poly)
-  maya.cmds.sets(mesh, add='initialShadingGroup')
-  spoly = maya.cmds.createNode('transportedMMD1')
-  maya.cmds.connectAttr(spoly + '.outputMesh', mesh + '.inMesh') 
