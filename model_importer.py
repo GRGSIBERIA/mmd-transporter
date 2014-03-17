@@ -22,6 +22,6 @@ class ModelImporter:
         self.vertices.append(self._ToFloat3(row, 2))
         self.normals.append(self._ToFloat3(row, 5))
         self.us.append(float(row[9]))
-        self.vs.append(float(row[10]))
+        self.vs.append(-1.0 * float(row[10]))
       elif row[0] == "Face":
         self.indices.extend(self._ToInt3(row, 3))
