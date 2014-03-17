@@ -86,8 +86,8 @@ class MaterialGenerator:
     cmds.setAttr("%s.transparency" % mat_node, material.transparent, material.transparent, material.transparent, type="double3")
     cmds.setAttr("%s.ambientColor" % mat_node, material.ambient_color[0], material.ambient_color[1], material.ambient_color[2], type="double3")
     cmds.setAttr("%s.specularColor" % mat_node, material.specular_color[0], material.specular_color[1], material.specular_color[2], type="double3")
-    cmds.setAttr("%s.eccentricity" % mat_node, material.specularity)
-    cmds.setAttr("%s.specularRollOff" % mat_node, material.specularity)
+    cmds.setAttr("%s.eccentricity" % mat_node, material.specularity * 0.01)
+    cmds.setAttr("%s.specularRollOff" % mat_node, material.specularity * 0.01)
 
     if material.texture != "":
       cmds.connectAttr("%s.outColor" % file_node ,"%s.color" % mat_node)
