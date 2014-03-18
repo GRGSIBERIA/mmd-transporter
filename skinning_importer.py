@@ -22,3 +22,16 @@ class SkinningImporter:
 
   def _getWeight(self, rows):
     return [float(rows[29]), float(rows[31]), float(rows[33]), float(rows[35])]
+
+class SkinningGenerator:
+  def __init__(self):
+    pass
+
+  def generate(self, transform, records, bone_objs):
+    bone_weights = SkinningImporter().importCSV(records)
+    histories = cmds.listHistory(transform)
+
+    
+
+    for i in range(len(bone_weights)):
+      pass
