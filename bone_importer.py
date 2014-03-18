@@ -35,6 +35,13 @@ class BoneGenerator:
 
   def generate(self, records):
     bones = BoneImporter().importCSV(records)
+    bone_objs = {}
     for bname, bone in bones.items():
       cmds.select(d=True)
-      cmds.joint(p=bone.abs_pos, name=bone.maya_name)
+      bone_objs[bname] = cmds.joint(p=bone.abs_pos, name=bone.maya_name)
+
+    for bname, bone in bones.items():
+      parent = bone_objs[bone.parent_bone_name]
+      cmds.connectJoint(bone_objs[bname], parent, pm=True)
+
+    return bone_objs
