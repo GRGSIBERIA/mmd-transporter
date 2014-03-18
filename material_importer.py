@@ -96,7 +96,4 @@ class MaterialGenerator:
 
     ext = os.path.splitext(material.texture)[1]
     if ext == ".png" or ext == ".tga":
-      reverse_node = cmds.createNode("reverse")
-      cmds.connectAttr("%s.outTransparency" % file_node, "%s.input" % reverse_node)
-      cmds.connectAttr("%s.output" % reverse_node, "%s.transparency" % mat_node)
-      #cmds.connectAttr("%s.outTransparency" % file_node, "%s.transparency" % mat_node)
+      cmds.connectAttr("%s.outTransparency" % file_node, "%s.transparency" % mat_node)

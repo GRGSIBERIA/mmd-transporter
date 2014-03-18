@@ -16,7 +16,7 @@ PMX Editorで読み込んだモデルデータをCSVで書き出してくださ�
 もしくはMMD TransporterをPlug-in Managerから読み込んでください．
 
 ```python
-# Script Editorから実行する場合は必ずパスを指定してください
+# Script Editorから実行する場合は必ずMMD Transporterを保存したパスを指定してください
 import maya.cmds
 maya.cmds.loadPlugin("/mmd-transporterのパス/main.py")
 ```
@@ -24,3 +24,5 @@ maya.cmds.loadPlugin("/mmd-transporterのパス/main.py")
 コマンドラインもしくはScript Editorでloadmmdを実行すると，ファイル選択ダイアログが表示されます．最初に保存したCSVを指定してください．この時，何か言われますが無視してYesをクリックしてください．
 
 しばらく待つとロードが完了します．
+
+モデルの表示がおかしい場合は，カメラメニューの[Shading]-[Polygon Transparency Sorting]と[Shading]-[Object Transparency Sorting]をオンにしてください．
