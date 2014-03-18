@@ -7,7 +7,6 @@ class Bone:
     self.number = number
     self.bone_name = bone_name
     self.maya_name = maya_name
-    self.maya_name = "joint"
     self.abs_pos = abs_pos
     self.rel_pos = rel_pos
     self.parent_bone_name = parent_bone_name
