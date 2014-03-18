@@ -6,8 +6,6 @@ import maya.cmds as cmds
 from csv_importer import *
 from model_importer import *
 from array_maker import *
-from material_importer import * 
-from face_material_importer import *
 
 class MMDTransporter(maya.OpenMayaMPx.MPxNode):
   widthHeight = maya.OpenMaya.MObject()
