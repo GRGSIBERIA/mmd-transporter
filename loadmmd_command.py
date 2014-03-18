@@ -32,14 +32,19 @@ class LoadMMDCommand(maya.OpenMayaMPx.MPxCommand):
     mg = MaterialGenerator(records, csv_file_path)
     shader_groups = mg.generate()
 
+    # マテリアル適用
     fmg = FaceMaterialGenerator()
     fmg.generate(records, mesh, shader_groups)
 
+    # ボーン配置
     bg = BoneGenerator()
     bone_objs, bones, root_name = bg.generate(records)
 
+    # スキニング
     cmds.select(poly)
     cmds.select(bone_objs[root_name], tgl=True)
     cmds.bindSkin()
-    
-  
+
+    # 
+    histories = cmds.listHistory(poly)
+    skin_cluster = cmds.ls(histories, type="skinCluster")[0]

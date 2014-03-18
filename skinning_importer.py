@@ -1,4 +1,7 @@
 #-*- encoding: utf-8
+import maya.OpenMaya
+import maya.OpenMayaAnim
+
 class Weight:
   def __init__(self, target_bones, weight_values):
     self.bones = target_bones
@@ -27,11 +30,16 @@ class SkinningGenerator:
   def __init__(self):
     pass
 
-  def generate(self, transform, records, bone_objs):
+  def generate(self, records, bone_objs, skin_cluster):
     bone_weights = SkinningImporter().importCSV(records)
-    histories = cmds.listHistory(transform)
 
-    
+    # skin cluster nodeからMayaのオブジェクトを抽出する
+    skinFn = self._extractSkinClusterFn(skin_cluster)
 
-    for i in range(len(bone_weights)):
-      pass
+  def _extractSkinClusterFn(self, skin_cluster):
+    select_list = maya.OpenMaya.MSelectionList()
+    select_list.add(skin_cluster)
+    cluster_node = maya.OpenMaya.MObject()
+    select_list.getDependNode(0, cluster_node)
+    skinFn = maya.OpenMayaAnim.MFnSkinCluster(cluster_node)
+    return skinFn
