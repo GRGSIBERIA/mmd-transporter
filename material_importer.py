@@ -96,4 +96,5 @@ class MaterialGenerator:
 
     ext = os.path.splitext(material.texture)[1]
     if ext == ".png" or ext == ".tga":
-      cmds.connectAttr("%s.outTransparency" % file_node, "%s.transparency" % mat_node)
+      if cmds.getAttr("%s.fileHasAlpha" % file_node) == 1:
+        cmds.connectAttr("%s.outTransparency" % file_node, "%s.transparency" % mat_node)
