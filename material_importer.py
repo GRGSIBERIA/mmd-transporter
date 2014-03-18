@@ -79,7 +79,6 @@ class MaterialGenerator:
     return file_node
 
   def setTexture(self, file_node, material):
-    print self.directory + "/" + material.texture
     cmds.setAttr("%s.fileTextureName" % file_node, self.directory + "/" + material.texture, type="string")
 
   def setMaterial(self, mat_node, file_node, material):
