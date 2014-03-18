@@ -7,6 +7,7 @@ from transporter import *
 from material_importer import * 
 from face_material_importer import *
 from bone_importer import *
+from skinning_importer import *
 
 class LoadMMDCommand(maya.OpenMayaMPx.MPxCommand):
   def __init__(self):
@@ -48,3 +49,4 @@ class LoadMMDCommand(maya.OpenMayaMPx.MPxCommand):
     # 
     histories = cmds.listHistory(poly)
     skin_cluster = cmds.ls(histories, type="skinCluster")[0]
+    SkinningGenerator().generate(records, bone_objs, poly, skin_cluster)

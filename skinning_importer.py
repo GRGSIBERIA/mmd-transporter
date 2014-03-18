@@ -1,4 +1,5 @@
 #-*- encoding: utf-8
+import maya.cmds as cmds
 import maya.OpenMaya
 import maya.OpenMayaAnim
 
@@ -77,7 +78,8 @@ class SkinningGenerator:
       bones = bone_weights[vtxId].bones
       weights = bone_weights[vtxId].weights
       for infNum in range(len(bones)):
-        path = obj_path[bones[infNum]]
+        joint_maya_name = bone_objs[bones[infNum]]
+        path = obj_path[joint_maya_name]  # obj_pathに必要なのは，maya_name
         boneId = inWeight[path]
         weight = weights[infNum]
         cmds.setAttr("%s.weightList[%s].weights[%s]" % (scluster, vtxId, boneId), weight)
@@ -99,4 +101,4 @@ class SkinningGenerator:
     selectList.add(scluster)
     clusterNode = maya.OpenMaya.MObject()
     selectList.getDependNode(0, clusterNode)
-    skinFn = maya.OpenMayaAnim.MFnSkinCluster(clusterNode)
+    return maya.OpenMayaAnim.MFnSkinCluster(clusterNode)
