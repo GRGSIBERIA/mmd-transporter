@@ -5,9 +5,10 @@ MMDのモデルデータをMayaに持ってくるためのプラグインです�
 
 現在サポートしているのは以下の機能です．
 
-* ポリゴンの読み込み
-* 材質の読み込み
-* テクスチャの読み込み
+* 読み込み
+  * ポリゴンの読み込み
+  * 材質の読み込み
+  * テクスチャの読み込み
 
 ### 使い方
 PMX Editorで読み込んだモデルデータをCSVで書き出してください（[ファイル]-[テキスト(CSV)変換]-[CSVファイルへ出力]）．CSVはモデルデータと同じ場所に保存してください．
@@ -15,7 +16,7 @@ PMX Editorで読み込んだモデルデータをCSVで書き出してくださ�
 ソースコードをダウンロードしたら以下のコードをScript Editorで実行するか，
 もしくはMMD TransporterをPlug-in Managerから読み込んでください．
 
-```python
+```python:script.py
 # Script Editorから実行する場合は必ずMMD Transporterを保存したパスを指定してください
 import maya.cmds
 maya.cmds.loadPlugin("/mmd-transporterのパス/main.py")
@@ -26,5 +27,6 @@ maya.cmds.loadPlugin("/mmd-transporterのパス/main.py")
 しばらく待つとロードが完了します．
 
 ### Q&A
+---------------------------------
 #### モデルの表示がおかしい
 カメラメニューの[Shading]-[Polygon Transparency Sorting]と[Shading]-[Object Transparency Sorting]をオンにしてください．
