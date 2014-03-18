@@ -43,7 +43,7 @@ class LoadMMDCommand(maya.OpenMayaMPx.MPxCommand):
     # スキニング
     cmds.select(poly)
     cmds.select(bone_objs[root_name], tgl=True)
-    cmds.bindSkin()
+    cmds.SmoothBindSkin()
 
     # 
     histories = cmds.listHistory(poly)
