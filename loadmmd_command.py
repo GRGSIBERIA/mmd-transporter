@@ -20,13 +20,13 @@ class LoadMMDCommand(maya.OpenMayaMPx.MPxCommand):
     csv_file_path = cmds.fileDialog2(dialogStyle=2, fileFilter="*.csv", okCaption="Select")[0]
 
     MMDTransporter.csvFilePath = csv_file_path
-    poly = maya.cmds.createNode('transform')
-    mesh = maya.cmds.createNode('mesh', parent=poly)
-    maya.cmds.sets(mesh, add='initialShadingGroup')
-    spoly = maya.cmds.createNode('transportedMMD1')
-    maya.cmds.connectAttr(spoly + '.outputMesh', mesh + '.inMesh')
+    poly = cmds.createNode('transform')
+    mesh = cmds.createNode('mesh', parent=poly)
+    cmds.sets(mesh, add='initialShadingGroup')
+    spoly = cmds.createNode('transportedMMD1')
+    cmds.connectAttr(spoly + '.outputMesh', mesh + '.inMesh')
     #polyNormal -normalMode 0 -userNormalMode 0 -ch 1 transform1;
-    maya.cmds.polyNormal(poly, normalMode=0, userNormalMode=0, ch=1)  # 表示が変になるのでノーマルを逆転
+    cmds.polyNormal(poly, normalMode=0, userNormalMode=0, ch=1)  # 表示が変になるのでノーマルを逆転
 
     records = CSVImporter().toRowList(csv_file_path)
     mg = MaterialGenerator(records, csv_file_path)
@@ -36,4 +36,10 @@ class LoadMMDCommand(maya.OpenMayaMPx.MPxCommand):
     fmg.generate(records, mesh, shader_groups)
 
     bg = BoneGenerator()
-    bone_objs = bg.generate(records)
+    bone_objs, bones, root_name = bg.generate(records)
+
+    cmds.select(poly)
+    cmds.select(bone_objs[root_name], tgl=True)
+    cmds.bindSkin()
+    
+  
