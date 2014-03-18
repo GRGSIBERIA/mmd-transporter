@@ -4,7 +4,6 @@ import maya.OpenMayaMPx
 import maya.cmds as cmds
 
 from transporter import *
-
 from material_importer import * 
 from face_material_importer import *
 from bone_importer import *
@@ -32,6 +31,7 @@ class LoadMMDCommand(maya.OpenMayaMPx.MPxCommand):
     records = CSVImporter().toRowList(csv_file_path)
     mg = MaterialGenerator(records, csv_file_path)
     shader_groups = mg.generate()
+
     fmg = FaceMaterialGenerator()
     fmg.generate(records, mesh, shader_groups)
 

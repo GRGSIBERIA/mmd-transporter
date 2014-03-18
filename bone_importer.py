@@ -22,7 +22,7 @@ class BoneImporter:
         bone_name = rows[1] # テーブルで英文字に変換
         apos = self._to_float3(rows, 5)
         rpos = self._to_float3(rows, 16)
-        bones Bone(cnt, rows[1], bone_name, apos, rpos, rows[13])
+        bones = Bone(cnt, rows[1], bone_name, apos, rpos, rows[13])
         cnt += 1
     return bones
 
