@@ -6,7 +6,7 @@ class Bone:
   def __init__(self, number, bone_name, maya_name, abs_pos, rel_pos, parent_bone_name):
     self.number = number
     self.bone_name = bone_name
-    #self.maya_name = maya_name
+    self.maya_name = maya_name
     self.maya_name = "joint"
     self.abs_pos = abs_pos
     self.rel_pos = rel_pos
