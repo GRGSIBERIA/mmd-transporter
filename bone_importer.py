@@ -50,3 +50,21 @@ class BoneGenerator:
         cmds.connectJoint(bone_objs[bname], bone_objs[parent], pm=True)
 
     return bone_objs, bones
+
+  def serachRoot(self, bones):
+    maybe_root = {}
+    for bone_name, bone in bones.items():
+      root = self._recursiveSearch(bone_name, bones))
+      if maybe_root.has_key(root) == False:
+        maybe_root[root] = 0
+      maybe_root[root] += 1
+      if len(maybe_root) > 5:
+        break   # 親なしボーンはさすがに5個もない考え
+    return max(maybe_root.items(), key=lambda x:x[1])[0]
+
+  def _recursiveSearch(self, bone_name, bones):
+    bone = bones[bone_name]
+    parent = bone.parent_bone_name
+    if parent == "":
+      return bone_name
+    return self._recursiveSearch(parent, bones)
