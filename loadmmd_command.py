@@ -46,7 +46,7 @@ class LoadMMDCommand(maya.OpenMayaMPx.MPxCommand):
     cmds.select(bone_objs[root_name], tgl=True)
     cmds.SmoothBindSkin()
 
-    # 
+    # ウェイト
     histories = cmds.listHistory(poly)
     skin_cluster = cmds.ls(histories, type="skinCluster")[0]
-    SkinningGenerator().generate(records, bone_objs, poly, skin_cluster)
+    SkinningGenerator().generate(records, bone_objs, bones, poly, skin_cluster)
