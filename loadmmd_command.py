@@ -22,6 +22,7 @@ class LoadMMDCommand(maya.OpenMayaMPx.MPxCommand):
     syntax = maya.OpenMaya.MSyntax()
     syntax.addFlag("-m", "-mesh", maya.OpenMaya.MSyntax.kNoArg)
     syntax.addFlag("-ma","-material", maya.OpenMaya.MSyntax.kNoArg)
+    syntax.addFlag("-fm","-faceMaterial", maya.OpenMaya.MSyntax.kNoArg)
     syntax.addFlag("-b", "-bone", maya.OpenMaya.MSyntax.kNoArg)
     syntax.addFlag("-s", "-skinning", maya.OpenMaya.MSyntax.kNoArg)
     syntax.addFlag("-w", "-weight", maya.OpenMaya.MSyntax.kNoArg)
@@ -35,7 +36,6 @@ class LoadMMDCommand(maya.OpenMayaMPx.MPxCommand):
     else:
       csv_file_path = cmds.fileDialog2(dialogStyle=2, fileFilter="*.csv", okCaption="Select")[0]
 
-
       MMDTransporter.csvFilePath = csv_file_path
       poly = cmds.createNode('transform')
       mesh = cmds.createNode('mesh', parent=poly)
@@ -45,30 +45,49 @@ class LoadMMDCommand(maya.OpenMayaMPx.MPxCommand):
       #polyNormal -normalMode 0 -userNormalMode 0 -ch 1 transform1;
       cmds.polyNormal(poly, normalMode=0, userNormalMode=0, ch=1)  # 表示が変になるのでノーマルを逆転
 
+      if argData.isFlagSet("-m"):
+        return True
+
+      # マテリアル作成
       records = CSVImporter().toRowList(csv_file_path)
       mg = MaterialGenerator(records, csv_file_path)
       shader_groups = mg.generate()
+
+      if argData.isFlagSet("-ma"):
+        return True
 
       # マテリアル適用
       fmg = FaceMaterialGenerator()
       fmg.generate(records, mesh, shader_groups)
 
+      if argData.isFlagSet("-fm"):
+        return True
+
       # ボーン配置
       bg = BoneGenerator()
       bone_objs, bones = bg.generate(records)
-
       root_name = bg.searchRoot(bones) # ルートボーンを探索する
-
       cmds.select(bone_objs[root_name])
       cmds.joint(e=True, oj="xyz", secondaryAxisOrient="yup", ch=True, zso=True)
       #joint -e  -oj xyz -secondaryAxisOrient yup -ch -zso;
+
+      if argData.isFlagSet("-b"):
+        return True
 
       # スキニング
       cmds.select(poly)
       cmds.select(bone_objs[root_name], tgl=True)
       cmds.SmoothBindSkin()
 
+      if argData.isFlagSet("-s"):
+        return True
+
       # ウェイト
       histories = cmds.listHistory(poly)
       skin_cluster = cmds.ls(histories, type="skinCluster")[0]
       SkinningGenerator().generate(records, bone_objs, bones, poly, skin_cluster)
+
+      if argData.isFlagSet("-w"):
+        return True
+        
+      return True
