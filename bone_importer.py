@@ -21,11 +21,10 @@ class BoneImporter:
     root = None
     for rows in records:
       if rows[0] == "Bone":
-        #bone_name = hashlib.sha1(rows[1]).hexdigest()
-        #parent = hashlib.sha1(rows[13]).hexdigest()
         bone_name = rows[1]
         parent = rows[13]
-        maya_name = "joint" #rows[1] # テーブルで英文字に変換
+        i = cnt + 1
+        maya_name = u"joint%s" % i #rows[1] # テーブルで英文字に変換
         apos = self._to_float3(rows, 5)
         rpos = self._to_float3(rows, 16)
         bones[bone_name] = Bone(cnt, bone_name, maya_name, apos, rpos, parent)
@@ -51,7 +50,6 @@ class BoneGenerator:
     for bname, bone in bones.items():
       parent = bone.parent_bone_name
       if parent != "":
-        print [bname, parent, bone_objs[bname], bone_objs[parent]]
         cmds.connectJoint(bone_objs[bname], bone_objs[parent], pm=True)
 
     return bone_objs, bones, root_name
