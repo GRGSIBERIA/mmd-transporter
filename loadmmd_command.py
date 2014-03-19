@@ -28,41 +28,47 @@ class LoadMMDCommand(maya.OpenMayaMPx.MPxCommand):
     return syntax
 
   def doIt(self, args):
-    csv_file_path = cmds.fileDialog2(dialogStyle=2, fileFilter="*.csv", okCaption="Select")[0]
+    try:
+      argData = maya.OpenMaya.MArgDatabase(self.syntax(), args)
+    except: 
+      pass
+    else:
+      csv_file_path = cmds.fileDialog2(dialogStyle=2, fileFilter="*.csv", okCaption="Select")[0]
 
-    MMDTransporter.csvFilePath = csv_file_path
-    poly = cmds.createNode('transform')
-    mesh = cmds.createNode('mesh', parent=poly)
-    cmds.sets(mesh, add='initialShadingGroup')
-    spoly = cmds.createNode('transportedMMD1')
-    cmds.connectAttr(spoly + '.outputMesh', mesh + '.inMesh')
-    #polyNormal -normalMode 0 -userNormalMode 0 -ch 1 transform1;
-    cmds.polyNormal(poly, normalMode=0, userNormalMode=0, ch=1)  # 表示が変になるのでノーマルを逆転
 
-    records = CSVImporter().toRowList(csv_file_path)
-    mg = MaterialGenerator(records, csv_file_path)
-    shader_groups = mg.generate()
+      MMDTransporter.csvFilePath = csv_file_path
+      poly = cmds.createNode('transform')
+      mesh = cmds.createNode('mesh', parent=poly)
+      cmds.sets(mesh, add='initialShadingGroup')
+      spoly = cmds.createNode('transportedMMD1')
+      cmds.connectAttr(spoly + '.outputMesh', mesh + '.inMesh')
+      #polyNormal -normalMode 0 -userNormalMode 0 -ch 1 transform1;
+      cmds.polyNormal(poly, normalMode=0, userNormalMode=0, ch=1)  # 表示が変になるのでノーマルを逆転
 
-    # マテリアル適用
-    fmg = FaceMaterialGenerator()
-    fmg.generate(records, mesh, shader_groups)
+      records = CSVImporter().toRowList(csv_file_path)
+      mg = MaterialGenerator(records, csv_file_path)
+      shader_groups = mg.generate()
 
-    # ボーン配置
-    bg = BoneGenerator()
-    bone_objs, bones = bg.generate(records)
+      # マテリアル適用
+      fmg = FaceMaterialGenerator()
+      fmg.generate(records, mesh, shader_groups)
 
-    root_name = bg.searchRoot(bones) # ルートボーンを探索する
+      # ボーン配置
+      bg = BoneGenerator()
+      bone_objs, bones = bg.generate(records)
 
-    cmds.select(bone_objs[root_name])
-    cmds.joint(e=True, oj="xyz", secondaryAxisOrient="yup", ch=True, zso=True)
-    #joint -e  -oj xyz -secondaryAxisOrient yup -ch -zso;
+      root_name = bg.searchRoot(bones) # ルートボーンを探索する
 
-    # スキニング
-    cmds.select(poly)
-    cmds.select(bone_objs[root_name], tgl=True)
-    cmds.SmoothBindSkin()
+      cmds.select(bone_objs[root_name])
+      cmds.joint(e=True, oj="xyz", secondaryAxisOrient="yup", ch=True, zso=True)
+      #joint -e  -oj xyz -secondaryAxisOrient yup -ch -zso;
 
-    # ウェイト
-    histories = cmds.listHistory(poly)
-    skin_cluster = cmds.ls(histories, type="skinCluster")[0]
-    SkinningGenerator().generate(records, bone_objs, bones, poly, skin_cluster)
+      # スキニング
+      cmds.select(poly)
+      cmds.select(bone_objs[root_name], tgl=True)
+      cmds.SmoothBindSkin()
+
+      # ウェイト
+      histories = cmds.listHistory(poly)
+      skin_cluster = cmds.ls(histories, type="skinCluster")[0]
+      SkinningGenerator().generate(records, bone_objs, bones, poly, skin_cluster)
