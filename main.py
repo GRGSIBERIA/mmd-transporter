@@ -21,7 +21,7 @@ def initializePlugin(mobject):
   mplugin = maya.OpenMayaMPx.MFnPlugin(mobject, "Eiichi Takebuchi", "1.0")
   try:
     mplugin.registerNode(kPluginNodeName, kPluginNodeId, MMDTransporter.nodeCreator, MMDTransporter.nodeInitializer)
-    mplugin.registerCommand(kPluginCmdName, LoadMMDCommand.cmdCreator)
+    mplugin.registerCommand(kPluginCmdName, LoadMMDCommand.cmdCreator, LoadMMDCommand.syntaxCreator)
   except:
     sys.stderr.write('Failed to register node: %s' % kPluginNodeName)
     raise

@@ -17,6 +17,16 @@ class LoadMMDCommand(maya.OpenMayaMPx.MPxCommand):
   def cmdCreator(cls):
     return maya.OpenMayaMPx.asMPxPtr(cls())
 
+  @classmethod
+  def syntaxCreator(cls):
+    syntax = maya.OpenMaya.MSyntax()
+    syntax.addFlag("-m", "-mesh", maya.OpenMaya.MSyntax.kNoArg)
+    syntax.addFlag("-ma","-material", maya.OpenMaya.MSyntax.kNoArg)
+    syntax.addFlag("-b", "-bone", maya.OpenMaya.MSyntax.kNoArg)
+    syntax.addFlag("-s", "-skinning", maya.OpenMaya.MSyntax.kNoArg)
+    syntax.addFlag("-w", "-weight", maya.OpenMaya.MSyntax.kNoArg)
+    return syntax
+
   def doIt(self, args):
     csv_file_path = cmds.fileDialog2(dialogStyle=2, fileFilter="*.csv", okCaption="Select")[0]
 
