@@ -42,9 +42,9 @@ class LoadMMDCommand(maya.OpenMayaMPx.MPxCommand):
     bone_objs, bones = bg.generate(records)
 
     root_name = bg.searchRoot(bones) # ルートボーンを探索する
-    # 今は動かない
 
     cmds.select(bone_objs[root_name])
+    cmds.joint(e=True, oj="xyz", secondaryAxisOrient="yup", ch=True, zso=True)
     #joint -e  -oj xyz -secondaryAxisOrient yup -ch -zso;
 
     # スキニング

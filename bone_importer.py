@@ -51,10 +51,10 @@ class BoneGenerator:
 
     return bone_objs, bones
 
-  def serachRoot(self, bones):
+  def searchRoot(self, bones):
     maybe_root = {}
     for bone_name, bone in bones.items():
-      root = self._recursiveSearch(bone_name, bones))
+      root = self._recursiveSearch(bone_name, bones)
       if maybe_root.has_key(root) == False:
         maybe_root[root] = 0
       maybe_root[root] += 1
