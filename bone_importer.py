@@ -18,7 +18,6 @@ class BoneImporter:
   def importCSV(self, records):
     bones = {}
     cnt = 0
-    root = None
     for rows in records:
       if rows[0] == "Bone":
         bone_name = rows[1]
@@ -28,10 +27,8 @@ class BoneImporter:
         apos = self._to_float3(rows, 5)
         rpos = self._to_float3(rows, 16)
         bones[bone_name] = Bone(cnt, bone_name, maya_name, apos, rpos, parent)
-        if cnt == 1:    # 0番はたぶん操作中心ボーン
-          root = bone_name
         cnt += 1
-    return bones, root
+    return bones
 
   def _to_float3(self, rows, start):
     return [float(rows[start]), float(rows[start+1]), -float(rows[start+2])]
@@ -41,7 +38,7 @@ class BoneGenerator:
     pass
 
   def generate(self, records):
-    bones, root_name = BoneImporter().importCSV(records)
+    bones = BoneImporter().importCSV(records)
     bone_objs = {}
     for bname, bone in bones.items():
       cmds.select(d=True)
@@ -52,4 +49,4 @@ class BoneGenerator:
       if parent != "":
         cmds.connectJoint(bone_objs[bname], bone_objs[parent], pm=True)
 
-    return bone_objs, bones, root_name
+    return bone_objs, bones

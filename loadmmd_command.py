@@ -39,7 +39,12 @@ class LoadMMDCommand(maya.OpenMayaMPx.MPxCommand):
 
     # ボーン配置
     bg = BoneGenerator()
-    bone_objs, bones, root_name = bg.generate(records)
+    bone_objs, bones = bg.generate(records)
+
+    root_name = None # ルートボーンを探索する
+
+    cmds.select(bone_objs[root_name])
+    #joint -e  -oj xyz -secondaryAxisOrient yup -ch -zso;
 
     # スキニング
     cmds.select(poly)
