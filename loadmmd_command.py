@@ -40,8 +40,8 @@ class LoadMMDCommand(maya.OpenMayaMPx.MPxCommand):
       poly = cmds.createNode('transform')
       mesh = cmds.createNode('mesh', parent=poly)
       cmds.sets(mesh, add='initialShadingGroup')
-      spoly = cmds.createNode('transportedMMD1')
-      cmds.connectAttr(spoly + '.outputMesh', mesh + '.inMesh')
+      plugin = cmds.createNode('transportedMMD1')
+      cmds.connectAttr(plugin + '.outputMesh', mesh + '.inMesh')
       #polyNormal -normalMode 0 -userNormalMode 0 -ch 1 transform1;
       cmds.polyNormal(poly, normalMode=0, userNormalMode=0, ch=1)  # 表示が変になるのでノーマルを逆転
 
@@ -89,5 +89,5 @@ class LoadMMDCommand(maya.OpenMayaMPx.MPxCommand):
 
       if argData.isFlagSet("-w"):
         return True
-        
+
       return True
