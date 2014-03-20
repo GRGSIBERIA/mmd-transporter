@@ -1,15 +1,25 @@
 #-*- encoding: utf-8
-import hashlib
 import maya.cmds as cmds
 
+from establisher import *
+
 class Bone:
-  def __init__(self, number, bone_name, maya_name, abs_pos, rel_pos, parent_bone_name):
+  def __init__(self, number, record, maya_name):
     self.number = number
-    self.bone_name = bone_name
+    self.bone_name = record[1]
     self.maya_name = maya_name
-    self.abs_pos = abs_pos
-    self.rel_pos = rel_pos
-    self.parent_bone_name = parent_bone_name
+    self.abs_pos = self._to_float3(record, 5)
+    self.rel_pos = self._to_float3(record, 16)
+    self.parent_bone_name = record[13]
+    self.enable_rotate = int(record[8])
+    self.enable_translate = int(record[9])
+    self.enable_visibility = int(record[11])
+    self.is_establish_rotation = int(record[20])
+    self.is_establish_translate = int(record[21])
+    self.establish_power = float(record[22])
+
+  def _to_float3(self, rows, start):
+    return [float(rows[start]), float(rows[start+1]), -float(rows[start+2])]
 
 class BoneImporter:
   def __init__(self):
@@ -20,18 +30,12 @@ class BoneImporter:
     cnt = 0
     for rows in records:
       if rows[0] == "Bone":
-        bone_name = rows[1]
-        parent = rows[13]
         i = cnt + 1
+        bone_name = rows[1]
         maya_name = u"joint%s" % i #rows[1] # テーブルで英文字に変換
-        apos = self._to_float3(rows, 5)
-        rpos = self._to_float3(rows, 16)
-        bones[bone_name] = Bone(cnt, bone_name, maya_name, apos, rpos, parent)
+        bones[bone_name] = Bone(cnt, rows, maya_name)
         cnt += 1
     return bones
-
-  def _to_float3(self, rows, start):
-    return [float(rows[start]), float(rows[start+1]), -float(rows[start+2])]
 
 class BoneGenerator:
   def __init__(self):
@@ -48,6 +52,10 @@ class BoneGenerator:
       parent = bone.parent_bone_name
       if parent != "":
         cmds.connectJoint(bone_objs[bname], bone_objs[parent], pm=True)
+
+    le = LimitEstablisher()
+    for bname, bone in bones.items():
+      le.giveLimit(bone_objs[bname], bone)
 
     return bone_objs, bones
 
