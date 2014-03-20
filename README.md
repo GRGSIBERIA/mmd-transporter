@@ -36,13 +36,38 @@ maya.cmds.loadPlugin("mmd-transporterのパス/main.py")
 
 しばらく待つとロードが完了します．
 
+モデルの表示がおかしい場合，カメラメニューの[Shading]-[Polygon Transparency Sorting]と[Shading]-[Object Transparency Sorting]をオンにしてください．
+
 ### 動作テストモデル
 * Tda式初音ミク・アペンドver1.0
 
-## Q&A
----------------------------------
-#### モデルの表示がおかしい
-カメラメニューの[Shading]-[Polygon Transparency Sorting]と[Shading]-[Object Transparency Sorting]をオンにしてください．
+
+## コマンドマニュアル
+
+### loadmmd
+
+    loadmmd (-m|-mt|-fm|-b|-s|-w)
+
+PMX EditorでCSVに変換されているモデルデータを読み込みます．
+
+#### -m(-mesh)フラグ
+このフラグをオンにすると，CSVからメッシュのみ読み込みます．
+
+#### -mt(-material)フラグ
+このフラグをオンにすると，マテリアルの読み込みまで行います．
+
+#### -fm(-faceMaterial)フラグ
+このフラグをオンにすると，メッシュに対してマテリアルの適用まで行います．
+
+#### -b(-bone)フラグ
+このフラグをオンにすると，ボーンの配置まで行います．
+
+#### -s(-skinning)フラグ
+このフラグをオンにすると，読み込んだメッシュとボーンについてスキニングまで行います．
+
+#### -w(-weight)フラグ
+このフラグをオンにすると，ウェイトの設定まで行います．
+
 
 ## Copyright
 Copyright (c) Eiichi Takebuchi, released under the MIT license.
