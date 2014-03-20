@@ -57,40 +57,36 @@ class SkinningGenerator:
     infDags = maya.OpenMaya.MDagPathArray()
     skinFn.influenceObjects(infDags)
 
-    infs = {}
+    inf_id_path = {}
     inWeight = {}
-    obj_path = {}
     for x in range(infDags.length()):
-      infPath = infDags[x].fullPathName()
+      boneFullPath = infDags[x].fullPathName()
       infId = int(skinFn.indexForInfluenceObject(infDags[x]))
-      infs[infId] = infPath
+      inf_id_path[infId] = boneFullPath
 
-      joint_name = infPath.split("|")[-1]
+      joint_name = boneFullPath.split("|")[-1]
       inWeight[joint_name] = infId
+      print infId
 
-    self._normalizeSkinWeights(transform, scluster, infs)
+    self._normalizeSkinWeights(transform, scluster, inf_id_path)
 
-    #weightListPlug = skinFn.findPlug("weightList")
-    #weightPlug = skinFn.findPlug("weights")
-    #weightListAttr = weightListPlug.attribute()
-    #weightAttr = weightPlug.attribute()
+    self._useSkinPercent(scluster, transform, bone_weights, bone_objs)
+    #self._useSetAttr(scluster, bone_weights, bone_objs)
 
-    ## bone_objsの中身 == infPathの最後尾のボーン名
-    #print "bonenum: %s" % weightListPlug.numElements()
-    #for i in range(weightListPlug.numElements()):
-    #  print i
-    #  cmds.setAttr("%s.weightList[0].weights[%s]" % (scluster, i), 1)
+  def _useSetAttr(self, skinFn, scluster, bone_weights, bone_objs):
+    weightListPlug = skinFn.findPlug("weightList")
+    weightPlug = skinFn.findPlug("weights")
 
-    #for vtxId in range(weightListPlug.numElements()):
-    #  bones = bone_weights[vtxId].bones
-    #  weights = bone_weights[vtxId].weight_values
-    #  for infNum in range(len(bones)):
-    #    maya_name = bone_insts[bones[infNum]].maya_name
-    #    boneId = inWeight[maya_name]
-    #    weight = weights[infNum]
-    #    cmds.setAttr("%s.weightList[%s].weights[%s]" % (scluster, vtxId, boneId), weight)
+    for vtxId in range(weightListPlug.numElements()):
+      bw = bone_weights[vtxId]
+      for bwi in bw:
+        target_bone = bone_objs[bw.bones[bwi]]
+        weight = bw.weight_values[bwi]
+        boneId = inWeight[target_bone]
+        if weight > 0.0:
+          cmds.setAttr("%s.weightList[%s].weights[%s]" % (scluster, vtxId, boneId), weight)
 
-    #skinPercentを使う
+  def _useSkinPercent(self, scluster, transform, bone_weights, bone_objs):
     for vtx_ind in range(len(bone_weights)):
       bw = bone_weights[vtx_ind]
       transform_value = []
@@ -100,8 +96,6 @@ class SkinningGenerator:
         if weight > 0.0:
           transform_value.append((target_bone, weight))
       cmds.skinPercent(scluster, "%s.vtx[%s]" % (transform, vtx_ind), transformValue=transform_value)
-      # joint8 is not an influence object for this skin. #
-      # 操作中心ボーンということが判明
 
   def _normalizeSkinWeights(self, transform, scluster, infs):
     for inf in infs.values():
