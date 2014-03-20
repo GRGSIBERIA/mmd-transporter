@@ -49,14 +49,19 @@ class BoneGenerator:
     bone_objs = {}
     for bname, bone in bones.items():
       cmds.select(d=True)
-      bone_objs[bname] = cmds.joint(p=bone.abs_pos)
-      bone.maya_name = bone_objs[bname]
+      joint_name = cmds.joint(p=bone.abs_pos)
+      bone_objs[bname] = joint_name
+      bone.maya_name = joint_name
 
     for bname, bone in bones.items():
-      parent = bones[bone.parent_bone_name]
+      parent = bone.parent_bone_name
       if parent != "":
-        cmds.connectJoint(bone.maya_name, parent.maya_name, pm=True)
-        #cmds.connectJoint(bone_objs[bname], bone_objs[parent], pm=True)
+        parent_joint = bones[parent]
+        cmds.connectJoint(bone.maya_name, parent_joint.maya_name, pm=True)
+
+    axis_limit = AxisLimitter()
+    for bname, bone in bones.items():
+      axis_limit.giveAxis(bone)
 
     limit_estab = LimitEstablisher()
     for bname, bone in bones.items():
