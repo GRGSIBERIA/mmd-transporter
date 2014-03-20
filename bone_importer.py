@@ -59,14 +59,17 @@ class BoneGenerator:
         parent_joint = bones[parent]
         cmds.connectJoint(bone.maya_name, parent_joint.maya_name, pm=True)
 
+    # 軸制限
     axis_limit = AxisLimitter()
     for bname, bone in bones.items():
       axis_limit.giveAxis(bone)
 
+    # 移動，回転の非表示
     limit_estab = LimitEstablisher()
     for bname, bone in bones.items():
       limit_estab.giveLimit(bone)
 
+    # 回転・移動付与
     attr_estab = AttributeEstablisher()
     for bname, bone in bones.items():
       attr_estab.giveAttr(bone, bones)
