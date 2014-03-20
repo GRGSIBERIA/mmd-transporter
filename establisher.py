@@ -27,6 +27,7 @@ class AttributeEstablisher:
       self._createExpression(joint_name, bone_inst, bones, "rotate")
     if bone_inst.is_establish_translate == 1:
       self._createExpression(joint_name, bone_inst, bones, "translate")
+    # 末端のボーンのOrientJointが原因でExpressionが破綻する
 
   def _createExpression(self, joint_name, bone_inst, bones, attr_type):
     parent_joint_name = bones[bone_inst.establish_parent].maya_name
