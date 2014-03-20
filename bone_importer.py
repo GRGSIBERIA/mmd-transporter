@@ -18,6 +18,8 @@ class Bone:
     self.is_establish_translate = int(record[21])
     self.establish_power = float(record[22])
     self.establish_parent = record[23]
+    self.enable_axis = int(record[24])
+    self.limit_axis = self._to_float3(record, 25)
 
   def _to_float3(self, rows, start):
     return [float(rows[start]), float(rows[start+1]), -float(rows[start+2])]
@@ -51,17 +53,18 @@ class BoneGenerator:
       bone.maya_name = bone_objs[bname]
 
     for bname, bone in bones.items():
-      parent = bone.parent_bone_name
+      parent = bones[bone.parent_bone_name]
       if parent != "":
-        cmds.connectJoint(bone_objs[bname], bone_objs[parent], pm=True)
+        cmds.connectJoint(bone.maya_name, parent.maya_name, pm=True)
+        #cmds.connectJoint(bone_objs[bname], bone_objs[parent], pm=True)
 
     limit_estab = LimitEstablisher()
     for bname, bone in bones.items():
-      limit_estab.giveLimit(bone_objs[bname], bone)
+      limit_estab.giveLimit(bone)
 
     attr_estab = AttributeEstablisher()
     for bname, bone in bones.items():
-      attr_estab.giveAttr(bone_objs[bname], bone, bones)
+      attr_estab.giveAttr(bone, bones)
 
     return bone_objs, bones
 
