@@ -17,6 +17,7 @@ class Bone:
     self.is_establish_rotation = int(record[20])
     self.is_establish_translate = int(record[21])
     self.establish_power = float(record[22])
+    self.establish_parent = record[23]
 
   def _to_float3(self, rows, start):
     return [float(rows[start]), float(rows[start+1]), -float(rows[start+2])]
