@@ -27,16 +27,15 @@ class AttributeEstablisher:
       self._createExpression(joint_name, bone_inst, bones, "rotate")
     if bone_inst.is_establish_translate == 1:
       self._createExpression(joint_name, bone_inst, bones, "translate")
-    #expression -s "joint3.rz = pCube1.rz;" -n "hoge";
 
   def _createExpression(self, joint_name, bone_inst, bones, attr_type):
-    parent_join_name = bones[bone_inst.establish_parent].maya_name
-    script = self._createScript(joint_name, bone_inst, bones, attr_type, parent_join_name)
-    name = "establish_%s_for_%s_from_%s" % (attr_type, joint_name, parent_join_name)
-    cmds.expression(s="script", n=name)
+    parent_joint_name = bones[bone_inst.establish_parent].maya_name
+    script = self._createScript(joint_name, bone_inst, bones, attr_type, parent_joint_name)
+    name = "establish_%s_for_%s_from_%s" % (attr_type, joint_name, parent_joint_name)
+    cmds.expression(s=script, n=name)
 
-  def _createScript(self, joint_name, bone_inst, bones, attr_type, parent_join_name):
+  def _createScript(self, joint_name, bone_inst, bones, attr_type, parent_joint_name):
     script = ""
     for attr in ["X", "Y", "Z"]:
-      script += "%s.%s%s = %s.%s%s * %s;\n" % (joint_name, attr_type, attr, parent_join_name, attr_type, attr, bone_inst.establish_power)
+      script += "%s.%s%s = %s.%s%s * %s;\n" % (joint_name, attr_type, attr, parent_joint_name, attr_type, attr, bone_inst.establish_power)
     return script

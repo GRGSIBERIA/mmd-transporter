@@ -48,15 +48,20 @@ class BoneGenerator:
     for bname, bone in bones.items():
       cmds.select(d=True)
       bone_objs[bname] = cmds.joint(p=bone.abs_pos)
+      bone.maya_name = bone_objs[bname]
 
     for bname, bone in bones.items():
       parent = bone.parent_bone_name
       if parent != "":
         cmds.connectJoint(bone_objs[bname], bone_objs[parent], pm=True)
 
-    le = LimitEstablisher()
+    limit_estab = LimitEstablisher()
     for bname, bone in bones.items():
-      le.giveLimit(bone_objs[bname], bone)
+      limit_estab.giveLimit(bone_objs[bname], bone)
+
+    attr_estab = AttributeEstablisher()
+    for bname, bone in bones.items():
+      attr_estab.giveAttr(bone_objs[bname], bone, bones)
 
     return bone_objs, bones
 
