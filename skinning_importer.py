@@ -66,20 +66,19 @@ class SkinningGenerator:
 
       joint_name = boneFullPath.split("|")[-1]
       inWeight[joint_name] = infId
-      print infId
 
     self._normalizeSkinWeights(transform, scluster, inf_id_path)
 
-    self._useSkinPercent(scluster, transform, bone_weights, bone_objs)
-    #self._useSetAttr(scluster, bone_weights, bone_objs)
+    #self._useSkinPercent(scluster, transform, bone_weights, bone_objs)
+    self._useSetAttr(skinFn, scluster, inWeight, bone_weights, bone_objs)
 
-  def _useSetAttr(self, skinFn, scluster, bone_weights, bone_objs):
+  def _useSetAttr(self, skinFn, scluster, inWeight, bone_weights, bone_objs):
     weightListPlug = skinFn.findPlug("weightList")
     weightPlug = skinFn.findPlug("weights")
 
     for vtxId in range(weightListPlug.numElements()):
       bw = bone_weights[vtxId]
-      for bwi in bw:
+      for bwi in range(bw.length):
         target_bone = bone_objs[bw.bones[bwi]]
         weight = bw.weight_values[bwi]
         boneId = inWeight[target_bone]
