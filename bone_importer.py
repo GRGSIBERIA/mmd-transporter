@@ -14,10 +14,12 @@ class Bone:
     self.enable_rotate = int(record[8])
     self.enable_translate = int(record[9])
     self.enable_visibility = int(record[11])
+
     self.is_establish_rotation = int(record[20])
     self.is_establish_translate = int(record[21])
     self.establish_power = float(record[22])
     self.establish_parent = record[23]
+
     self.enable_axis = int(record[24])
     self.limit_axis = self._to_float3(record, 25)
 
@@ -53,21 +55,20 @@ class BoneGenerator:
       bone_objs[bname] = joint_name
       bone.maya_name = joint_name
 
+    axis_limit = AxisLimitter()
     for bname, bone in bones.items():
       parent = bone.parent_bone_name
       if parent != "":
         parent_joint = bones[parent]
+        axis_limit.giveAxis(bone)    # 最初に配置したボーンが優先的にorientJointされる
         cmds.connectJoint(bone.maya_name, parent_joint.maya_name, pm=True)
 
     # joint orientの調整
     root_name = self._searchRoot(bones) # ルートボーンを探索する
-    cmds.select(bone_objs[root_name])
-    cmds.joint(e=True, oj="xyz", secondaryAxisOrient="yup", ch=True, zso=True)
-
-    # 軸制限
-    axis_limit = AxisLimitter()
-    for bname, bone in bones.items():
-      axis_limit.giveAxis(bone)
+    
+    # Orient Jointをかけると今まで作ったボーン構造が破綻する
+    #cmds.select(bone_objs[root_name])
+    #cmds.joint(e=True, oj="xyz", secondaryAxisOrient="yup", ch=True, zso=True)
 
     # 移動，回転の非表示
     limit_estab = LimitEstablisher()
