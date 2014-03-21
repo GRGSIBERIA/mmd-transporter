@@ -64,10 +64,10 @@ class BoneGenerator:
     for bname, bone in bones.items():
       parent = bone.parent_bone_name
       axis_limit.giveLocal(bone)
-      #axis_limit.giveAxis(bone)
+      axis_limit.giveAxis(bone)
       if parent != "":
         parent_joint = bones[parent]
-        #cmds.connectJoint(bone.maya_name, parent_joint.maya_name, pm=True)
+        cmds.connectJoint(bone.maya_name, parent_joint.maya_name, pm=True)
 
     # joint orientの調整
     root_name = self._searchRoot(bones) # ルートボーンを探索する
