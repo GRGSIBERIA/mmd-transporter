@@ -59,6 +59,11 @@ class BoneGenerator:
         parent_joint = bones[parent]
         cmds.connectJoint(bone.maya_name, parent_joint.maya_name, pm=True)
 
+    # joint orientの調整
+    root_name = self._searchRoot(bones) # ルートボーンを探索する
+    cmds.select(bone_objs[root_name])
+    cmds.joint(e=True, oj="xyz", secondaryAxisOrient="yup", ch=True, zso=True)
+
     # 軸制限
     axis_limit = AxisLimitter()
     for bname, bone in bones.items():
@@ -74,9 +79,9 @@ class BoneGenerator:
     for bname, bone in bones.items():
       attr_estab.giveAttr(bone, bones)
 
-    return bone_objs, bones
+    return bone_objs, bones, root_name
 
-  def searchRoot(self, bones):
+  def _searchRoot(self, bones):
     maybe_root = {}
     for bone_name, bone in bones.items():
       root = self._recursiveSearch(bone_name, bones)

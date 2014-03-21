@@ -50,11 +50,11 @@ class AttributeEstablisher:
 
   def _createExpression(self, bone_inst, bones, attr_type):
     parent_joint = bones[bone_inst.establish_parent]
-    pbuf = bones[bone_inst.parent_bone_name]
-    self._asyncOrientJointFromParent(bone_inst, pbuf)
+    #pbuf = bones[bone_inst.parent_bone_name]
+    #self._asyncOrientJointFromParent(bone_inst, pbuf)
     script = self._createScript(bone_inst, bones, attr_type, parent_joint)
     name = "establish_%s_for_%s_from_%s" % (attr_type, bone_inst.maya_name, parent_joint.maya_name)
-    cmds.expression(s=script, n=name)
+    #cmds.expression(s=script, n=name)
 
   def _asyncOrientJointFromParent(self, bone, parent_joint):
     axis = []
@@ -64,6 +64,12 @@ class AttributeEstablisher:
 
   def _createScript(self, bone_inst, bones, attr_type, parent_joint):
     script = ""
-    for attr in ["X", "Y", "Z"]:
-      script += "%s.%s%s = %s.%s%s * %s;\n" % (bone_inst.maya_name, attr_type, attr, parent_joint.maya_name, attr_type, attr, bone_inst.establish_power)
+    val = bone_inst.establish_power
+    #for attr in ["X", "Y", "Z"]:
+    #  script += "%s.%s%s = %s.%s%s * %s;\n" % (bone_inst.maya_name, attr_type, attr, parent_joint.maya_name, attr_type, attr, bone_inst.establish_power)
+    #script = "$a = `xform -q -a -ws -ro %s`;\nxform -a -ws -ro ($a[0]*%s) ($a[1]*%s) ($a[2]*%s) %s;" % (parent_joint.maya_name, val, val, val, bone_inst.maya_name)
+    script = "$a = `xform -q -a -ws -ro %s`;\n"
+    attr = ["X", "Y", "Z"]
+    for i in range(3):
+      script += "%s.%s%s = $a[%s];\n" % (bone_inst.maya_name, attr_type, attr[i], i)
     return script
