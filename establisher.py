@@ -64,12 +64,8 @@ class AttributeEstablisher:
 
   def _createScript(self, bone_inst, bones, attr_type, parent_joint):
     script = ""
-    val = bone_inst.establish_power
-    #for attr in ["X", "Y", "Z"]:
-    #  script += "%s.%s%s = %s.%s%s * %s;\n" % (bone_inst.maya_name, attr_type, attr, parent_joint.maya_name, attr_type, attr, bone_inst.establish_power)
-    #script = "$a = `xform -q -a -ws -ro %s`;\nxform -a -ws -ro ($a[0]*%s) ($a[1]*%s) ($a[2]*%s) %s;" % (parent_joint.maya_name, val, val, val, bone_inst.maya_name)
-    script = "$a = `xform -q -a -ws -ro %s`;\n"
-    attr = ["X", "Y", "Z"]
-    for i in range(3):
-      script += "%s.%s%s = $a[%s];\n" % (bone_inst.maya_name, attr_type, attr[i], i)
     return script
+
+# parent.worldSpaceRotate = parent.rotate + parent.orientJoint
+# child.rotate = parent.worldSpaceRotate - child.orientJoint
+#
