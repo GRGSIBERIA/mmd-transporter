@@ -67,10 +67,6 @@ class LoadMMDCommand(maya.OpenMayaMPx.MPxCommand):
       bg = BoneGenerator()
       bone_objs, bones, root_name = bg.generate(records)
       
-      #cmds.select(bone_objs[root_name])
-      #cmds.joint(e=True, oj="xyz", secondaryAxisOrient="yup", ch=True, zso=True)
-      #joint -e  -oj xyz -secondaryAxisOrient yup -ch -zso;
-
       if argData.isFlagSet("-b"):
         return True
 

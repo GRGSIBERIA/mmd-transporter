@@ -63,10 +63,11 @@ class BoneGenerator:
     axis_limit = AxisLimitter()
     for bname, bone in bones.items():
       parent = bone.parent_bone_name
-      axis_limit.giveAxis(bone)    # 最初に配置したボーンが優先的にorientJointされる
+      axis_limit.giveLocal(bone)
+      #axis_limit.giveAxis(bone)
       if parent != "":
         parent_joint = bones[parent]
-        cmds.connectJoint(bone.maya_name, parent_joint.maya_name, pm=True)
+        #cmds.connectJoint(bone.maya_name, parent_joint.maya_name, pm=True)
 
     # joint orientの調整
     root_name = self._searchRoot(bones) # ルートボーンを探索する
@@ -76,14 +77,14 @@ class BoneGenerator:
     #cmds.joint(e=True, oj="xyz", secondaryAxisOrient="yup", ch=True, zso=True)
 
     # 移動，回転の非表示
-    limit_estab = LimitEstablisher()
-    for bname, bone in bones.items():
-      limit_estab.giveLimit(bone)
+    #limit_estab = LimitEstablisher()
+    #for bname, bone in bones.items():
+    #  limit_estab.giveLimit(bone)
 
     # 回転・移動付与
-    attr_estab = AttributeEstablisher()
-    for bname, bone in bones.items():
-      attr_estab.giveAttr(bone, bones)
+    #attr_estab = AttributeEstablisher()
+    #for bname, bone in bones.items():
+    #  attr_estab.giveAttr(bone, bones)
 
     return bone_objs, bones, root_name
 
