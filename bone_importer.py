@@ -11,6 +11,7 @@ class Bone:
     self.abs_pos = self._to_float3(record, 5)
     self.rel_pos = self._to_float3(record, 16)
     self.parent_bone_name = record[13]
+
     self.enable_rotate = int(record[8])
     self.enable_translate = int(record[9])
     self.enable_visibility = int(record[11])
@@ -22,6 +23,10 @@ class Bone:
 
     self.enable_axis = int(record[24])
     self.limit_axis = self._to_float3(record, 25)
+
+    self.enable_local = int(record[28])
+    self.local_x = self._to_float3(record, 29)
+    self.local_z = self._to_float3(record, 32)
 
   def _to_float3(self, rows, start):
     return [float(rows[start]), float(rows[start+1]), -float(rows[start+2])]
@@ -58,9 +63,9 @@ class BoneGenerator:
     axis_limit = AxisLimitter()
     for bname, bone in bones.items():
       parent = bone.parent_bone_name
+      axis_limit.giveAxis(bone)    # 最初に配置したボーンが優先的にorientJointされる
       if parent != "":
         parent_joint = bones[parent]
-        axis_limit.giveAxis(bone)    # 最初に配置したボーンが優先的にorientJointされる
         cmds.connectJoint(bone.maya_name, parent_joint.maya_name, pm=True)
 
     # joint orientの調整

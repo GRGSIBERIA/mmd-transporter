@@ -15,6 +15,7 @@ class AxisLimitter:
       cmds.setAttr("%s.jointTypeZ" % bone.maya_name, 0)
       cmds.setAttr("%s.ry" % bone.maya_name, lock=True)
       cmds.setAttr("%s.rz" % bone.maya_name, lock=True)
+      cmds.setAttr("%s.drawStyle" % axis_joint, 2)
 
 
 class LimitEstablisher:
