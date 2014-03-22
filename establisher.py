@@ -68,8 +68,12 @@ class AttributeEstablisher:
       parent_joint = bones[bone.establish_parent]
       cmds.select(parent_joint.maya_name)
       cmds.select(bone.maya_name, tgl=True)
-      mel.eval("doCreateOrientConstraintArgList 1 { \"1\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"%s\",\"\",\"1\" };" % bone.establish_power)
-      cmds.orientConstraint(mo=True, weight=bone.establish_power)
+      constraint = cmds.orientConstraint(mo=True)[0]
+      multiply = cmds.createNode("multiplyDivide", n="%s_orientConstraint_multiplyDivide" % bone.maya_name)
+      cmds.setAttr("%s.input2" % multiply, bone.establish_power, bone.establish_power, bone.establish_power, type="double3")
+      cmds.connectAttr("%s.constraintRotate" % constraint, "%s.input1" % multiply)
+      cmds.connectAttr("%s.output" % multiply, "%s.rotate" % bone.maya_name)
+      # outputConstraint
 
     if bone.enable_establish_translate == 1:
       pass
