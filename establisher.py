@@ -9,19 +9,22 @@ class AxisLimitter:
   def giveAxis(self, bone):
     if bone.enable_axis == 1:
       cmds.select(bone.maya_name)
-      axis_joint = cmds.joint(r=True, p=bone.limit_axis)
+      #makeIdentity -apply true -t 1 -r 1 -s 1 -n 0 -pn 1 -jointOrient;
+      cmds.makeIdentity(apply=True, t=1, r=1, s=1, n=0, pn=1, jointOrient=True)
+      axis_joint = cmds.joint(r=True, p=bone.limit_axis, name="%s_axis" % bone.maya_name)
       cmds.joint(bone.maya_name, e=True, zso=True, oj="xyz")
-      cmds.setAttr("%s.jointTypeY" % bone.maya_name, 0)
-      cmds.setAttr("%s.jointTypeZ" % bone.maya_name, 0)
-      cmds.setAttr("%s.ry" % bone.maya_name, lock=True)
-      cmds.setAttr("%s.rz" % bone.maya_name, lock=True)
-      cmds.setAttr("%s.drawStyle" % axis_joint, 2)
+      #cmds.setAttr("%s.jointTypeY" % bone.maya_name, 0)
+      #cmds.setAttr("%s.jointTypeZ" % bone.maya_name, 0)
+      #cmds.setAttr("%s.ry" % bone.maya_name, lock=True)
+      #cmds.setAttr("%s.rz" % bone.maya_name, lock=True)
+      #cmds.setAttr("%s.drawStyle" % axis_joint, 2)
       cmds.delete(axis_joint)
 
   def giveLocal(self, bone):
     if bone.enable_local == 1:
       # 1. Z軸に対してジョイントを伸ばす（-zso -oj xyz -sao yup）
       cmds.select(bone.maya_name)
+      cmds.makeIdentity(apply=True, t=1, r=1, s=1, n=0, pn=1, jointOrient=True)
       z_axis = cmds.joint(r=True, p=bone.local_z, name="%s_local_z" % bone.maya_name)
       cmds.select(bone.maya_name)
       cmds.joint(e=True, zso=True, oj="xyz", sao="yup")
@@ -29,11 +32,10 @@ class AxisLimitter:
 
       # 2. X軸にジョイントを伸ばす
       cmds.select(bone.maya_name)
+      cmds.makeIdentity(apply=True, t=1, r=1, s=1, n=0, pn=1, jointOrient=True)
       x_axis = cmds.joint(r=True, p=bone.local_x, name="%s_local_x" % bone.maya_name)
-
-      # 4. X軸に対してorientJointをかける（-zso -oj xyz）
-      cmds.select(x_axis)
-      cmds.joint(e=True, zso=True, oj="xyz", ch=True)
+      cmds.select(bone.maya_name)
+      cmds.joint(e=True, zso=True, oj="xyz")
       cmds.delete(x_axis)
 
 class LimitEstablisher:

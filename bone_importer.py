@@ -31,6 +31,7 @@ class Bone:
   def _to_float3(self, rows, start):
     return [float(rows[start]), float(rows[start+1]), -float(rows[start+2])]
 
+
 class BoneImporter:
   def __init__(self):
     pass
@@ -47,6 +48,7 @@ class BoneImporter:
         cnt += 1
     return bones
 
+
 class BoneGenerator:
   def __init__(self):
     pass
@@ -61,28 +63,41 @@ class BoneGenerator:
       bone.maya_name = joint_name
 
     axis_limit = AxisLimitter()
+    #limit_estab = LimitEstablisher()
+    #attr_estab = AttributeEstablisher()
+
     for bname, bone in bones.items():
-      parent = bone.parent_bone_name
-      axis_limit.giveLocal(bone)
-      axis_limit.giveAxis(bone)
-      if parent != "":
-        parent_joint = bones[parent]
+      parent_name = bone.parent_bone_name
+      if parent_name != "":
+        parent_joint = bones[parent_name]
+        #axis_limit.giveLocal(parent_joint)
+        #axis_limit.giveAxis(parent_joint)
         cmds.connectJoint(bone.maya_name, parent_joint.maya_name, pm=True)
 
     # joint orientの調整
     root_name = self._searchRoot(bones) # ルートボーンを探索する
     
+    # ローカル座標チェック
+    for bname, bone in bones.items():
+      if bone.parent_bone_name == "":
+        continue
+      parent = bones[bone.parent_bone_name]
+      cmds.select(parent.maya_name)
+      if parent.local_x[0] > 0.0:
+        cmds.joint(parent.maya_name, e=True, zso=True, oj="xyz", sao="yup")
+      else:
+        cmds.joint(parent.maya_name, e=True, zso=True, oj="xyz", sao="ydown")
+
+
     # Orient Jointをかけると今まで作ったボーン構造が破綻する
     #cmds.select(bone_objs[root_name])
     #cmds.joint(e=True, oj="xyz", secondaryAxisOrient="yup", ch=True, zso=True)
 
     # 移動，回転の非表示
-    #limit_estab = LimitEstablisher()
     #for bname, bone in bones.items():
     #  limit_estab.giveLimit(bone)
 
     # 回転・移動付与
-    #attr_estab = AttributeEstablisher()
     #for bname, bone in bones.items():
     #  attr_estab.giveAttr(bone, bones)
 
