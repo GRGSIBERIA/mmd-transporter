@@ -61,22 +61,28 @@ class AttributeEstablisher:
   def __init__(self):
     pass
 
-  def giveAttr(self, bone_inst, bones):
-    if bone_inst.is_establish_rotation == 1:
-      self._createExpression(bone_inst, bones, "rotate")
-    if bone_inst.is_establish_translate == 1:
-      self._createExpression(bone_inst, bones, "translate")
+  def giveAttr(self, bone, bones):
+    if bone.is_establish_rotation == 1:
+      #self._createExpression(bone, bones, "rotate")
+      est_p = bones[bone.establish_parent]
+      world_rotation = cmds.xform(est_p.maya_name, q=True, r=True, ws=True, ro=True)
+      script  = "$%s_b = `xform -q -r -ws -ro %s`;\n" % (bone.maya_name, est_p.maya_name)
+      script += "%s.rotateX = $%s_b[0] - %s;\n" % (bone.maya_name, bone.maya_name, world_rotation[0])
+      script += "%s.rotateY = $%s_b[1] - %s;\n" % (bone.maya_name, bone.maya_name, world_rotation[1])
+      script += "%s.rotateZ = $%s_b[2] - %s;\n" % (bone.maya_name, bone.maya_name, world_rotation[2])
+      print script
+      cmds.expression(s=script, n="establish_rotation_for_%s_%s" % (est_p.maya_name, bone.maya_name))
+    if bone.is_establish_translate == 1:
+      #self._createExpression(bone, bones, "translate")
+      pass
 
-  def _createExpression(self, bone_inst, bones, attr_type):
-    parent_joint = bones[bone_inst.establish_parent]
-    #pbuf = bones[bone_inst.parent_bone_name]
-    #self._asyncOrientJointFromParent(bone_inst, pbuf)
-    script = self._createScript(bone_inst, bones, attr_type, parent_joint)
-    name = "establish_%s_for_%s_from_%s" % (attr_type, bone_inst.maya_name, parent_joint.maya_name)
-    #cmds.expression(s=script, n=name)
+  def _createExpression(self, bone, bones, attr_type):
+    pass
 
-  def _createScript(self, bone_inst, bones, attr_type, parent_joint):
+  def _createScript(self, bone, bones, attr_type, parent_joint):
     script = ""
+    
+
     return script
 
 # parent.worldSpaceRotate = parent.rotate + parent.orientJoint

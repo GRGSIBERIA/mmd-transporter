@@ -64,7 +64,7 @@ class BoneGenerator:
 
     axis_limit = AxisLimitter()
     #limit_estab = LimitEstablisher()
-    #attr_estab = AttributeEstablisher()
+    attr_estab = AttributeEstablisher()
 
     for bname, bone in bones.items():
       parent_name = bone.parent_bone_name
@@ -89,11 +89,10 @@ class BoneGenerator:
         cmds.joint(parent.maya_name, e=True, zso=True, oj="xyz", sao="ydown")
 
     for bname, bone in bones.items():
-      if bone.parent_bone_name == "":
+      if bone.bone_name == "":
         continue
-      parent = bones[bone.parent_bone_name]
-      cmds.select(parent.maya_name)
-      
+      attr_estab.giveAttr(bone, bones)
+
     # Orient Jointをかけると今まで作ったボーン構造が破綻する
     #cmds.select(bone_objs[root_name])
     #cmds.joint(e=True, oj="xyz", secondaryAxisOrient="yup", ch=True, zso=True)
