@@ -1,5 +1,6 @@
 #-*- encoding: utf-8
 import maya.cmds as cmds
+import maya.mel as mel
 
 
 class AxisLimitter:
@@ -38,6 +39,7 @@ class AxisLimitter:
       cmds.joint(e=True, zso=True, oj="xyz")
       cmds.delete(x_axis)
 
+
 class LimitEstablisher:
   def __init__(self):
     pass
@@ -62,29 +64,12 @@ class AttributeEstablisher:
     pass
 
   def giveAttr(self, bone, bones):
-    if bone.is_establish_rotation == 1:
-      #self._createExpression(bone, bones, "rotate")
-      est_p = bones[bone.establish_parent]
-      world_rotation = cmds.xform(est_p.maya_name, q=True, r=True, ws=True, ro=True)
-      script  = "$%s_b = `xform -q -r -ws -ro %s`;\n" % (bone.maya_name, est_p.maya_name)
-      script += "%s.rotateX = $%s_b[0] - %s;\n" % (bone.maya_name, bone.maya_name, world_rotation[0])
-      script += "%s.rotateY = $%s_b[1] - %s;\n" % (bone.maya_name, bone.maya_name, world_rotation[1])
-      script += "%s.rotateZ = $%s_b[2] - %s;\n" % (bone.maya_name, bone.maya_name, world_rotation[2])
-      print script
-      cmds.expression(s=script, n="establish_rotation_for_%s_%s" % (est_p.maya_name, bone.maya_name))
-    if bone.is_establish_translate == 1:
-      #self._createExpression(bone, bones, "translate")
+    if bone.enable_establish_rotation == 1:
+      parent_joint = bones[bone.establish_parent]
+      cmds.select(parent_joint.maya_name)
+      cmds.select(bone.maya_name, tgl=True)
+      mel.eval("doCreateOrientConstraintArgList 1 { \"1\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"%s\",\"\",\"1\" };" % bone.establish_power)
+      cmds.orientConstraint(mo=True, weight=bone.establish_power)
+
+    if bone.enable_establish_translate == 1:
       pass
-
-  def _createExpression(self, bone, bones, attr_type):
-    pass
-
-  def _createScript(self, bone, bones, attr_type, parent_joint):
-    script = ""
-    
-
-    return script
-
-# parent.worldSpaceRotate = parent.rotate + parent.orientJoint
-# child.rotate = parent.worldSpaceRotate - child.orientJoint
-#

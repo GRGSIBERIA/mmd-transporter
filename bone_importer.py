@@ -16,8 +16,8 @@ class Bone:
     self.enable_translate = int(record[9])
     self.enable_visibility = int(record[11])
 
-    self.is_establish_rotation = int(record[20])
-    self.is_establish_translate = int(record[21])
+    self.enable_establish_rotation = int(record[20])
+    self.enable_establish_translate = int(record[21])
     self.establish_power = float(record[22])
     self.establish_parent = record[23]
 
