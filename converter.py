@@ -9,6 +9,10 @@ class ToMaya:
     return maya.OpenMaya.MFloatPoint(v.x, v.y, -v.z)
 
   @classmethod
+  def fvector3(cls, v):
+    return maya.OpenMaya.MVector(v.x, v.y, -v.z)
+
+  @classmethod
   def uv(cls, uv, index, uArray, vArray):
     uArray[index] = uv.x
-    vArray[index] = uv.y
+    vArray[index] = 1.0 - uv.y

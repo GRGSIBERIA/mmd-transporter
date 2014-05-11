@@ -23,11 +23,15 @@ class MMDPoly(maya.OpenMayaMPx.MPxNode):
     faceConnects = meshGen.CreateFaceConnects()
     faceCounts = meshGen.CreateFaceCounts()
     uArray, vArray = meshGen.CreateUVArray()
+    normals = meshGen.CreateNormalArray()
 
     meshFS = maya.OpenMaya.MFnMesh()
     newMesh = meshFS.create(points.length(), faceCounts.length(), points, faceCounts, faceConnects, uArray, vArray, outData)
 
     meshFS.assignUVs(faceCounts, faceConnects)
+
+    meshFS.setFaceVertexNormals(normals, faceCounts, faceConnects)
+
     return newMesh
 
   def compute(self, plug, data):

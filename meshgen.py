@@ -48,6 +48,15 @@ class MeshGenerator:
       cnv.ToMaya.uv(uv, i, uArray, vArray)
     return uArray, vArray
 
+  def CreateNormalArray(self):
+    normals = maya.OpenMaya.MVectorArray()
+    numNormals = len(self.mmdData.vertices)
+    normals.setLength(numNormals)
+    for i in range(numNormals):
+      normal = self.mmdData.vertices[i].normal
+      normals[i] = cnv.ToMaya.fvector3(normal)
+    return normals
+
   @classmethod
   def CreatePolyNodes(cls):
     poly = maya.cmds.createNode('transform')
@@ -55,4 +64,4 @@ class MeshGenerator:
     maya.cmds.sets(mesh, add='initialShadingGroup')
     spoly = maya.cmds.createNode('mmdPoly')
     maya.cmds.connectAttr(spoly + '.outputMesh', mesh + '.inMesh')
-    return mesh
+    return mesh, poly

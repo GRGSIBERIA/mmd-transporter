@@ -56,7 +56,6 @@ class MaterialGenerator:
 
 
   def _setMaterial(self, mat_node, file_node, material, textures):
-    cmds.setAttr("%s.transparency" % mat_node, material.alpha, material.alpha, material.alpha, type="double3")
     cmds.setAttr("%s.ambientColor" % mat_node, material.ambient_color[0], material.ambient_color[1], material.ambient_color[2], type="double3")
     cmds.setAttr("%s.specularColor" % mat_node, material.specular_color[0], material.specular_color[1], material.specular_color[2], type="double3")
     cmds.setAttr("%s.eccentricity" % mat_node, material.specular_factor * 0.01)
@@ -68,19 +67,30 @@ class MaterialGenerator:
     else:
       cmds.setAttr("%s.color" % mat_node, material.diffuse_color[0], material.diffuse_color[1], material.diffuse_color[2], type="double3")
 
+    if material.alpha < 1.0:
+      alpha = 1.0 - material.alpha
+      cmds.setAttr("%s.transparency" % mat_node, alpha, alpha, alpha, type="double3")
+
     ext = os.path.splitext(texturePath)[1]
     if ext == ".png" or ext == ".tga":
-      if cmds.getAttr("%s.fileHasAlpha" % file_node) == 1:
-        cmds.connectAttr("%s.outTransparency" % file_node, "%s.transparency" % mat_node)
+      if material.alpha < 1.0:
+        alpha = 1.0 - material.alpha
+        if cmds.getAttr("%s.fileHasAlpha" % file_node) == 1:
+          multiplyNode = cmds.createNode("multiplyDivide")
+          cmds.setAttr("%s.input1" % multiplyNode, alpha, alpha, alpha, type="double3")
+          cmds.connectAttr("%s.outTransparency" % file_node, "%s.input2" % multiplyNode)
+          cmds.connectAttr("%s.output" % multiplyNode, "%s.transparency" % mat_node)
 
 
-  def generate(self):
+  def _generateTextureFile(self):
     fileNodeNames = []
     for i in range(len(self.mmdData.textures)):
       fileNode = self._createFileNode(self.mmdData.textures[i])
       fileNodeNames.append(fileNode)
       self._setTexture(fileNode, self.mmdData.textures[i])
+    return fileNodeNames
 
+  def _generateMaterials(self, fileNodeNames):
     shaderGroupNodes = []
     for i in range(len(self.mmdData.materials)):
       material = self.mmdData.materials[i]
@@ -88,4 +98,22 @@ class MaterialGenerator:
       fileNode = fileNodeNames[material.texture_index]
       self._setMaterial(materialNode, fileNode, material, self.mmdData.textures)
       shaderGroupNodes.append(shaderGroup)
-    return shaderGroupNodes
+    return shaderGroupNodes    
+
+  def _setFaceMaterials(self, meshName, shaderGroupNodes):
+    cnt = 0
+    for i in range(len(self.mmdData.materials)):
+      sg = shaderGroupNodes[i]
+      material = self.mmdData.materials[i]
+      faceNumber = material.vertex_count / 3
+      start = cnt
+      end = cnt + faceNumber
+      targetFaceName = "%s.f[%s:%s]" % (meshName, start, end)
+      cmds.sets(targetFaceName, forceElement=sg)
+      cnt += faceNumber
+
+  def generate(self, meshName):
+    fileNodeNames = self._generateTextureFile()
+    shaderGroupNodes = self._generateMaterials(fileNodeNames)
+    self._setFaceMaterials(meshName, shaderGroupNodes)
+
