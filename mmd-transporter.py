@@ -4,14 +4,17 @@ import maya.OpenMaya
 import maya.OpenMayaMPx
 
 import mmdpoly as mdp
+import mmdcommand as cmd
 
 kPluginNodeName = 'mmdPoly'
 kPluginNodeId = maya.OpenMaya.MTypeId(0x03939)
-
-
+kPluginCmdName = "loadmmd"
 
 def nodeCreator():
     return maya.OpenMayaMPx.asMPxPtr(mdp.MMDPoly())
+
+def createCommand():
+    return maya.OpenMayaMPx.asMPxPtr(cmd.LoadMMD())
 
 def nodeInitializer():
     nAttr = maya.OpenMaya.MFnNumericAttribute()
@@ -26,17 +29,11 @@ def nodeInitializer():
 
 
 def initializePlugin(mobject):
-    mplugin = maya.OpenMayaMPx.MFnPlugin(mobject)
-    try:
-        mplugin.registerNode(kPluginNodeName, kPluginNodeId, nodeCreator, nodeInitializer)
-    except:
-        sys.stderr.write('Failed to register node: %s' % kPluginNodeName)
-        raise
+    mplugin = maya.OpenMayaMPx.MFnPlugin(mobject, "Eiichi Takebuchi", "1.0")
+    mplugin.registerNode(kPluginNodeName, kPluginNodeId, nodeCreator, nodeInitializer)
+    mplugin.registerCommand(kPluginCmdName, createCommand)
 
 def uninitializePlugin(mobject):
     mplugin = maya.OpenMayaMPx.MFnPlugin(mobject)
-    try:
-        mplugin.deregisterNode( kPluginNodeId )
-    except:
-        sys.stderr.write('Failed to deregister node: %s' % kPluginNodeName)
-        raise
+    mplugin.deregisterNode(kPluginNodeId)
+    mplugin.deregisterCommand(kPluginCmdName)
