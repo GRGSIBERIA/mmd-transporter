@@ -50,11 +50,13 @@ class MeshGenerator:
 
   def CreateNormalArray(self):
     normals = maya.OpenMaya.MVectorArray()
-    numNormals = len(self.mmdData.vertices)
+    numNormals = len(self.mmdData.indices)
     normals.setLength(numNormals)
     for i in range(numNormals):
-      normal = self.mmdData.vertices[i].normal
-      normals[i] = cnv.ToMaya.fvector3(normal)
+      index = self.mmdData.indices[i]
+      normal = self.mmdData.vertices[index].normal
+      normalItem = cnv.ToMaya.fvector3(normal)
+      normals.set(normalItem, i)
     return normals
 
   @classmethod

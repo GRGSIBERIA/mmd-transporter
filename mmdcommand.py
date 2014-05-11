@@ -44,7 +44,7 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
 
       # ポリゴンの生成
       meshName, polyName = meshgen.MeshGenerator.CreatePolyNodes()
-      #maya.cmds.polyNormal(polyName, normalMode=0, userNormalMode=0, ch=1)  # 表示が変になるのでノーマルを逆転
+      maya.cmds.polyNormal(polyName, normalMode=0, userNormalMode=0, ch=1)  # 表示が変になるのでノーマルを逆転
 
       # マテリアルの生成
       genMaterial = matgen.MaterialGenerator(mmdData, filePath)
