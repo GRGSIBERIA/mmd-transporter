@@ -10,6 +10,7 @@ import pymeshio.pmd.reader
 import mmdpoly as mpoly
 import meshgen
 import matgen
+import bonegen
 
 class LoadMMD(maya.OpenMayaMPx.MPxCommand):
   def __init__(self):
@@ -48,4 +49,4 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
 
       # マテリアルの生成
       genMaterial = matgen.MaterialGenerator(mmdData, filePath)
-      shaderGroupNames = genMaterial.generate(meshName)
+      genMaterial.generate(meshName)
