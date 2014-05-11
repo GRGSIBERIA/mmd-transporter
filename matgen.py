@@ -54,6 +54,17 @@ class MaterialGenerator:
   def _setTexture(self, fileNode, texturePath):
     cmds.setAttr("%s.fileTextureName" % fileNode, self.directory + "/" + texturePath, type="string")
 
+  def _setTransparency(self, material, texturePath, mat_node, file_node):
+    alpha = material.alpha
+    if alpha < 1.0:
+      cmds.setAttr("%s.transparency" % mat_node, alpha, alpha, alpha, type="double3")
+
+    ext = os.path.splitext(texturePath)[1]
+    if ext == ".png" or ext == ".tga":
+      if cmds.getAttr("%s.fileHasAlpha" % file_node) == 1 and alpha == 1.0:
+        cmds.connectAttr("%s.outTransparency" % file_node, "%s.transparency" % mat_node)
+
+    
 
   def _setMaterial(self, mat_node, file_node, material, textures):
     cmds.setAttr("%s.ambientColor" % mat_node, material.ambient_color[0], material.ambient_color[1], material.ambient_color[2], type="double3")
@@ -67,19 +78,7 @@ class MaterialGenerator:
     else:
       cmds.setAttr("%s.color" % mat_node, material.diffuse_color[0], material.diffuse_color[1], material.diffuse_color[2], type="double3")
 
-    if material.alpha < 1.0:
-      alpha = 1.0 - material.alpha
-      cmds.setAttr("%s.transparency" % mat_node, alpha, alpha, alpha, type="double3")
-
-    ext = os.path.splitext(texturePath)[1]
-    if ext == ".png" or ext == ".tga":
-      if material.alpha < 1.0:
-        alpha = 1.0 - material.alpha
-        if cmds.getAttr("%s.fileHasAlpha" % file_node) == 1:
-          multiplyNode = cmds.createNode("multiplyDivide")
-          cmds.setAttr("%s.input1" % multiplyNode, alpha, alpha, alpha, type="double3")
-          cmds.connectAttr("%s.outTransparency" % file_node, "%s.input2" % multiplyNode)
-          cmds.connectAttr("%s.output" % multiplyNode, "%s.transparency" % mat_node)
+    self._setTransparency(material, texturePath, mat_node, file_node)
 
 
   def _generateTextureFile(self):
