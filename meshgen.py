@@ -9,9 +9,8 @@ import maya.cmds
 import converter as cnv
 
 class MeshGenerator:
-  def __init__(self, mmdData, ext):
+  def __init__(self, mmdData):
     self.mmdData = mmdData
-    self.extension = ext.lower()
 
   def CreatePoints(self):
     points = maya.OpenMaya.MFloatPointArray()
@@ -48,3 +47,12 @@ class MeshGenerator:
       uv = self.mmdData.vertices[i].uv
       cnv.ToMaya.uv(uv, i, uArray, vArray)
     return uArray, vArray
+
+  @classmethod
+  def CreatePolyNodes(cls):
+    poly = maya.cmds.createNode('transform')
+    mesh = maya.cmds.createNode('mesh', parent=poly)
+    maya.cmds.sets(mesh, add='initialShadingGroup')
+    spoly = maya.cmds.createNode('mmdPoly')
+    maya.cmds.connectAttr(spoly + '.outputMesh', mesh + '.inMesh')
+    return mesh
