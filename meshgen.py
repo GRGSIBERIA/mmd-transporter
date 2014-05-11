@@ -1,9 +1,12 @@
+#-*- encoding: utf-8
 import sys
 import os.path
 
 import maya.OpenMaya
 import maya.OpenMayaMPx
 import maya.cmds
+
+import converter as cnv
 
 class MeshGenerator:
   def __init__(self, mmdData, ext):
@@ -15,12 +18,11 @@ class MeshGenerator:
     numVertices = len(self.mmdData.vertices)
     points.setLength(numVertices)
     for i in range(numVertices):
-      mmdPoint = self.mmdData.vertices[i].position
-      vtxPoint = maya.OpenMaya.MFloatPoint(mmdPoint.x, mmdPoint.y, mmdPoint.z)
+      vtxPoint = cnv.ToMaya.vector3(self.mmdData.vertices[i].position)
       points.set(vtxPoint, i)
     return points
 
-  def CreateConnects(self):
+  def CreateFaceConnects(self):
     faceConnects = maya.OpenMaya.MIntArray()
     numIndices = len(self.mmdData.indices)
     faceConnects.setLength(numIndices)
@@ -28,10 +30,21 @@ class MeshGenerator:
       faceConnects[i] = self.mmdData.indices[i]
     return faceConnects
 
-  def CreateCounts(self):
+  def CreateFaceCounts(self):
     faceCounts = maya.OpenMaya.MIntArray()
     numFaces = len(self.mmdData.indices) / 3
     faceCounts.setLength(numFaces)
     for i in range(numFaces):
       faceCounts[i] = 3
     return faceCounts
+
+  def CreateUVArray(self):
+    uArray = maya.OpenMaya.MFloatArray()
+    vArray = maya.OpenMaya.MFloatArray()
+    length = len(self.mmdData.vertices)
+    uArray.setLength(length)
+    vArray.setLength(length)
+    for i in range(length):
+      uv = self.mmdData.vertices[i].uv
+      cnv.ToMaya.uv(uv, i, uArray, vArray)
+    return uArray, vArray

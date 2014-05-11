@@ -1,12 +1,14 @@
 import sys
 import os.path
 
+#-*- encoding: utf-8
 import maya.OpenMaya
 import maya.OpenMayaMPx
 import maya.cmds
 
 import pymeshio.pmx.reader
 import pymeshio.pmd.reader
+import meshgen
 
 class MMDPoly(maya.OpenMayaMPx.MPxNode):
     widthHeight = maya.OpenMaya.MObject()
@@ -16,8 +18,6 @@ class MMDPoly(maya.OpenMayaMPx.MPxNode):
         maya.OpenMayaMPx.MPxNode.__init__(self)
 
     def _createMesh(self, planeSize, outData):
-        numFaces = 1
-
         filterName = "PMD/PMX (*.pmd *pmx);;PMD (*.pmd);;PMX (*.pmx)"
         filePath = maya.cmds.fileDialog2(ds=2, cap="Selet PMD/PMX", ff=filterName, fm=1)[0]
         root, extType = os.path.splitext(filePath)
@@ -30,28 +30,20 @@ class MMDPoly(maya.OpenMayaMPx.MPxNode):
         elif extType == ".pmx":
             mmdData = pymeshio.pmx.reader.read_from_file(filePath)
 
-        points = maya.OpenMaya.MFloatPointArray()
-        numVertices = len(mmdData.vertices)
-        points.setLength(numVertices)
-        for i in range(numVertices):
-            mmdPoint = mmdData.vertices[i].position
-            vtxPoint = maya.OpenMaya.MFloatPoint(mmdPoint.x, mmdPoint.y, mmdPoint.z)
-            points.set(vtxPoint, i)
+        meshGen = meshgen.MeshGenerator(mmdData, extType)
 
-        faceConnects = maya.OpenMaya.MIntArray()
-        numIndices = len(mmdData.indices)
-        faceConnects.setLength(numIndices)
-        for i in range(numIndices):
-            faceConnects[i] = mmdData.indices[i]
+        points = meshGen.CreatePoints()
+        faceConnects = meshGen.CreateFaceConnects()
+        faceCounts = meshGen.CreateFaceCounts()
+        uArray, vArray = meshGen.CreateUVArray()
 
-        faceCounts = maya.OpenMaya.MIntArray()
-        numFaces = numIndices / 3
-        faceCounts.setLength(numFaces)
-        for i in range(numFaces):
-            faceCounts[i] = 3
+        print type(uArray)
+        print type(vArray)
 
         meshFS = maya.OpenMaya.MFnMesh()
-        newMesh = meshFS.create(numVertices, numFaces, points, faceCounts, faceConnects, outData)
+        newMesh = meshFS.create(points.length(), faceCounts.length(), points, faceCounts, faceConnects, uArray, vArray, outData)
+
+        meshFS.assignUVs(faceCounts, faceConnects)
         return newMesh
 
     def compute(self, plug, data):
