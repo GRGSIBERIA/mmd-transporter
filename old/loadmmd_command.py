@@ -37,10 +37,14 @@ class LoadMMDCommand(maya.OpenMayaMPx.MPxCommand):
       csv_file_path = cmds.fileDialog2(dialogStyle=2, fileFilter="*.csv", okCaption="Select")[0]
 
       MMDTransporter.csvFilePath = csv_file_path
+
+      # ノード作成
       poly = cmds.createNode('transform')
       mesh = cmds.createNode('mesh', parent=poly)
       cmds.sets(mesh, add='initialShadingGroup')
       plugin = cmds.createNode('transportedMMD1')
+
+      # メッシュ生成
       cmds.connectAttr(plugin + '.outputMesh', mesh + '.inMesh')
       #polyNormal -normalMode 0 -userNormalMode 0 -ch 1 transform1;
       cmds.polyNormal(poly, normalMode=0, userNormalMode=0, ch=1)  # 表示が変になるのでノーマルを逆転
