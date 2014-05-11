@@ -26,8 +26,10 @@ class MaterialGenerator:
     return os.path.basename(path)
 
   def _createFileNode(self, texturePath):
-    file_node = cmds.shadingNode("file", asTexture=1)
-    placed2d  = cmds.shadingNode("place2dTexture", asUtility=1)
+    fileName = os.path.splitext(texturePath)[0]
+    fileName = os.path.basename(fileName)
+    file_node = cmds.shadingNode("file", asTexture=1, name=fileName)
+    placed2d  = cmds.shadingNode("place2dTexture", asUtility=1, name="%s_place2dTexture" % fileName)
     cmds.connectAttr("%s.coverage" % placed2d, "%s.coverage" % file_node, f=True)
     cmds.connectAttr("%s.translateFrame" % placed2d, "%s.translateFrame" % file_node, f=True)
     cmds.connectAttr("%s.rotateFrame" % placed2d, "%s.rotateFrame" % file_node, f=True)
@@ -48,22 +50,25 @@ class MaterialGenerator:
     cmds.connectAttr("%s.outUvFilterSize" % placed2d, "%s.uvFilterSize" % file_node)
     return file_node
 
+
   def _setTexture(self, fileNode, texturePath):
     cmds.setAttr("%s.fileTextureName" % fileNode, self.directory + "/" + texturePath, type="string")
 
-  def _setMaterial(self, mat_node, file_node, material):
+
+  def _setMaterial(self, mat_node, file_node, material, textures):
     cmds.setAttr("%s.transparency" % mat_node, material.alpha, material.alpha, material.alpha, type="double3")
     cmds.setAttr("%s.ambientColor" % mat_node, material.ambient_color[0], material.ambient_color[1], material.ambient_color[2], type="double3")
     cmds.setAttr("%s.specularColor" % mat_node, material.specular_color[0], material.specular_color[1], material.specular_color[2], type="double3")
     cmds.setAttr("%s.eccentricity" % mat_node, material.specular_factor * 0.01)
     cmds.setAttr("%s.specularRollOff" % mat_node, material.specular_factor * 0.01)
 
-    if material.texture != "":
+    texturePath = textures[material.texture_index]
+    if texturePath != "":
       cmds.connectAttr("%s.outColor" % file_node ,"%s.color" % mat_node)
     else:
       cmds.setAttr("%s.color" % mat_node, material.diffuse_color[0], material.diffuse_color[1], material.diffuse_color[2], type="double3")
 
-    ext = os.path.splitext(material.texture)[1]
+    ext = os.path.splitext(texturePath)[1]
     if ext == ".png" or ext == ".tga":
       if cmds.getAttr("%s.fileHasAlpha" % file_node) == 1:
         cmds.connectAttr("%s.outTransparency" % file_node, "%s.transparency" % mat_node)
@@ -81,7 +86,6 @@ class MaterialGenerator:
       material = self.mmdData.materials[i]
       materialNode, shaderGroup = self._createMaterialNode(material)
       fileNode = fileNodeNames[material.texture_index]
-      self._setMaterial(materialNode, fileNode, material)
-      materialNodes.append(materialNode)
+      self._setMaterial(materialNode, fileNode, material, self.mmdData.textures)
       shaderGroupNodes.append(shaderGroup)
     return shaderGroupNodes
