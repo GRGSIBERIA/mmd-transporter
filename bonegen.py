@@ -4,22 +4,24 @@ import maya.OpenMaya
 import maya.OpenMayaMPx
 import maya.cmds
 
+import kakasi
+
 class BoneGenerator:
   def __init__(self, mmdData):
     self.mmdData = mmdData
 
-  def _translateJapanese(boneName):
-    pass
+  def _translateJapanese(self, boneName):
+    romaji = kakasi.hepburn(boneName)
+    return romaji
 
   def _createJoints(self, bones):
     jointNames = []
     for i in range(len(bones)):
-      # KAKASHI使う
-      # boneName = self._translateJapanese(bones[i].name)
-      boneName = "joint"
+      boneName = self._translateJapanese(bones[i].name)
       pos = bones[i].position
       maya.cmds.select(d=True)
-      jointName = maya.cmds.joint(p=[pos.x, pos.y, -pos.z])
+      translatedName = self._translateJapanese(bones[i].name)
+      jointName = maya.cmds.joint(p=[pos.x, pos.y, -pos.z], name=boneName)
       jointNames.append(jointName)
     return jointNames
 
