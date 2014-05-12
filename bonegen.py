@@ -4,21 +4,30 @@ import maya.OpenMaya
 import maya.OpenMayaMPx
 import maya.cmds
 
-#import kakasi
+import os.path
+import csv
 
 class BoneGenerator:
-  def __init__(self, mmdData):
+  def __init__(self, mmdData, filePath):
     self.mmdData = mmdData
+    self.nameDict = []
+    self.dictFlag = True
+    directory = os.path.dirname(filePath)
 
-  def _translateJapanese(self, boneName):
-    #romaji = kakasi.hepburn(boneName)
-    #return romaji
-    pass
+    try:
+      csv = csv.reader(open(directory + "\\bonedict.csv", "r"))
+      for row in csv:
+        self.nameDict.append(row[1])
+    except:
+      self.dictFlag = False
+      print "bonedict.csv not found."
 
   def _createJoints(self, bones):
     jointNames = []
     for i in range(len(bones)):
-      boneName = self._translateJapanese(bones[i].name)
+      boneName = "joint"
+      if self.dictFlag:
+        boneName = self.nameDict[i]
       pos = bones[i].position
       maya.cmds.select(d=True)
       translatedName = self._translateJapanese(bones[i].name)

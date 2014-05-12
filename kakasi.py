@@ -1,3 +1,4 @@
+#http://straitmouth.jp/blog/setomits/1797
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
@@ -35,7 +36,8 @@ class Tagger(object):
 
 def hepburn(ustr):
     k = Tagger(['-Ha', '-Ka', '-Ja', '-Ea', '-ka'])
-    return k.parse(ustr)
+    buf = k.parse(ustr)
+    return buf
 
 def hiragana(ustr):
     k = Tagger(['-AH', '-KH', '-JH', '-EH', '-kH'])
@@ -51,4 +53,6 @@ def kunrei(ustr):
 
 def wakachi(ustr):
     k = Tagger(['-w'])
-    return k.parse(ustr)
+    buf = k.parse(ustr)
+    del k
+    return buf
