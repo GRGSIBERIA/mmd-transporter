@@ -53,6 +53,19 @@ class BoneGenerator:
       self._lockHideAttributes(jointName, "s")  # スケールは基本的に使えない
       maya.cmds.setAttr("%s.v" % jointName, lock=True, channelBox=False, keyable=False)
 
+  def _rotationMatrixToEulerAngle(self, xAxis, yAxis, zAxis):
+    rotateMatrixArray = [
+          xAxis[0], xAxis[1], xAxis[2], 0.0,
+          yAxis[0], yAxis[1], yAxis[2], 0.0,
+          zAxis[0], zAxis[1], zAxis[2], 0.0,
+          0.0, 0.0, 0.0, 1.0]
+        rotateMatrix = maya.OpenMaya.MMatrix()
+        maya.OpenMaya.MScriptUtil.createMatrixFromList(rotateMatrixArray, rotateMatrix)
+        transform = maya.OpenMaya.MTransformationMatrix(rotateMatrix)
+        order = maya.OpenMaya.MTransformationMatrix.kXYZ
+        eulerAngle = transform.eulerRotation().asVector()
+        return eulerAngle
+
   def _rectifyJointOrientation(self, bones, jointNames):
     constPI = 180.0 / 3.141592653589793
     for i in range(len(bones)):
@@ -65,16 +78,7 @@ class BoneGenerator:
           -zAxis.z*xAxis.x-zAxis.x*-xAxis.z,
           zAxis.x*xAxis.y-zAxis.y*xAxis.x]
 
-        rotateMatrixArray = [
-          xAxis[0], xAxis[1], xAxis[2], 0.0,
-          yAxis[0], yAxis[1], yAxis[2], 0.0,
-          zAxis[0], zAxis[1], zAxis[2], 0.0,
-          0.0, 0.0, 0.0, 1.0]
-        rotateMatrix = maya.OpenMaya.MMatrix()
-        maya.OpenMaya.MScriptUtil.createMatrixFromList(rotateMatrixArray, rotateMatrix)
-        transform = maya.OpenMaya.MTransformationMatrix(rotateMatrix)
-        order = maya.OpenMaya.MTransformationMatrix.kXYZ
-        eulerAngle = transform.eulerRotation().asVector()
+        eulerAngle = self._rotationMatrixToEulerAngle(xAxis, yAxis, zAxis)
         
         maya.cmds.setAttr("%s.jointOrientX" % jointNames[i], eulerAngle.x * constPI)
         maya.cmds.setAttr("%s.jointOrientY" % jointNames[i], eulerAngle.y * constPI)
