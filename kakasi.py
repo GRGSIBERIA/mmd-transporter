@@ -52,4 +52,3 @@ def kunrei(ustr):
 def wakachi(ustr):
     k = Tagger(['-w'])
     return k.parse(ustr)
-

@@ -4,15 +4,16 @@ import maya.OpenMaya
 import maya.OpenMayaMPx
 import maya.cmds
 
-import kakasi
+#import kakasi
 
 class BoneGenerator:
   def __init__(self, mmdData):
     self.mmdData = mmdData
 
   def _translateJapanese(self, boneName):
-    romaji = kakasi.hepburn(boneName)
-    return romaji
+    #romaji = kakasi.hepburn(boneName)
+    #return romaji
+    pass
 
   def _createJoints(self, bones):
     jointNames = []
@@ -61,12 +62,12 @@ class BoneGenerator:
           yAxis[0], yAxis[1], yAxis[2], 0.0,
           zAxis[0], zAxis[1], zAxis[2], 0.0,
           0.0, 0.0, 0.0, 1.0]
-        rotateMatrix = maya.OpenMaya.MMatrix()
-        maya.OpenMaya.MScriptUtil.createMatrixFromList(rotateMatrixArray, rotateMatrix)
-        transform = maya.OpenMaya.MTransformationMatrix(rotateMatrix)
-        order = maya.OpenMaya.MTransformationMatrix.kXYZ
-        eulerAngle = transform.eulerRotation().asVector()
-        return eulerAngle
+    rotateMatrix = maya.OpenMaya.MMatrix()
+    maya.OpenMaya.MScriptUtil.createMatrixFromList(rotateMatrixArray, rotateMatrix)
+    transform = maya.OpenMaya.MTransformationMatrix(rotateMatrix)
+    order = maya.OpenMaya.MTransformationMatrix.kXYZ
+    eulerAngle = transform.eulerRotation().asVector()
+    return eulerAngle
 
   def _rectifyJointOrientation(self, bones, jointNames):
     constPI = 180.0 / 3.141592653589793
