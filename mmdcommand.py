@@ -50,3 +50,7 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
       # マテリアルの生成
       genMaterial = matgen.MaterialGenerator(mmdData, filePath)
       genMaterial.generate(meshName)
+
+      # ボーンの生成
+      genBone = bonegen.BoneGenerator(mmdData)
+      genBone.generate()
