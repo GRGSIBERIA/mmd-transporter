@@ -22,7 +22,7 @@ class Tagger(object):
         argArray = ctypes.c_char_p * len(_args)
         args = argArray(*_args)        
 
-        self.kakasi = ctypes.cdll.LoadLibrary("libkakasi.so")
+        self.kakasi = ctypes.cdll.LoadLibrary("kakasi.dll")
         self.kakasi.kakasi_getopt_argv(len(_args), args)
 
     def parse(self, ustr):
