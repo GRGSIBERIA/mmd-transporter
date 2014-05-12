@@ -1,0 +1,119 @@
+
+                           KAKASI for Win32
+             漢字→かな(ローマ字)変換プログラム for Win32
+
+
+                           <<< はじめに >>>
+
+KAKASI は、漢字かなまじり文をひらがな文やローマ字文に変換することを目
+的として作成したプログラムと辞書の総称です。
+
+"KAKASI" という名称は、"kanji kana simple inverter" の略です。また、東
+北大学(現: 京都大学)の佐藤雅彦先生によって開発された SKK - simple kana
+kanji converter を逆から読んだものでもあります。KAKASI の辞書のエント
+リのほとんどは SKK 辞書起源のものです。
+
+KAKASI キットは、C プログラムと数種の辞書を含みます。辞書 "kakasidict" 
+のファイルサイズは非常に大きいため、しばしば "kakasidict.YYMMDD.gz" と
+いう名前で別に配布されます。
+
+
+                           <<< 環境設定 >>>
+
+[ Windows95/98 の環境設定 ]
+起動ドライブの AUTOEXEC.BAT で、 kakasi.exe の有るディレクトリへのパスを設
+定して下さい。
+＃AUTOEXEC.BAT の内容を編集する時は必ずメモ帳(notepad.exe)を使用してくだ
+＃さい。
+
+例えば AUTOEXEC.BAT の最後に
+    PATH C:\kakasi\bin;%PATH%
+を追加するとか :-)
+
+次に kanwadict,itaijidict の置いてあるディレクトリを環境変数
+KANWADICTPATH / ITAIJIDICTPATH に設定しておいて下さい。
+デフォルトのディレクトリの例は
+    SET KANWADICTPATH=C:\kakasi\share\kakasi\kanwadict
+    SET ITAIJIDICTPATH=C:\kakasi\share\kakasi\itaijidict
+です。
+
+[ WindowsNT/2000 の環境設定 ]
+デスクトップから
+「マイコンピュータ -> コントロールパネル -> システム -> 環境」
+を開いたところにあるユーザ環境変数の変数 PATH をクリックして、値のところに
+         ┌──────────────────────────────┐
+変数(V): │PATH                                                        │
+         └──────────────────────────────┘
+         ┌──────────────────────────────┐
+値(L):   │C:\kakasi\bin;%PATH%                                        │
+         └──────────────────────────────┘
+と入力して ”設定(E)”をクリックしてください。
+
+次に kanwadict,itaijidict の置いてあるディレクトリを環境変数
+KANWADICTPATH / ITAIJIDICTPATH に設定します。
+         ┌──────────────────────────────┐
+変数(V): │KANWADICTPATH                                               │
+         └──────────────────────────────┘
+         ┌──────────────────────────────┐
+値(L):   │C:\kakasi\share\kakasi\kanwadict                            │
+         └──────────────────────────────┘
+と入力して ”設定(E)”をクリックして、続いて
+         ┌──────────────────────────────┐
+変数(V): │ITAIJIDICTPATH                                              │
+         └──────────────────────────────┘
+         ┌──────────────────────────────┐
+値(L):   │C:\kakasi\share\kakasi\itaijidict                           │
+         └──────────────────────────────┘
+と入力して ”設定(E)”をクリックしてください。
+
+
+                      <<< ライブラリについて >>>
+
+このアーカイブには Win32 向けの dynamic link library と static link library
+を同梱してあります。
+VC++6.0 で compile した dynamic link library は
+        lib\kakasi.dll と lib\kakasi.lib
+です。
+VC++6.0 で compile した static link library は
+        lib\libkakasi.lib
+です。
+mingw32 の gcc-2.95 で compile した static link library は
+        lib\libkakasi.a と lib\libkakasi.la
+です。
+include file は共通で
+        include\libkakasi.h
+です。
+
+
+                    <<< 著作権及び転載について >>>
+
+KAKASI はフリーソフトウェアです。あなたは、Free Software Foundation が
+公表した GNU General Public License (GNU 一般公有使用許諾) バージョン 
+2 あるいはそれ以降の各バージョンの中からいずれかを選択し、そのバージョ
+ンが定める条項に従って本プログラムを再頒布または変更することができます。
+
+KAKASI は有用とは思いますが、頒布にあたっては、市場性及び特定目的適合
+性についての暗黙の保証を含めて、いかなる保証も行ないません。詳細につい
+ては GNU General Public License をお読みください。
+
+詳細は COPYING をご参照願います。
+
+
+                          <<< サポートは >>>
+
+KAKASI for Win32 は GPL2 に従っ たフリーソフトウェアです。完全に無保証です。
+
+最新の KAKASI は次のところから入手できます。
+
+        ftp://kakasi.namazu.org/pub/kakasi/
+
+KAKASI に関する情報は次のところから得ることができます。
+
+        http://kakasi.namazu.org/
+
+コメントやバグの報告は
+
+        bug-kakasi@namazu.org
+
+宛に、日本語か英語でお送り下さい。
+

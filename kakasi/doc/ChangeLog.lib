@@ -1,0 +1,46 @@
+kakasi-2.2.5w-lib3b.diffでの変更点		1999/05/09
+kakasi.c
+	kakasi_doがきちんと値を返していなかったのを修正
+kakasi-2.2.5w-lib3a.diffでの変更点		1999/04/14
+kakasi.c
+	kakasi_getopt_argvにいくつかの変数の初期化処理をさらに追加
+kakasi-2.2.5w-lib3.diffでの変更点		1999/04/12
+kakasi.c
+	kakasi_getopt_argvにいくつかの変数の初期化処理を追加
+	(レポートしてくださった広瀬さんありがとうございます)
+
+kakasi-2.2.5w-lib2.diffでの変更点		1999/03/04
+dict.c, kakasi.c, kanjiio.c
+	マクロをPERLMODからLIBRARYに変更
+kakasi.c
+	マクロLIBRARYが定義されている場合に、
+	・main関数をgetopt_argv, do_kakasiの2つの関数に分断
+	・関数close_kanwadictを定義
+	するよう変更
+Makefile
+	make all時に、libkakasi.a, libkakasi.soも作成するよう変更
+
+kakasi-2.2.5w-lib1.diffでの変更点		1999/01/11
+
+dict.c
+	マクロPERLMODが定義されている場合に、
+	・変数kanwadictを非staticにする
+	・kanwadictの初期化をする
+	ように変更
+
+kakasi-2.2.5w-lib.diffでの変更点		1999/01/08
+
+Makefile
+	libkakasi.aを作成するターゲットを設定
+kakasi.c
+	マクロPERLMODが定義されている場合に、
+	・各関数の定義を非staticにする
+	・main関数を定義しない
+	ように変更
+kanjiio.c
+	入出力を標準入出力ではなく文字列に対して行うよう変更
+	・関数setcharbufferの作成
+		この関数の引数に指定した領域から入力
+	・関数getpbstrの作成
+		内部のバッファに出力された結果をこの関数で取得
+	これらの変更は、マクロPERLMODを定義することで有効になる
