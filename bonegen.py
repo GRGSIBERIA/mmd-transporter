@@ -15,12 +15,15 @@ class BoneGenerator:
     directory = os.path.dirname(filePath)
 
     try:
-      csv = csv.reader(open(directory + "\\bonedict.csv", "r"))
-      for row in csv:
+      f = open(directory + "\\bonedict.csv", "rb")
+      csvfile = csv.reader(f)
+      for row in csvfile:
         self.nameDict.append(row[1])
+      f.close()
     except:
       self.dictFlag = False
       print "bonedict.csv not found."
+
 
   def _createJoints(self, bones):
     jointNames = []
@@ -30,8 +33,11 @@ class BoneGenerator:
         boneName = self.nameDict[i]
       pos = bones[i].position
       maya.cmds.select(d=True)
-      translatedName = self._translateJapanese(bones[i].name)
-      jointName = maya.cmds.joint(p=[pos.x, pos.y, -pos.z], name=boneName)
+      jointName = ""
+      try:
+        jointName = maya.cmds.joint(p=[pos.x, pos.y, -pos.z], name=boneName)
+      except:
+        jointName = maya.cmds.joint(p=[pos.x, pos.y, -pos.z])
       jointNames.append(jointName)
     return jointNames
 

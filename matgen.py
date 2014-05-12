@@ -4,18 +4,35 @@ import os.path
 import maya.OpenMayaMPx
 import maya.cmds as cmds
 
+import csv
+
 class MaterialGenerator:
   def __init__(self, mmdData, filePath):
     self.mmdData = mmdData
     self.directory = os.path.dirname(filePath)
+    self.nameDict = []
+    self.dictFlag = True
 
-  def _createMaterialNode(self, materialData):
-    materialName = materialData.english_name
+    try:
+      f = open(self.directory + "\\materialdict.csv", "rb")
+      csvfile = csv.reader(f)
+      for row in csvfile:
+        self.nameDict.append(row[1])
+      f.close()
+    except:
+      self.dictFlag = False
+      print "materialdict.csv not found"
+
+  def _createMaterialNode(self, materialData, index):
+    materialName = "mmd_material"
+    if self.dictFlag:
+      materialName = self.nameDict[index]
+
     material = None
-    if materialName != "":
+    try:
       material = cmds.shadingNode("blinn", asShader=1, name='%s' % materialName)
-    else:
-      material = cmds.shadingNode("blinn", asShader=1)
+    except:
+      material = cmds.shadingNode("blinn", asShader=1, name='mmd')
 
     shader_group = cmds.sets(renderable=1, noSurfaceShader=1, empty=1, name='%sSG' % material)
     #cmds.sets(model, e=1, forceElement=shader_group)   # ここは無視しておこう
@@ -93,7 +110,7 @@ class MaterialGenerator:
     shaderGroupNodes = []
     for i in range(len(self.mmdData.materials)):
       material = self.mmdData.materials[i]
-      materialNode, shaderGroup = self._createMaterialNode(material)
+      materialNode, shaderGroup = self._createMaterialNode(material, i)
       fileNode = fileNodeNames[material.texture_index]
       self._setMaterial(materialNode, fileNode, material, self.mmdData.textures)
       shaderGroupNodes.append(shaderGroup)
