@@ -5,23 +5,14 @@ import maya.OpenMayaMPx
 import maya.cmds as cmds
 
 import csv
+import filemanager as filemng
 
 class MaterialGenerator:
+
   def __init__(self, mmdData, filePath):
     self.mmdData = mmdData
     self.directory = os.path.dirname(filePath)
-    self.nameDict = []
-    self.dictFlag = True
-
-    try:
-      f = open(self.directory + "\\materialdict.csv", "rb")
-      csvfile = csv.reader(f)
-      for row in csvfile:
-        self.nameDict.append(row[1])
-      f.close()
-    except:
-      self.dictFlag = False
-      print "materialdict.csv not found"
+    self.nameDict, self.dictFlag = filemng.openCSV(self.directory, "materialdict.csv")
 
   def _createMaterialNode(self, materialData, index):
     materialName = "mmd_material"
@@ -32,7 +23,7 @@ class MaterialGenerator:
     try:
       material = cmds.shadingNode("blinn", asShader=1, name='%s' % materialName)
     except:
-      material = cmds.shadingNode("blinn", asShader=1, name='mmd')
+      material = cmds.shadingNode("blinn", asShader=1)  # 不正な名前のマテリアルはこれ
 
     shader_group = cmds.sets(renderable=1, noSurfaceShader=1, empty=1, name='%sSG' % material)
     #cmds.sets(model, e=1, forceElement=shader_group)   # ここは無視しておこう

@@ -53,4 +53,4 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
 
       # ボーンの生成
       genBone = bonegen.BoneGenerator(mmdData, filePath)
-      genBone.generate()
+      jointNames = genBone.generate()
