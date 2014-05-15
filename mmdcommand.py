@@ -11,6 +11,7 @@ import mmdpoly as mpoly
 import meshgen
 import matgen
 import bonegen
+import skingen
 
 class LoadMMD(maya.OpenMayaMPx.MPxCommand):
   def __init__(self):
@@ -57,9 +58,15 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
 
       # スキニング
       maya.cmds.select(polyName)
-      maya.cmds.select(jointNames[0], tgl=True)
+      for bone in mmdData.bones:
+        if bone.name == u"センター" or bone.name == u"全ての親":
+          print "got center"
+          maya.cmds.select(jointNames[0], tgl=True)
+          break
       maya.cmds.SmoothBindSkin()
 
       # ウェイト
       histories = maya.cmds.listHistory(polyName)
-      skin_cluster = maya.cmds.ls(histories, type="skinCluster")[0]
+      skinCluster = maya.cmds.ls(histories, type="skinCluster")[0]
+      genSkin = skingen.SkinGenerator(mmdData)
+      genSkin.generate(skinCluster, jointNames, polyName)

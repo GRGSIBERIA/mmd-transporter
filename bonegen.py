@@ -22,20 +22,17 @@ class BoneGenerator:
   def _createJoints(self, bones):
     jointNames = []
     for i in range(len(bones)):
-      if !bones[i].getIkFlag():
-        boneName = "joint"
-        if self.dictFlag:
-          boneName = self.nameDict[i]
-        pos = bones[i].position
-        maya.cmds.select(d=True)
-        jointName = ""
-        try:
-          jointName = maya.cmds.joint(p=[pos.x, pos.y, -pos.z], name=boneName)
-        except:
-          jointName = maya.cmds.joint(p=[pos.x, pos.y, -pos.z])   # 稀に不正な名前のボーンが存在する
-        jointNames.append(jointName)
-      else:
-        jointNames.append("this_is_ik")
+      boneName = "joint"
+      if self.dictFlag:
+        boneName = self.nameDict[i]
+      pos = bones[i].position
+      maya.cmds.select(d=True)
+      jointName = ""
+      try:
+        jointName = maya.cmds.joint(p=[pos.x, pos.y, -pos.z], name=boneName)
+      except:
+        jointName = maya.cmds.joint(p=[pos.x, pos.y, -pos.z])   # 稀に不正な名前のボーンが存在する
+      jointNames.append(jointName)
     return jointNames
 
 
@@ -68,6 +65,10 @@ class BoneGenerator:
         self._lockHideAttributes(jointName, "r")
       if not bones[i].getTranslatable() or not bones[i].getManipulatable():
         self._lockHideAttributes(jointName, "t")
+
+      if bones[i].getFixedAxisFlag():
+        maya.cmds.setAttr("%s.rz" % jointName, lock=True, channelBox=False, keyable=False)
+        maya.cmds.setAttr("%s.ry" % jointName, lock=True, channelBox=False, keyable=False)
 
       self._lockHideAttributes(jointName, "s")  # スケールは基本的に使えない
       maya.cmds.setAttr("%s.v" % jointName, lock=True, channelBox=False, keyable=False)
@@ -123,8 +124,6 @@ class BoneGenerator:
         yAxis = self._crossProduct(zAxis, xAxis)
 
         self._setJointOrient(self.constPI, jointNames[i], xAxis, yAxis, zAxis)
-        maya.cmds.setAttr("%s.rz" % jointNames[i], lock=True, channelBox=False, keyable=False)
-        maya.cmds.setAttr("%s.ry" % jointNames[i], lock=True, channelBox=False, keyable=False)
 
 
   # この並び方通りにjoint.sideの番号が振られている
@@ -207,6 +206,6 @@ class BoneGenerator:
     self._rectifyJointOrientation(bones, jointNames)
     self._rectifyAxisLimt(bones, jointNames)
     self._connectJoints(bones, jointNames)
-    if humanIkFlag:
-      self._inspectOperationFlag(bones, jointNames) # Human IK使えなくなる
+    if not humanIkFlag:
+      self._inspectOperationFlag(bones, jointNames) # これを実行するとHuman IK使えなくなる
     return jointNames
