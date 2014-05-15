@@ -53,4 +53,13 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
 
       # ボーンの生成
       genBone = bonegen.BoneGenerator(mmdData, filePath)
-      jointNames = genBone.generate()
+      jointNames = genBone.generate(True) #True = humanIkFlug
+
+      # スキニング
+      maya.cmds.select(polyName)
+      maya.cmds.select(jointNames[0], tgl=True)
+      maya.cmds.SmoothBindSkin()
+
+      # ウェイト
+      histories = maya.cmds.listHistory(polyName)
+      skin_cluster = maya.cmds.ls(histories, type="skinCluster")[0]

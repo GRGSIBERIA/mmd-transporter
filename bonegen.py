@@ -22,17 +22,20 @@ class BoneGenerator:
   def _createJoints(self, bones):
     jointNames = []
     for i in range(len(bones)):
-      boneName = "joint"
-      if self.dictFlag:
-        boneName = self.nameDict[i]
-      pos = bones[i].position
-      maya.cmds.select(d=True)
-      jointName = ""
-      try:
-        jointName = maya.cmds.joint(p=[pos.x, pos.y, -pos.z], name=boneName)
-      except:
-        jointName = maya.cmds.joint(p=[pos.x, pos.y, -pos.z])   # 稀に不正な名前のボーンが存在する
-      jointNames.append(jointName)
+      if !bones[i].getIkFlag():
+        boneName = "joint"
+        if self.dictFlag:
+          boneName = self.nameDict[i]
+        pos = bones[i].position
+        maya.cmds.select(d=True)
+        jointName = ""
+        try:
+          jointName = maya.cmds.joint(p=[pos.x, pos.y, -pos.z], name=boneName)
+        except:
+          jointName = maya.cmds.joint(p=[pos.x, pos.y, -pos.z])   # 稀に不正な名前のボーンが存在する
+        jointNames.append(jointName)
+      else:
+        jointNames.append("this_is_ik")
     return jointNames
 
 
@@ -197,12 +200,13 @@ class BoneGenerator:
       self._labelingJointType(bones[i], jointNames[i])
 
 
-  def generate(self):
+  def generate(self, humanIkFlag):
     bones = self.mmdData.bones
     jointNames = self._createJoints(bones)
     self._jointLabeling(bones, jointNames)
     self._rectifyJointOrientation(bones, jointNames)
     self._rectifyAxisLimt(bones, jointNames)
     self._connectJoints(bones, jointNames)
-    # self._inspectOperationFlag(bones, jointNames) # Human IK使えなくなる
+    if humanIkFlag:
+      self._inspectOperationFlag(bones, jointNames) # Human IK使えなくなる
     return jointNames
