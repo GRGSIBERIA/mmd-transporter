@@ -75,6 +75,7 @@ class MaterialGenerator:
     
 
   def _setMaterial(self, mat_node, file_node, material, textures):
+    cmds.setAttr("%s.incandescence" % mat_node, 1.0, 1.0, 1.0, type="double3")
     cmds.setAttr("%s.ambientColor" % mat_node, material.ambient_color[0], material.ambient_color[1], material.ambient_color[2], type="double3")
     cmds.setAttr("%s.specularColor" % mat_node, material.specular_color[0], material.specular_color[1], material.specular_color[2], type="double3")
     cmds.setAttr("%s.eccentricity" % mat_node, material.specular_factor * 0.01)
