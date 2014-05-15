@@ -9,11 +9,25 @@ class EstablishGenerator:
     self.mmdData = mmdData
 
 
+  def _makeExpressionCode(self, target, emitter, axisName, power):
+    s = ""
+    for axis in ["X", "Y", "Z"]:
+      s += "%s.%s%s = %s.%s%s * %s;" % (target, axisName, axis, emitter, axisName, axis, power)
+      s += "\n"
+    return s
+
+
+  def _makeExpression(self, bones, jointNames, i, axisName):
+    eIndex = bones[i].effect_index
+    expression = self._makeExpressionCode(jointNames[i], jointNames[eIndex], "rotate", bones[i].effect_factor)
+    maya.cmds.expression(s=expression, name="%s_%s_E" % (jointNames[i], axisName))
+
+
   def generate(self, jointNames):
     bones = self.mmdData.bones
-    for bone in bones:
-      if bone.getExternalRotationFlag():
-        pass
+    for i in range(len(bones)):
+      if bones[i].getExternalRotationFlag():
+        self._makeExpression(bones, jointNames, i, "rotate")
 
-      if bone.getExternalTranslationFlag():
-        pass
+      if bones[i].getExternalTranslationFlag():
+        self._makeExpression(bones, jointNames, i, "translate")

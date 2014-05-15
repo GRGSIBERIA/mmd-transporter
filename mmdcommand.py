@@ -43,7 +43,6 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
     for i in range(len(jointNames)):
       name = mmdData.bones[i].name
       if name == u"センター" or name == u"全ての親":
-        print "got center"
         maya.cmds.select(jointNames[i], tgl=True)
         maya.cmds.SmoothBindSkin()
         return True
@@ -78,6 +77,8 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
       jointNames, noparentBonesIndices = genBone.generate(True) #True = humanIkFlug
 
       # 付与親生成
+      genEstab = estabgen.EstablishGenerator(mmdData)
+      genEstab.generate(jointNames)
 
       # スキニング
       skinningFlag = self._skinning(polyName, jointNames, mmdData)

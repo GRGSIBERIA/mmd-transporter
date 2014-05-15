@@ -59,13 +59,16 @@ class BoneGenerator:
       maya.cmds.setAttr("%s.%s%s" % (jointName, disableType, elem), lock=True, channelBox=False, keyable=False)
 
 
-  # 回転・移動・操作フラグからLockとHideを各チャンネルに行う
-  def _inspectOperationFlag(self, bones, jointNames):
+  def _settingDrawStyle(self, bones, jointNames):
     for i in range(len(bones)):
       visible = 0 if bones[i].getVisibleFlag() else 2
       jointName = jointNames[i]
       maya.cmds.setAttr("%s.drawStyle" % jointName, visible)
 
+
+  # 回転・移動・操作フラグからLockとHideを各チャンネルに行う
+  def _inspectOperationFlag(self, bones, jointNames):
+    for i in range(len(bones)):
       if not bones[i].getRotatable() or not bones[i].getManipulatable():
         self._lockHideAttributes(jointName, "r")
       if not bones[i].getTranslatable() or not bones[i].getManipulatable():
@@ -123,12 +126,24 @@ class BoneGenerator:
   # 軸制限があれば軸制限する
   def _rectifyAxisLimt(self, bones, jointNames):
     for i in range(len(bones)):
-      if bones[i].getFixedAxisFlag():
+      if bones[i].getFixedAxisFlag() and not bones[i].getLocalCoordinateFlag():
         xAxis = bones[i].fixed_axis
         zAxis = self._crossProduct([0.0, 1.0, 0.0], xAxis)
         yAxis = self._crossProduct(zAxis, xAxis)
 
         self._setJointOrient(self.constPI, jointNames[i], xAxis, yAxis, zAxis)
+
+
+  def _rectifyEstablishAxis(self, bones, jointNames):
+    for i in range(len(bones)):
+      if bones[i].getExternalRotationFlag():
+        index = bones[i].effect_index
+        x = maya.cmds.getAttr("%s.jointOrientX" % jointNames[index])
+        y = maya.cmds.getAttr("%s.jointOrientY" % jointNames[index])
+        z = maya.cmds.getAttr("%s.jointOrientZ" % jointNames[index])
+        maya.cmds.setAttr("%s.jointOrientX" % jointNames[i], x)
+        maya.cmds.setAttr("%s.jointOrientY" % jointNames[i], y)
+        maya.cmds.setAttr("%s.jointOrientZ" % jointNames[i], z)
 
 
   # この並び方通りにjoint.sideの番号が振られている
@@ -207,9 +222,11 @@ class BoneGenerator:
   def generate(self, humanIkFlag):
     bones = self.mmdData.bones
     jointNames, noparentBones = self._createJoints(bones)
+    self._settingDrawStyle(bones, jointNames)  # 本番ではコメントを消す
     self._jointLabeling(bones, jointNames)
     self._rectifyJointOrientation(bones, jointNames)
     self._rectifyAxisLimt(bones, jointNames)
+    self._rectifyEstablishAxis(bones, jointNames)
     self._connectJoints(bones, jointNames)
     if not humanIkFlag:
       self._inspectOperationFlag(bones, jointNames) # これを実行するとHuman IK使えなくなる
