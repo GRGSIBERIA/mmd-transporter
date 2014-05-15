@@ -41,14 +41,14 @@
         <item key="Neck7" value="Neck7" />
         <item key="Neck8" value="Neck8" />
         <item key="Neck9" value="Neck9" />
-        <item key="LeftUpLegRoll" value="LeftUpLegRoll" />
-        <item key="LeftLegRoll" value="LeftLegRoll" />
-        <item key="RightUpLegRoll" value="RightUpLegRoll" />
-        <item key="RightLegRoll" value="RightLegRoll" />
-        <item key="LeftArmRoll" value="LeftArmRoll" />
-        <item key="LeftForeArmRoll" value="LeftForeArmRoll" />
-        <item key="RightArmRoll" value="RightArmRoll" />
-        <item key="RightForeArmRoll" value="RightForeArmRoll" />
+        <item key="LeftUpLegRoll" value="hidariashi_mojiri" />
+        <item key="LeftLegRoll" value="hidariashi_kubi_mojiri" />
+        <item key="RightUpLegRoll" value="migiashi_mojiri" />
+        <item key="RightLegRoll" value="migiashi_kubi_mojiri" />
+        <item key="LeftArmRoll" value="hidariude_mojiri" />
+        <item key="LeftForeArmRoll" value="hidarite_mojiri" />
+        <item key="RightArmRoll" value="migiude_mojiri" />
+        <item key="RightForeArmRoll" value="migite_mojiri" />
         <item key="HipsTranslation" value="HipsTranslation" />
         <item key="LeftHandThumb1" value="hidari_oyayubi_0" />
         <item key="LeftHandThumb2" value="hidari_oyayubi_1" />
