@@ -12,6 +12,7 @@ import meshgen
 import matgen
 import bonegen
 import skingen
+import estabgen
 
 class LoadMMD(maya.OpenMayaMPx.MPxCommand):
   def __init__(self):
@@ -37,6 +38,26 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
       mmdData = pymeshio.pmx.reader.read_from_file(filePath)
     return mmdData
 
+  def _skinning(self, polyName, jointNames, mmdData):
+    maya.cmds.select(polyName)
+    for i in range(len(jointNames)):
+      name = mmdData.bones[i].name
+      if name == u"センター" or name == u"全ての親":
+        print "got center"
+        maya.cmds.select(jointNames[i], tgl=True)
+        maya.cmds.SmoothBindSkin()
+        return True
+    return False
+
+  def _grouping(self, polyName, jointNames, noparentBonesIndices):
+    maya.cmds.select(d=True)
+    boneGroup = maya.cmds.group(n="bones", w=True, em=True)
+    group = maya.cmds.group(n="mmdModelGroup", w=True, em=True)
+    maya.cmds.parent(boneGroup, group)
+    maya.cmds.parent(polyName, group)
+    for i in noparentBonesIndices:
+      maya.cmds.parent(jointNames[i], boneGroup)
+
   def doIt(self, args):
     filePath = self._getPath()
     if filePath != None:
@@ -54,19 +75,19 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
 
       # ボーンの生成
       genBone = bonegen.BoneGenerator(mmdData, filePath)
-      jointNames = genBone.generate(True) #True = humanIkFlug
+      jointNames, noparentBonesIndices = genBone.generate(True) #True = humanIkFlug
+
+      # 付与親生成
 
       # スキニング
-      maya.cmds.select(polyName)
-      for bone in mmdData.bones:
-        if bone.name == u"センター" or bone.name == u"全ての親":
-          print "got center"
-          maya.cmds.select(jointNames[0], tgl=True)
-          break
-      maya.cmds.SmoothBindSkin()
+      skinningFlag = self._skinning(polyName, jointNames, mmdData)
 
-      # ウェイト
-      histories = maya.cmds.listHistory(polyName)
-      skinCluster = maya.cmds.ls(histories, type="skinCluster")[0]
-      genSkin = skingen.SkinGenerator(mmdData)
-      genSkin.generate(skinCluster, jointNames, polyName)
+      if skinningFlag:
+        # ウェイト
+        histories = maya.cmds.listHistory(polyName)
+        skinCluster = maya.cmds.ls(histories, type="skinCluster")[0]
+        genSkin = skingen.SkinGenerator(mmdData)
+        genSkin.generate(skinCluster, jointNames, polyName)
+
+      #グループ化
+      self._grouping(polyName, jointNames, noparentBonesIndices)

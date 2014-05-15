@@ -20,12 +20,17 @@ class BoneGenerator:
 
 
   def _createJoints(self, bones):
+    noparentBones = []
     jointNames = []
     for i in range(len(bones)):
       boneName = "joint"
       if self.dictFlag:
         boneName = self.nameDict[i]
       pos = bones[i].position
+
+      if bones[i].parent_index == -1:
+        noparentBones.append(i)
+
       maya.cmds.select(d=True)
       jointName = ""
       try:
@@ -33,7 +38,7 @@ class BoneGenerator:
       except:
         jointName = maya.cmds.joint(p=[pos.x, pos.y, -pos.z])   # 稀に不正な名前のボーンが存在する
       jointNames.append(jointName)
-    return jointNames
+    return jointNames, noparentBones
 
 
   def _connectJoints(self, bones, jointNames):
@@ -201,11 +206,11 @@ class BoneGenerator:
 
   def generate(self, humanIkFlag):
     bones = self.mmdData.bones
-    jointNames = self._createJoints(bones)
+    jointNames, noparentBones = self._createJoints(bones)
     self._jointLabeling(bones, jointNames)
     self._rectifyJointOrientation(bones, jointNames)
     self._rectifyAxisLimt(bones, jointNames)
     self._connectJoints(bones, jointNames)
     if not humanIkFlag:
       self._inspectOperationFlag(bones, jointNames) # これを実行するとHuman IK使えなくなる
-    return jointNames
+    return jointNames, noparentBones

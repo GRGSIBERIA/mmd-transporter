@@ -10,12 +10,14 @@ class SkinGenerator:
   def __init__(self, mmdData):
     self.mmdData = mmdData
 
+
   def _getSkinFn(self, scluster):
     selectList = maya.OpenMaya.MSelectionList()
     selectList.add(scluster)
     clusterNode = maya.OpenMaya.MObject()
     selectList.getDependNode(0, clusterNode)
     return maya.OpenMayaAnim.MFnSkinCluster(clusterNode)
+
 
   def _normalizeSkinWeights(self, polyName, scluster, infIdPath):
     for inf in infIdPath.values():
@@ -29,13 +31,14 @@ class SkinGenerator:
     if skinNorm:
       maya.cmds.setAttr("%s.normalizeWeights" % scluster, skinNorm)
 
+
   def _getWeightList(self, deform):
     if isinstance(self.mmdData, pymeshio.pmx.Model):
       if isinstance(deform, pymeshio.pmx.Bdef1):
         return \
           [deform.index0], \
           [1.0]
-      elif isinstance(deform, pymeshio.pmx.Bdef2):
+      elif isinstance(deform, pymeshio.pmx.Bdef2) or isinstance(deform, pymeshio.pmx.Sdef):
         return \
           [deform.index0, deform.index1], \
           [deform.weight0, 1.0-deform.weight0]
@@ -48,14 +51,13 @@ class SkinGenerator:
         [deform.index0, deform.index1], \
         [deform.weight0, 1.0-deform.weight0]
 
+
   def _useSetAttr(self, skinFn, scluster, inWeight, jointNames):
     weightListPlug = skinFn.findPlug("weightList")
     weightPlug = skinFn.findPlug("weights")
 
     vertices = self.mmdData.vertices
     bones = self.mmdData.bones
-    print inWeight
-    print type(inWeight)
     for vtxId in range(weightListPlug.numElements()):
       deform = vertices[vtxId].deform
       indices, weights = self._getWeightList(deform)
@@ -64,7 +66,7 @@ class SkinGenerator:
           index = indices[bwi]
           targetJonit = jointNames[index]
           boneId = inWeight[targetJonit]
-          maya.cmds.setAttr("%s.weightList[%s].weights[%s]" % (scluster.vtxId, boneId), weight[bwi])
+          maya.cmds.setAttr("%s.weightList[%s].weights[%s]" % (scluster, vtxId, boneId), weights[bwi])
 
 
   def generate(self, skinCluster, jointNames, polyName):
