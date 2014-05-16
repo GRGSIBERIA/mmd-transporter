@@ -18,6 +18,10 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
   def __init__(self):
     maya.OpenMayaMPx.MPxCommand.__init__(self)
 
+  @classmethod
+  def syntaxCreator(cls):
+    pass
+
   def _getPath(self):
     filterName = "PMD/PMX (*.pmd *pmx);;PMD (*.pmd);;PMX (*.pmx)"
     path = maya.cmds.fileDialog2(ds=2, cap="Selet PMD/PMX", ff=filterName, fm=1)
