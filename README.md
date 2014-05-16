@@ -2,10 +2,15 @@ MMD Transporter
 =======================
 MayaでMikuMikuDanceするためのPythonプラグインです。
 
-# インストール方法
+## 動作環境
 
+* Windows7
+* Maya2013(x64)以降
+* そこそこのスペックのPC
 
-## Pythonのインストール
+## インストール方法
+
+### Pythonのインストール
 Mayaでは日本語を扱うことができません。
 そのため、事前に日本語からローマ字に変換する必要があります。
 しかし、kakasiはMaya Pythonで直接動かすことができません。
@@ -20,7 +25,7 @@ Pythonのバージョンは2.7です。以下のリンクからインストー�
 [Python 2.7 のインストール](http://www5f.biglobe.ne.jp/~nobml/ninix/2_python.html)
 
 
-## kakasiフォルダを移動する
+### kakasiフォルダを移動する
 kakasiとは、ひらがなやカタカナ、漢字等をローマ字に変換することのできるライブラリです。MMDのモデルデータは、ボーンの名前やモーフの名前に日本語を使っているため、Mayaで読み込ませることができません。kakasiを利用することで、日本語とローマ字の変換辞書を作成します。
 
 ZIPファイルを解凍すると、**kakasiフォルダ**が入っています。
@@ -30,9 +35,21 @@ kakasiフォルダを**Cドライブの直下**に置いてください。
 それ以外の場所に置くと実行されません。
 
 
-# 使い方
+### Human IKのルールファイルの登録
+MMD Transporterで読み込んだモデルは、ルールファイルを用いることで自動的にHuman IKを設定します。そのルールファイルがMMD HumanIK.xmlです。
 
-## Pythonでmakedict.pyを実行する
+ルールファイルは以下のディレクトリに保存されています。
+
+```
+C:/Users/ユーザ名/AppData/Roaming/Autodesk/HIKCharacterizationTool4/Template
+```
+
+この中にMMD HumanIK.xml
+
+
+## 使い方
+
+### Pythonでmakedict.pyを実行する
 mmd-transporterのフォルダ内にmakedict.pyがあります。
 これは日本語とローマ字の変換辞書を作るためのスクリプトです。
 
@@ -62,9 +79,21 @@ python makedict.py (右クリック→貼り付け)
 一つのフォルダの中に複数のモデルデータが入っている場合は注意してください。
 
 
-## プラグインを実行する
+### プラグインを読み込む
+
+Plugin ManagerでMMD Transporterを登録するか、以下のコマンド（Python）を実行してプラグインとして登録してください。
 
 ```
 import maya.cmds
 maya.cmds.loadPlugin("mmd-transporterのパス/mmd-transporter.py")
 ```
+
+### モデルデータを読み込む
+
+モデルデータの読み込みは以下のコマンド（MEL/Python）で実行できます。
+
+```
+loadmmd
+```
+
+ダイアログが開くのでPMX/PMDを指定します。
