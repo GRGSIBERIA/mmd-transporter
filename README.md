@@ -59,7 +59,7 @@ C:/Users/ユーザ名/AppData/Roaming/Autodesk/HIKCharacterizationTool4/Template
 3. [Skeleton]-[Human IK]を選択
 4. Character ControlsのDefineからSkeletonを選択
 5. 適当に置いたスケルトンを選択
-6. Character Controlsの上部にあるLoad Skeleton Definitionをクリック
+6. Character Controlsの上部のアイコン(Load Skeleton Definition)をクリック
 7. Templateのプルダウンメニューから[Browse]を選択
 8. MMD HumanIK.xmlのファイルをコピーする
 9. 7番で表示されたダイアログで右クリックを押して貼り付け
@@ -126,3 +126,13 @@ MMDの透過テクスチャの描画順は材質順に準拠しています。�
 
 ### HumanIKの設定
 Human IKとは、Mayaのプラグインの一つです。利点は色々あるのですが、その中でもボーンの共通規格からFull Body IK（FBIK）をとリグを自動的に構築できるという点です。FBIKとは、体全体を引っ張るように操作できるIKのことです。
+
+Human IKは[Skeleton]-[Human IK]でペインが生成されます。Character ControlsのDefineからCreateを押すと、Human IKのキャラクターが生成されます。
+
+まず、Human IKで最初にやることは、Defineで各種コントローラの部位とボーンを対応付けることです。MMD Transporterでは、テンプレートを事前に用意してあるため、このテンプレートを読み込むと、自動的に登録が完了します。
+
+読み込んだモデルデータの**ルートボーンを選択して、Select Hierarchyで全てのボーンを選択してある状態**にしてください。
+
+その次にペイン上部のアイコン(Load Skeleton Definition)を押し、TemplateからMMD HumanIKを選んでください。ラジオボタンが二つありますが、そのうち下にあるMatch only selected bonesを選択してください。これでOKボタンを押すと自動的にHuman IKが適用されます。
+
+ただし、MMDではAスタンスが基本となっているため、Human IKの設定は完全に適用されません。腕を水平にすればスケルトンの定義をロックできるようになるので、肩や鎖骨等を弄って全部緑になるように動かしてください。
