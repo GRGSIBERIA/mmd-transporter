@@ -8,6 +8,14 @@ MayaでMikuMikuDanceするためのPythonプラグインです。
 * Maya2014(x64)以降
 * そこそこのスペックのPC
 
+## 実装されている機能
+
+* PMD/PMXファイルの読み込み
+* メッシュの構築
+* マテリアルの構築/適用
+* ボーン/スキニングの設定/適用
+* Human IKのテンプレートの同梱
+
 ## インストール方法
 
 ### Pythonのインストール
@@ -108,6 +116,7 @@ maya.cmds.loadPlugin("mmd-transporterのパス/mmd-transporter.py")
 loadmmd
 ```
 
+### 顔の裏側や不自然に描画される等の問題を解決する
 MMDの透過テクスチャの描画順は材質順に準拠しています。一方で、MayaではZソートで描画順を決めています。この違いにより、シェーディングをTexturedの状態にすると表示が崩れてしまいます。
 
 表示が崩れてしまった場合は、カメラのパネルで[Shading]-[Polygon Transparency Sorting]をオンにするとある程度は正常に描画されるようになります。
