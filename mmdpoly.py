@@ -16,6 +16,17 @@ class MMDPoly(maya.OpenMayaMPx.MPxNode):
   def __init__(self):
     maya.OpenMayaMPx.MPxNode.__init__(self)
 
+  def _setNormals(self, meshFS, mmdData, faceConnects):
+    normalLength = len(mmdData.indices)
+    faceInds = maya.OpenMaya.MIntArray(normalLength)
+    normals = maya.OpenMaya.MVectorArray(normalLength)
+    for i in range(normalLength):
+        faceInds.set(i / 3, i)
+        vtxInd = mmdData.indices[i]
+        normal = mmdData.vertices[vtxInd].normal
+        normals.set(maya.OpenMaya.MVector(normal.x, normal.y, -normal.z), i)
+    meshFS.setFaceVertexNormals(normals, faceInds, faceConnects)
+
   def _createMesh(self, planeSize, outData, mmdData):
     meshGen = meshgen.MeshGenerator(mmdData)
 
@@ -23,15 +34,13 @@ class MMDPoly(maya.OpenMayaMPx.MPxNode):
     faceConnects = meshGen.CreateFaceConnects()
     faceCounts = meshGen.CreateFaceCounts()
     uArray, vArray = meshGen.CreateUVArray()
-    #normals = meshGen.CreateNormalArray()
 
     meshFS = maya.OpenMaya.MFnMesh()
     newMesh = meshFS.create(points.length(), faceCounts.length(), points, faceCounts, faceConnects, uArray, vArray, outData)
 
     meshFS.assignUVs(faceCounts, faceConnects)
 
-    # わからん
-    #meshFS.setFaceVertexNormals(normals, faceCounts, faceConnects)
+    self._setNormals(meshFS, mmdData, faceConnects)
 
     return newMesh
 
