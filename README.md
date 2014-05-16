@@ -5,7 +5,7 @@ MayaでMikuMikuDanceするためのPythonプラグインです。
 ## 動作環境
 
 * Windows7
-* Maya2013(x64)以降
+* Maya2014(x64)以降
 * そこそこのスペックのPC
 
 ## インストール方法
@@ -35,16 +35,28 @@ kakasiフォルダを**Cドライブの直下**に置いてください。
 それ以外の場所に置くと実行されません。
 
 
-### Human IKのルールファイルの登録
-MMD Transporterで読み込んだモデルは、ルールファイルを用いることで自動的にHuman IKを設定します。そのルールファイルがMMD HumanIK.xmlです。
+### Human IKのテンプレートの登録
+MMD Transporterで読み込んだモデルは、テンプレートを用いることで自動的にHuman IKを設定します。そのテンプレートがMMD HumanIK.xmlです。
 
-ルールファイルは以下のディレクトリに保存されています。
+テンプレートは以下のディレクトリに保存されています。
 
 ```
 C:/Users/ユーザ名/AppData/Roaming/Autodesk/HIKCharacterizationTool4/Template
 ```
 
-この中にMMD HumanIK.xml
+この中にMMD HumanIK.xmlを入れてください。もし見つからない場合は以下の手順でテンプレートを入れることができます。
+
+1. Mayaを起動する
+2. 適当にスケルトンを置く
+3. [Skeleton]-[Human IK]を選択
+4. Character ControlsのDefineからSkeletonを選択
+5. 適当に置いたスケルトンを選択
+6. Character Controlsの上部にあるLoad Skeleton Definitionをクリック
+7. Templateのプルダウンメニューから[Browse]を選択
+8. MMD HumanIK.xmlのファイルをコピーする
+9. 7番で表示されたダイアログで右クリックを押して貼り付け
+
+当該ディレクトリにテンプレートが保存されると、Load Skeleton DefinitionのTemplateにMMD HumanIKが追加されます。
 
 
 ## 使い方
@@ -96,4 +108,12 @@ maya.cmds.loadPlugin("mmd-transporterのパス/mmd-transporter.py")
 loadmmd
 ```
 
+MMDの透過テクスチャの描画順は材質順に準拠しています。一方で、MayaではZソートで描画順を決めています。この違いにより、シェーディングをTexturedの状態にすると表示が崩れてしまいます。
+
+表示が崩れてしまった場合は、カメラのパネルで[Shading]-[Polygon Transparency Sorting]をオンにするとある程度は正常に描画されるようになります。
+
 ダイアログが開くのでPMX/PMDを指定します。
+
+
+### HumanIKの設定
+Human IKとは、Mayaのプラグインの一つです。利点は色々あるのですが、その中でもボーンの共通規格からFull Body IK（FBIK）をとリグを自動的に構築できるという点です。FBIKとは、体全体を引っ張るように操作できるIKのことです。
