@@ -43,6 +43,7 @@ class ExpressionGenerator:
         if morphs[i].panel == panel + 1:
           maya.cmds.select(morphNames[i], tgl=True)
       groupName = maya.cmds.group(name=panels[panel])
+      maya.cmds.setAttr("%s.v" % groupName, 0)
       groups.append(groupName)
     return groups
 
@@ -57,6 +58,7 @@ class ExpressionGenerator:
   def _structUVMorph(self, morph, morphName):
     for offset in morph.offsets:
       #path = "%s.uv[%s]" % (morphNames, offset.)  # UVモーフが実装されてなかった
+      pass
 
   def _doOffsetsDuplicateModel(self, morphNames):
     morphs = self.mmdData.morphs
@@ -81,9 +83,27 @@ class ExpressionGenerator:
         pass
 
 
+  def _appendBlendShapes(self, polyName, morphNames):
+    maya.cmds.select(d=True)
+    for morphName in morphNames:
+      maya.cmds.select(morphName, tgl=True)
+    maya.cmds.select(polyName, tgl=True)
+
+    blendShapeNode = maya.cmds.blendShape()[0]
+    morphs = self.mmdData.morphs
+
+    # ここでパネル用のアトリビュートをこっそり追加する
+    morphLength = len(morphs)
+    maya.cmds.select(blendShapeNode)
+    maya.cmds.addAttr(longName="panel", numberOfChildren=morphLength, attributeType="compound")
+    for i in range(morphLength):
+      name = morphNames[i].replace("exp_", "panel_")
+      maya.cmds.addAttr(longName=name, attributeType="long", parent="panel", defaultValue=morphs[i].panel)
+
   def generate(self, polyName):
     self.polyName = polyName
 
     morphNames = self._duplicateMesh()
-    self._createDisplayLayer(morphNames)
+    groupNames = self._createDisplayLayer(morphNames)
     self._doOffsetsDuplicateModel(morphNames)
+    self._appendBlendShapes(polyName, morphNames)
