@@ -75,11 +75,9 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
   def _groupExpression(self, blendShapeNames, mother):
     expgroup = maya.cmds.group(n="expresssion", w=True, em=True)
     maya.cmds.parent(expgroup, mother)
-    maya.cmds.select(d=True)
     for gname in blendShapeNames:
-      maya.cmds.select(gname)
-    maya.cmds.select(expgroup)
-    maya.cmds.parent()
+      maya.cmds.parent(gname, expgroup)
+    
 
 
   def _createData(self, argData):
