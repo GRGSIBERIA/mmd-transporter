@@ -54,6 +54,10 @@ class ExpressionGenerator:
       maya.cmds.move(pos.x, pos.y, -pos.z, path, r=True)
 
 
+  def _structUVMorph(self, morph, morphName):
+    for offset in morph.offsets:
+      #path = "%s.uv[%s]" % (morphNames, offset.)  # UVモーフが実装されてなかった
+
   def _doOffsetsDuplicateModel(self, morphNames):
     morphs = self.mmdData.morphs
     for i in range(len(morphs)):
