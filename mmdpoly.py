@@ -24,7 +24,7 @@ class MMDPoly(maya.OpenMayaMPx.MPxNode):
         faceInds.set(i / 3, i)
         vtxInd = mmdData.indices[i]
         normal = mmdData.vertices[vtxInd].normal
-        normals.set(maya.OpenMaya.MVector(normal.x, normal.y, -normal.z), i)
+        normals.set(maya.OpenMaya.MVector(normal.z, normal.x, normal.y), i)
     meshFS.setFaceVertexNormals(normals, faceInds, faceConnects)
 
   def _createMesh(self, planeSize, outData, mmdData):
@@ -40,7 +40,7 @@ class MMDPoly(maya.OpenMayaMPx.MPxNode):
 
     meshFS.assignUVs(faceCounts, faceConnects)
 
-    self._setNormals(meshFS, mmdData, faceConnects)
+    #self._setNormals(meshFS, mmdData, faceConnects)
 
     return newMesh
 
