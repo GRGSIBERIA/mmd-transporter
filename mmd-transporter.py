@@ -31,7 +31,7 @@ def nodeInitializer():
 def initializePlugin(mobject):
     mplugin = maya.OpenMayaMPx.MFnPlugin(mobject, "Eiichi Takebuchi(GRGSIBERIA)", "1.0")
     mplugin.registerNode(kPluginNodeName, kPluginNodeId, nodeCreator, nodeInitializer)
-    mplugin.registerCommand(kPluginCmdName, createCommand)
+    mplugin.registerCommand(kPluginCmdName, createCommand, cmd.LoadMMD.syntaxCreator)
 
 def uninitializePlugin(mobject):
     mplugin = maya.OpenMayaMPx.MFnPlugin(mobject)

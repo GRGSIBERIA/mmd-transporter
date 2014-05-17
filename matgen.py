@@ -74,8 +74,9 @@ class MaterialGenerator:
 
     
 
-  def _setMaterial(self, mat_node, file_node, material, textures):
-    cmds.setAttr("%s.incandescence" % mat_node, 1.0, 1.0, 1.0, type="double3")
+  def _setMaterial(self, mat_node, file_node, material, textures, incandescenceFlag):
+    if incandescenceFlag:
+      cmds.setAttr("%s.incandescence" % mat_node, 1.0, 1.0, 1.0, type="double3")
     cmds.setAttr("%s.ambientColor" % mat_node, material.ambient_color[0], material.ambient_color[1], material.ambient_color[2], type="double3")
     cmds.setAttr("%s.specularColor" % mat_node, material.specular_color[0], material.specular_color[1], material.specular_color[2], type="double3")
     cmds.setAttr("%s.eccentricity" % mat_node, material.specular_factor * 0.01)
@@ -98,13 +99,13 @@ class MaterialGenerator:
       self._setTexture(fileNode, self.mmdData.textures[i])
     return fileNodeNames
 
-  def _generateMaterials(self, fileNodeNames):
+  def _generateMaterials(self, fileNodeNames, incandescenceFlag):
     shaderGroupNodes = []
     for i in range(len(self.mmdData.materials)):
       material = self.mmdData.materials[i]
       materialNode, shaderGroup = self._createMaterialNode(material, i)
       fileNode = fileNodeNames[material.texture_index]
-      self._setMaterial(materialNode, fileNode, material, self.mmdData.textures)
+      self._setMaterial(materialNode, fileNode, material, self.mmdData.textures, incandescenceFlag)
       shaderGroupNodes.append(shaderGroup)
     return shaderGroupNodes    
 
@@ -120,8 +121,8 @@ class MaterialGenerator:
       cmds.sets(targetFaceName, forceElement=sg)
       cnt += faceNumber
 
-  def generate(self, meshName):
+  def generate(self, meshName, incandescenceFlag):
     fileNodeNames = self._generateTextureFile()
-    shaderGroupNodes = self._generateMaterials(fileNodeNames)
+    shaderGroupNodes = self._generateMaterials(fileNodeNames, incandescenceFlag)
     self._setFaceMaterials(meshName, shaderGroupNodes)
 

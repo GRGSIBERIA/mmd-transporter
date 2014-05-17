@@ -20,7 +20,9 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
 
   @classmethod
   def syntaxCreator(cls):
-    pass
+    syntax = maya.OpenMaya.MSyntax()
+    syntax.addFlag("-inc", "-incandescense", maya.OpenMaya.MSyntax.kNoArg)
+    return syntax
 
   def _getPath(self):
     filterName = "PMD/PMX (*.pmd *pmx);;PMD (*.pmd);;PMX (*.pmx)"
@@ -61,7 +63,7 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
     for i in noparentBonesIndices:
       maya.cmds.parent(jointNames[i], boneGroup)
 
-  def doIt(self, args):
+  def _createData(self, argData):
     filePath = self._getPath()
     if filePath != None:
       extName = self._getExt(filePath)
@@ -70,11 +72,12 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
 
       # ポリゴンの生成
       meshName, polyName = meshgen.MeshGenerator.CreatePolyNodes()
-      maya.cmds.polyNormal(polyName, normalMode=0, userNormalMode=0, ch=1)  # 表示が変になるのでノーマルを逆転
+      #maya.cmds.polyNormal(polyName, normalMode=0, userNormalMode=0, ch=1)  # 表示が変になるのでノーマルを逆転
 
       # マテリアルの生成
+      incandescenseFlag = argData.isFlagSet("-inc")   # マテリアルの白熱光をMAXにするかどうか
       genMaterial = matgen.MaterialGenerator(mmdData, filePath)
-      genMaterial.generate(meshName)
+      genMaterial.generate(meshName, incandescenseFlag)
 
       # ボーンの生成
       genBone = bonegen.BoneGenerator(mmdData, filePath)
@@ -96,3 +99,11 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
 
       #グループ化
       self._grouping(polyName, jointNames, noparentBonesIndices)
+
+  def doIt(self, args):
+    try:
+      argData = maya.OpenMaya.MArgDatabase(self.syntax(), args)
+    except:
+      pass
+    else:
+      self._createData(argData)
