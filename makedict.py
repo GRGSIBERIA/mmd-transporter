@@ -43,6 +43,7 @@ def main(argv):
     makeCSV("\\skindict.csv", directory, mmdData.morphs)
     makeCSV("\\materialdict.csv", directory, mmdData.materials)
     makeCSV("\\rigiddict.csv", directory, mmdData.rigidbodies)
+    makeCSV("\\morphdict.csv", directory, mmdData.morphs)
 
 if __name__ == "__main__":
   main(sys.argv[1:])

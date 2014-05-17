@@ -13,6 +13,7 @@ import matgen
 import bonegen
 import skingen
 import estabgen
+import expgen
 
 class LoadMMD(maya.OpenMayaMPx.MPxCommand):
   def __init__(self):
@@ -72,12 +73,16 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
 
       # ポリゴンの生成
       meshName, polyName = meshgen.MeshGenerator.CreatePolyNodes()
-      maya.cmds.polyNormal(polyName, normalMode=0, userNormalMode=0, ch=1)  # 表示が変になるのでノーマルを逆転
+      #maya.cmds.polyNormal(polyName, normalMode=0, userNormalMode=0, ch=1)  # 表示が変になるのでノーマルを逆転
 
       # マテリアルの生成
       incandescenseFlag = argData.isFlagSet("-inc")   # マテリアルの白熱光をMAXにするかどうか
       genMaterial = matgen.MaterialGenerator(mmdData, filePath)
       genMaterial.generate(meshName, incandescenseFlag)
+
+      # Blend Shapeの生成
+      genExp = expgen.ExpressionGenerator(mmdData, filePath)
+      genExp.generate(polyName)
 
       # ボーンの生成
       genBone = bonegen.BoneGenerator(mmdData, filePath)
