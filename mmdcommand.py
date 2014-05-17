@@ -19,11 +19,13 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
   def __init__(self):
     maya.OpenMayaMPx.MPxCommand.__init__(self)
 
+
   @classmethod
   def syntaxCreator(cls):
     syntax = maya.OpenMaya.MSyntax()
     syntax.addFlag("-inc", "-incandescense", maya.OpenMaya.MSyntax.kNoArg)
     return syntax
+
 
   def _getPath(self):
     filterName = "PMD/PMX (*.pmd *pmx);;PMD (*.pmd);;PMX (*.pmx)"
@@ -32,9 +34,11 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
       return path[0]
     return None
 
+
   def _getExt(self, filePath):
     root, extType = os.path.splitext(filePath)
     return extType.lower()
+
 
   def _readData(self, filePath, extName):
     mmdData = None
@@ -44,6 +48,7 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
     elif extName == ".pmx":
       mmdData = pymeshio.pmx.reader.read_from_file(filePath)
     return mmdData
+
 
   def _skinning(self, polyName, jointNames, mmdData):
     maya.cmds.select(polyName)
@@ -55,6 +60,7 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
         return True
     return False
 
+
   def _grouping(self, polyName, jointNames, noparentBonesIndices):
     maya.cmds.select(d=True)
     boneGroup = maya.cmds.group(n="bones", w=True, em=True)
@@ -63,6 +69,18 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
     maya.cmds.parent(polyName, group)
     for i in noparentBonesIndices:
       maya.cmds.parent(jointNames[i], boneGroup)
+    return group
+
+
+  def _groupExpression(self, blendShapeNames, mother):
+    expgroup = maya.cmds.group(n="expresssion", w=True, em=True)
+    maya.cmds.parent(expgroup, mother)
+    maya.cmds.select(d=True)
+    for gname in blendShapeNames:
+      maya.cmds.select(gname)
+    maya.cmds.select(expgroup)
+    maya.cmds.parent()
+
 
   def _createData(self, argData):
     filePath = self._getPath()
@@ -82,7 +100,7 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
 
       # Blend Shapeの生成
       genExp = expgen.ExpressionGenerator(mmdData, filePath)
-      genExp.generate(polyName)
+      blendShapeNames = genExp.generate(polyName)
 
       # ボーンの生成
       genBone = bonegen.BoneGenerator(mmdData, filePath)
@@ -103,7 +121,9 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
         genSkin.generate(skinCluster, jointNames, polyName)
 
       #グループ化
-      self._grouping(polyName, jointNames, noparentBonesIndices)
+      mother = self._grouping(polyName, jointNames, noparentBonesIndices)
+      self._groupExpression(blendShapeNames, mother)
+
 
   def doIt(self, args):
     try:

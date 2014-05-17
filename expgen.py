@@ -69,7 +69,7 @@ class ExpressionGenerator:
         self._structVertexMorph(morphs[i], morphNames[i])
       elif morphs[i].morph_type == 2: # ボーン
         pass
-      elif morphs[i].morph_type == 3: # UV
+      elif morphs[i].morph_type == 3: # UV  UVモーフはなぜかpymeshioで実装されてない
         pass
       elif morphs[i].morph_type == 4: # UV1
         pass
@@ -107,3 +107,4 @@ class ExpressionGenerator:
     groupNames = self._createDisplayLayer(morphNames)
     self._doOffsetsDuplicateModel(morphNames)
     self._appendBlendShapes(polyName, morphNames)
+    return groupNames

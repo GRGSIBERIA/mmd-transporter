@@ -14,6 +14,7 @@ MayaでMikuMikuDanceするためのPythonプラグインです。
 * メッシュの構築
 * マテリアルの構築/適用
 * ボーン/スキニングの設定/適用
+* BlendShapeの設定/適用
 * Human IKのテンプレートの同梱
 
 ## インストール方法
@@ -113,7 +114,7 @@ maya.cmds.loadPlugin("mmd-transporterのパス/mmd-transporter.py")
 モデルデータの読み込みは以下のコマンド（MEL/Python）で実行できます。
 
 ```
-loadmmd
+maya.cmds.loadmmd()
 ```
 
 ### 顔の裏側や不自然に描画される等の問題を解決する
