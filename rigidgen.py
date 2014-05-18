@@ -60,7 +60,7 @@ class RigidBodyGenerator:
     maya.cmds.parentConstraint(mo=True)
 
 
-  def _constructConstraint(self, rigidObj, shape, rigid, jointNames):
+  def _constructConstraint(self, bones, rigidObj, shape, rigid, jointNames):
     parentJoint = ""
     if rigid.bone_index != -1:
       parentJoint = jointNames[rigid.bone_index]
@@ -69,6 +69,8 @@ class RigidBodyGenerator:
     if parentJoint != "":
       if mode == 0:   # ボーン追従
         maya.cmds.setAttr("%s.bodyType" % shape, 1)
+        current = bones[rigid.bone_index]
+        parentJoint = jointNames[current.parent_index]
         self._parentConstraint(parentJoint, rigidObj)
       elif mode == 1: # 物理演算
         self._parentConstraint(rigidObj, parentJoint)
@@ -86,6 +88,7 @@ class RigidBodyGenerator:
   def _createRigidObjects(self, jointNames):
     rigids = self.mmdData.rigidbodies
     joints = self.mmdData.joints
+    bones = self.mmdData.bones
     rigidObjects = []
     rigidShapes = []
     for i in range(len(rigids)):
@@ -94,7 +97,7 @@ class RigidBodyGenerator:
       shape = self._initializePose(rigidObj, rigids[i])
       self._initializeParams(shape, rigids[i].param)
       self._initializeColider(shape, rigids[i])
-      self._constructConstraint(rigidObj, shape, rigids[i], jointNames)
+      self._constructConstraint(bones, rigidObj, shape, rigids[i], jointNames)
       self._settingCollision(shape, rigids[i])
 
       rigidObjects.append(rigidObj)
@@ -116,16 +119,20 @@ class RigidBodyGenerator:
 
   def _setJointLimitation(self, constraint, minVector, maxVector, limitType, axis, i):
     args = (constraint, limitType, axis)
-    minValue = self._convertCoordinate(minVector[i], limitType, axis)
-    maxValue = self._convertCoordinate(maxVector[i], limitType, axis)
+    minValue = minVector[i] #self._convertCoordinate(minVector[i], limitType, axis)
+    maxValue = maxVector[i] #self._convertCoordinate(maxVector[i], limitType, axis)
 
     if minVector[i] == 0.0 and maxVector[i] == 0.0:
-      maya.cmds.setAttr("%s.%sConstraint%s" % args, 1)
+      maya.cmds.setAttr("%s.%sConstraint%s" % args, 2)
     else:
       maya.cmds.setAttr("%s.%sConstraint%s" % args, 2)
       maya.cmds.setAttr("%s.%sConstraintMin%s" % args, minValue)
       maya.cmds.setAttr("%s.%sConstraintMax%s" % args, maxValue)
 
+
+  def _setSpringLimitation(self, constraint, limitVector, limitType, axis, i):
+    limitValue = limitVector[i] #self._convertCoordinate(limitVector[i], limitType, axis)
+    maya.cmds.setAttr("%s.%sSpringStiffness%s" % (constraint, limitType, axis), limitValue)
 
   def _constraintJoint(self, joint, rigidShapes):
     ai = joint.rigidbody_index_a
@@ -139,6 +146,8 @@ class RigidBodyGenerator:
     for i in range(3):
       self._setJointLimitation(constraint, joint.translation_limit_min, joint.translation_limit_max, "linear", axis[i], i)
       self._setJointLimitation(constraint, joint.rotation_limit_min, joint.rotation_limit_max, "angular", axis[i], i)
+      self._setSpringLimitation(constraint, joint.spring_constant_translation, "linear", axis[i], i)
+      self._setSpringLimitation(constraint, joint.spring_constant_rotation, "angular", axis[i], i)
 
 
   def _createJoint(self, rigidShapes):
@@ -149,4 +158,4 @@ class RigidBodyGenerator:
 
   def generate(self, jointNames):
     rigidObjects, rigidShapes = self._createRigidObjects(jointNames)
-    self._createJoint(rigidShapes)
+    #self._createJoint(rigidShapes)
