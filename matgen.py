@@ -25,6 +25,9 @@ class MaterialGenerator:
     except:
       material = cmds.shadingNode("blinn", asShader=1)  # 不正な名前のマテリアルはこれ
 
+    maya.cmds.addAttr(material, dt="string", ln="jpName", h=False, k=False)
+    maya.cmds.setAttr("%s.jpName" % materialData.name, typ="string")
+
     shader_group = cmds.sets(renderable=1, noSurfaceShader=1, empty=1, name='%sSG' % material)
     #cmds.sets(model, e=1, forceElement=shader_group)   # ここは無視しておこう
     cmds.connectAttr("%s.outColor" % material, "%s.surfaceShader" % shader_group, f=1)
