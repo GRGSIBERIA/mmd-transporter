@@ -44,6 +44,19 @@ kakasiフォルダを**Cドライブの直下**に置いてください。
 それ以外の場所に置くと実行されません。
 
 
+### Bulletプラグインを有効化する
+MMDでは物理演算にBulletを利用しています。
+MMD Transporterもそれに習い、Bulletプラグインを利用してMMDの物理演算を再現します。
+
+[Window]-[Settings/Preferences]-[Plug-in Manager]でPlug-in Managerを開いてください。その中に、**bullet.mll**という項目がありますので、LoadedとAuto loadの両方をチェックしてください。
+
+さがすのが面倒くさい場合は、以下のMELでbullet.mllを読み込むことができます。
+
+```
+loadPlugin "bullet"
+```
+
+
 ### Human IKのテンプレートの登録
 MMD Transporterで読み込んだモデルは、テンプレートを用いることで自動的にHuman IKを設定します。そのテンプレートがMMD HumanIK.xmlです。
 
@@ -81,7 +94,7 @@ mmd-transporterのフォルダ内にmakedict.pyがあります。
 コマンドプロンプトが開いたら、以下のように入力してください。
 
 ```
-cd (右クリック→貼り付け)
+cd mmd-transporterのパス(右クリック→貼り付け)
 ```
 
 これでmmd-transporterのフォルダへ移動します。
@@ -92,7 +105,7 @@ PMD/PMXファイルの上で**Shift+右クリック**を押し、「パスとし
 次に、コマンドプロンプトに戻って以下のように入力してください。
 
 ```
-python makedict.py (右クリック→貼り付け)
+python makedict.py PMD/PMXファイルのパス(右クリック→貼り付け)
 ```
 
 これで、モデルデータのあるフォルダにいくつかのCSVファイルが書き出されました。
@@ -136,7 +149,7 @@ Human IKは[Skeleton]-[Human IK]でペインが生成されます。Character Co
 
 その次にペイン上部のアイコン(Load Skeleton Definition)を押し、TemplateからMMD HumanIKを選んでください。ラジオボタンが二つありますが、そのうち下にあるMatch only selected bonesを選択してください。これでOKボタンを押すと自動的にHuman IKが適用されます。
 
-ただし、MMDではAスタンスが基本となっているため、Human IKの設定は完全に適用されません。腕を水平にすればスケルトンの定義をロックできるようになるので、**肩や鎖骨等を弄って全部緑になるように動かしてください**。腕を水平にするのは肩の構造上あまりよろしくないため不具合が残る可能性があります。
+ただし、MMDではAスタンスが基本となっているため、Human IKの設定は完全に適用されません。腕を水平にすればスケルトンの定義をロックできるようになるので、**肩や鎖骨等を弄って全部緑になるように、ボーンの回転角を調整してください**。腕を水平にするのは肩の構造上あまりよろしくないため不具合が残る可能性があります。
 
 ## お借りしたもの
 
