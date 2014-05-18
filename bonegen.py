@@ -37,6 +37,8 @@ class BoneGenerator:
         jointName = maya.cmds.joint(p=[pos.x, pos.y, -pos.z], name=boneName)
       except:
         jointName = maya.cmds.joint(p=[pos.x, pos.y, -pos.z])   # 稀に不正な名前のボーンが存在する
+      maya.cmds.addAttr(jointName, dt="string", ln="jpName")
+      maya.cmds.setAttr("%s.jpName" % jointName, self.nameDict[i])
       jointNames.append(jointName)
     return jointNames, noparentBones
 

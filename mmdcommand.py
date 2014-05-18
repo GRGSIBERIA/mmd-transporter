@@ -14,6 +14,7 @@ import bonegen
 import skingen
 import estabgen
 import expgen
+import rigidgen
 
 class LoadMMD(maya.OpenMayaMPx.MPxCommand):
   def __init__(self):
@@ -78,7 +79,6 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
     for gname in blendShapeNames:
       maya.cmds.parent(gname, expgroup)
     
-
 
   def _createData(self, argData):
     filePath = self._getPath()
