@@ -123,7 +123,7 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
 
       #グループ化
       mother = self._grouping(polyName, jointNames, noparentBonesIndices)
-      self._groupExpression(blendShapeNames, mother)
+      #self._groupExpression(blendShapeNames, mother)
 
 
   def doIt(self, args):
