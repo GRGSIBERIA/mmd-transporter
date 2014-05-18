@@ -102,17 +102,29 @@ class RigidBodyGenerator:
     return rigidObjects, rigidShapes
 
 
+  def _convertCoordinate(self, value, limitType, axis):
+    if limitType == "angular" and axis == "X":
+      return  -value * self.constPI
+    elif limitType == "linear" and axis == "Z":
+      return -value
+
+    if limitType == "angular":
+      return value * self.constPI
+
+    return value
+
+
   def _setJointLimitation(self, constraint, minVector, maxVector, limitType, axis, i):
     args = (constraint, limitType, axis)
-    minValue = self.convertCoordinate(minVector[i], limitType, axis)
-    maxValue = self.convertCoordinate(maxVector[i], limitType, axis)
+    minValue = self._convertCoordinate(minVector[i], limitType, axis)
+    maxValue = self._convertCoordinate(maxVector[i], limitType, axis)
 
     if minVector[i] == 0.0 and maxVector[i] == 0.0:
       maya.cmds.setAttr("%s.%sConstraint%s" % args, 1)
     else:
       maya.cmds.setAttr("%s.%sConstraint%s" % args, 2)
-      maya.cmds.setAttr("%s.%sConstraintMin%s" % args, minVector[i])
-      maya.cmds.setAttr("%s.%sConstraintMax%s" % args, maxVector[i])
+      maya.cmds.setAttr("%s.%sConstraintMin%s" % args, minValue)
+      maya.cmds.setAttr("%s.%sConstraintMax%s" % args, maxValue)
 
 
   def _constraintJoint(self, joint, rigidShapes):
@@ -126,7 +138,7 @@ class RigidBodyGenerator:
     axis = ["X", "Y", "Z"]
     for i in range(3):
       self._setJointLimitation(constraint, joint.translation_limit_min, joint.translation_limit_max, "linear", axis[i], i)
-      self._setJointLimitation(constraint, joint.translation_limit_min, joint.translation_limit_max, "angular", axis[i], i)
+      self._setJointLimitation(constraint, joint.rotation_limit_min, joint.rotation_limit_max, "angular", axis[i], i)
 
 
   def _createJoint(self, rigidShapes):
