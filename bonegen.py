@@ -8,6 +8,7 @@ import os.path
 import csv
 import re
 
+import util
 import filemanager as filemng
 
 class BoneGenerator:
@@ -37,8 +38,7 @@ class BoneGenerator:
         jointName = maya.cmds.joint(p=[pos.x, pos.y, -pos.z], name=boneName)
       except:
         jointName = maya.cmds.joint(p=[pos.x, pos.y, -pos.z])   # 稀に不正な名前のボーンが存在する
-      maya.cmds.addAttr(jointName, dt="string", ln="jpName", h=False, k=False)
-      maya.cmds.setAttr("%s.jpName" % jointName, bones[i].name, typ="string")
+      util.setJpName(jointName, bones[i].name)
       jointNames.append(jointName)
     return jointNames, noparentBones
 

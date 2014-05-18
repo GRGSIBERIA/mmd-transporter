@@ -6,6 +6,7 @@ import maya.cmds as cmds
 
 import csv
 import filemanager as filemng
+import util
 
 class MaterialGenerator:
 
@@ -13,6 +14,7 @@ class MaterialGenerator:
     self.mmdData = mmdData
     self.directory = os.path.dirname(filePath)
     self.nameDict, self.dictFlag = filemng.openCSV(self.directory, "materialdict.csv")
+
 
   def _createMaterialNode(self, materialData, index):
     materialName = "mmd_material"
@@ -25,16 +27,17 @@ class MaterialGenerator:
     except:
       material = cmds.shadingNode("blinn", asShader=1)  # 不正な名前のマテリアルはこれ
 
-    maya.cmds.addAttr(material, dt="string", ln="jpName", h=False, k=False)
-    maya.cmds.setAttr("%s.jpName" % materialData.name, typ="string")
+    util.setJpName(material, materialData.name)
 
     shader_group = cmds.sets(renderable=1, noSurfaceShader=1, empty=1, name='%sSG' % material)
     #cmds.sets(model, e=1, forceElement=shader_group)   # ここは無視しておこう
     cmds.connectAttr("%s.outColor" % material, "%s.surfaceShader" % shader_group, f=1)
     return material, shader_group
 
+
   def _getFileName(self, path):
     return os.path.basename(path)
+
 
   def _createFileNode(self, texturePath):
     fileName = os.path.splitext(texturePath)[0]
@@ -64,6 +67,7 @@ class MaterialGenerator:
 
   def _setTexture(self, fileNode, texturePath):
     cmds.setAttr("%s.fileTextureName" % fileNode, self.directory + "/" + texturePath, type="string")
+
 
   def _setTransparency(self, material, texturePath, mat_node, file_node):
     alpha = material.alpha
@@ -102,6 +106,7 @@ class MaterialGenerator:
       self._setTexture(fileNode, self.mmdData.textures[i])
     return fileNodeNames
 
+
   def _generateMaterials(self, fileNodeNames, incandescenceFlag):
     shaderGroupNodes = []
     for i in range(len(self.mmdData.materials)):
@@ -111,6 +116,7 @@ class MaterialGenerator:
       self._setMaterial(materialNode, fileNode, material, self.mmdData.textures, incandescenceFlag)
       shaderGroupNodes.append(shaderGroup)
     return shaderGroupNodes    
+
 
   def _setFaceMaterials(self, meshName, shaderGroupNodes):
     cnt = 0
@@ -123,6 +129,7 @@ class MaterialGenerator:
       targetFaceName = "%s.f[%s:%s]" % (meshName, start, end)
       cmds.sets(targetFaceName, forceElement=sg)
       cnt += faceNumber
+
 
   def generate(self, meshName, incandescenceFlag):
     fileNodeNames = self._generateTextureFile()
