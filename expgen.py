@@ -24,8 +24,9 @@ class ExpressionGenerator:
       name = "expression"
       if self.dictFlag:
         name = "exp_" + self.nameDict[i]
-      morphName = maya.cmds.duplicate(self.polyName, n=name)
-      morphNames.append(morphName[0])
+      morphName = maya.cmds.duplicate(self.polyName, n=name)[0]
+      util.setJpName(morphName, morphs[i].name)
+      morphNames.append(morphName)
 
       morphPanelCounts[morph.panel] += 1
       count = morphPanelCounts[morph.panel]

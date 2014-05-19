@@ -15,6 +15,7 @@ import skingen
 import estabgen
 import expgen
 import rigidgen
+import util
 
 class LoadMMD(maya.OpenMayaMPx.MPxCommand):
   def __init__(self):
@@ -75,6 +76,7 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
 
   def _groupExpression(self, blendShapeNames, mother):
     expgroup = maya.cmds.group(n="blendShapes", w=True, em=True)
+    util.setString(expgroup, "nodeType", "blendShapeGroup")
     maya.cmds.parent(expgroup, mother)
     for gname in blendShapeNames:
       maya.cmds.parent(gname, expgroup)
