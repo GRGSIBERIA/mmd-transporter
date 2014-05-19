@@ -72,6 +72,7 @@ class MmdBlendShapeWindow:
     maya.cmds.menuItem(l="Select BlendShape Node",\
       command=lambda *args:self._callSelectBlendShapeNode())
 
+
   def _changeFloatSlider(self, shape, floatValue):
     blendShapeName = "%s.%s" % (self.blendShapeNode, shape)
     maya.cmds.setAttr(blendShapeName, floatValue)
@@ -111,9 +112,15 @@ class MmdBlendShapeWindow:
 
     self._menu()
     self._layout(window, self.blendShapeNames)
-    #maya.cmds.showWindow()
+    # TODO:
+    # ・全部にキーフレを打つ
+    # ・チェックボックス全選択
+    # ・チェックボックスでキーフレを打つ
+    # ・チェックボックスでキーフレ全消去
+    # ・チェックボックスを全部空にする
+
     maya.cmds.dockControl(\
-      l=title, content=window, area="left", allowedArea=("left", "right"))
+      l=title, fl=True, content=window, area="left", allowedArea=("left", "right"))
 
 w = MmdBlendShapeWindow()
 w.show()
