@@ -5,6 +5,7 @@ import maya.cmds
 import maya.OpenMaya
 
 import filemanager
+import util
 
 class ExpressionGenerator:
 
@@ -36,6 +37,7 @@ class ExpressionGenerator:
   def _createDisplayLayer(self, morphNames):
     morphs = self.mmdData.morphs
     panels = ["eyebrow_group", "eye_group", "mouth_group", "other_group"]
+    panelJpNames = [u"眉", u"目", u"口", u"その他"]
     groups = []
     for panel in range(4):
       maya.cmds.select(d=True)
@@ -43,6 +45,7 @@ class ExpressionGenerator:
         if morphs[i].panel == panel + 1:
           maya.cmds.select(morphNames[i], tgl=True)
       groupName = maya.cmds.group(name=panels[panel])
+      util.setJpName(groupName, panelJpNames[panel])
       maya.cmds.setAttr("%s.v" % groupName, 0)
       groups.append(groupName)
     return groups

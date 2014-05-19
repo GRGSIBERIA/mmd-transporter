@@ -68,7 +68,7 @@ class RigidBodyGenerator:
 
     if parentJoint != "":
       if mode == 0:   # ボーン追従
-        maya.cmds.setAttr("%s.bodyType" % shape, 1)
+        maya.cmds.setAttr("%s.bodyType" % shape, 0)
         current = bones[rigid.bone_index]
         parentJoint = jointNames[current.parent_index]
         self._parentConstraint(parentJoint, rigidObj)
@@ -105,25 +105,15 @@ class RigidBodyGenerator:
     return rigidObjects, rigidShapes
 
 
-  def _convertCoordinate(self, value, limitType, axis):
-    if limitType == "angular" and axis == "X":
-      return  -value * self.constPI
-    elif limitType == "linear" and axis == "Z":
-      return -value
-
-    if limitType == "angular":
-      return value * self.constPI
-
-    return value
-
-
   def _setJointLimitation(self, constraint, minVector, maxVector, limitType, axis, i):
     args = (constraint, limitType, axis)
     minValue = minVector[i] #self._convertCoordinate(minVector[i], limitType, axis)
     maxValue = maxVector[i] #self._convertCoordinate(maxVector[i], limitType, axis)
 
+    if minVector[i] > maxVector[i]:
+      maya.cmds.setAttr("%s.%sConstraint%s" % args, 0)
     if minVector[i] == 0.0 and maxVector[i] == 0.0:
-      maya.cmds.setAttr("%s.%sConstraint%s" % args, 2)
+      maya.cmds.setAttr("%s.%sConstraint%s" % args, 1)
     else:
       maya.cmds.setAttr("%s.%sConstraint%s" % args, 2)
       maya.cmds.setAttr("%s.%sConstraintMin%s" % args, minValue)
@@ -132,7 +122,9 @@ class RigidBodyGenerator:
 
   def _setSpringLimitation(self, constraint, limitVector, limitType, axis, i):
     limitValue = limitVector[i] #self._convertCoordinate(limitVector[i], limitType, axis)
-    maya.cmds.setAttr("%s.%sSpringStiffness%s" % (constraint, limitType, axis), limitValue)
+    args = (constraint, limitType, axis)
+    maya.cmds.setAttr("%s.%sSpringEnabled%s" % args, 1)
+    maya.cmds.setAttr("%s.%sSpringStiffness%s" % args, limitValue)
 
   def _constraintJoint(self, joint, rigidShapes):
     ai = joint.rigidbody_index_a
@@ -158,4 +150,4 @@ class RigidBodyGenerator:
 
   def generate(self, jointNames):
     rigidObjects, rigidShapes = self._createRigidObjects(jointNames)
-    #self._createJoint(rigidShapes)
+    self._createJoint(rigidShapes)

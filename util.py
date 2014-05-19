@@ -5,3 +5,6 @@ import maya.cmds
 def setJpName(objName, jpName):
   maya.cmds.addAttr(objName, dt="string", ln="jpName", h=False, k=False)
   maya.cmds.setAttr("%s.jpName" % objName, jpName, typ="string")
+
+def getJpName(objName):
+  return maya.cmds.getAttr("%s.jpName" % objName)

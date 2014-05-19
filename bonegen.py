@@ -64,8 +64,8 @@ class BoneGenerator:
   def _settingDrawStyle(self, bones, jointNames):
     for i in range(len(bones)):
       visible = 0 if bones[i].getVisibleFlag() else 2
-      jointName = jointNames[i]
-      maya.cmds.setAttr("%s.drawStyle" % jointName, visible)
+      visible = 2 if bones[i].getIkFlag() else visible
+      maya.cmds.setAttr("%s.drawStyle" % jointNames[i], visible)
 
 
   # 回転・移動・操作フラグからLockとHideを各チャンネルに行う
