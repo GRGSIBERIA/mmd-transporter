@@ -45,7 +45,7 @@ class ExpressionGenerator:
         if morphs[i].panel == panel + 1:
           maya.cmds.select(morphNames[i], tgl=True)
       groupName = maya.cmds.group(name=panels[panel])
-      util.setJpName(groupName, panelJpNames[panel])
+      util.setString(groupName, "expression", panelJpNames[panel])
       maya.cmds.setAttr("%s.v" % groupName, 0)
       groups.append(groupName)
     return groups

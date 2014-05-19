@@ -4,10 +4,13 @@
 import maya.cmds
 import maya.OpenMayaMPx
 
-class MmdBlendShapeWindow(maya.OpenMayaMPx.MPxCommand):
+import bswindow
+
+class MmdBlendShapeWindowCommand(maya.OpenMayaMPx.MPxCommand):
 
   def __init__(self):
     maya.OpenMayaMPx.MPxCommand.__init__(self)
 
   def doIt(self, args):
-    pass
+    window = bswindow.MmdBlendShapeWindow()
+    window.show()
