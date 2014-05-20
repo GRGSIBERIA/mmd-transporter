@@ -106,9 +106,12 @@ class MmdBlendShapeWindow:
   def _deleteKeyFrame(self, shape):
     maya.cmds.selectKey(clear=True)
     currentTime = (maya.cmds.currentTime(q=True),)
-    maya.cmds.selectKey("%s_%s" % (self.blendShapeNode, shape),\
-      add=True, k=True, t=currentTime)
-    maya.cmds.cutKey(animation="keys", clear=True)
+    try:
+      maya.cmds.selectKey("%s_%s" % (self.blendShapeNode, shape),\
+        add=True, k=True, t=currentTime)
+      maya.cmds.cutKey(animation="keys", clear=True)
+    except ValueError:
+      pass
 
 
   def _drawBlendShapeLine(self, shape, jpName):
