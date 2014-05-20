@@ -67,10 +67,31 @@ class MmdBlendShapeWindow:
     maya.cmds.select(self.blendShapeNode)
 
 
+  def _callSetKeyAll(self):
+    for exptype, shapes in self.blendShapeNames.items():
+      for shape, jpName in shapes.items():
+        maya.cmds.setKeyframe("%s.%s" % (self.blendShapeNode, shape))
+
+  def _callDeleteKeyAll(self):
+    maya.cmds.selectKey(clear=True)
+    currentTime = (maya.cmds.currentTime(q=True),)
+    print currentTime
+    for exptype, shapes in self.blendShapeNames.items():
+      for shape, jpName in shapes.items():
+        maya.cmds.selectKey("%s_%s" % (self.blendShapeNode, shape), \
+          add=True, k=True, tgl=True, t=currentTime)
+    maya.cmds.cutKey(animation="keys", clear=True)
+
+
   def _menu(self):
     maya.cmds.menu(l="Option")
     maya.cmds.menuItem(l="Select BlendShape Node",\
       command=lambda *args:self._callSelectBlendShapeNode())
+    maya.cmds.menuItem(divider=True)
+    maya.cmds.menuItem("Set Key All at Current Frame", \
+      command=lambda *args:self._callSetKeyAll())
+    maya.cmds.menuItem("Delete Key All at Current Frame", \
+      command=lambda *args:self._callDeleteKeyAll())
 
 
   def _changeFloatSlider(self, shape, floatValue):
@@ -120,7 +141,8 @@ class MmdBlendShapeWindow:
     # ・チェックボックスを全部空にする
 
     maya.cmds.dockControl(\
-      l=title, fl=True, content=window, area="left", allowedArea=("left", "right"))
+      l=title, fl=True, content=window,\
+      w=400, area="left", allowedArea=("left", "right"))
 
 w = MmdBlendShapeWindow()
 w.show()
