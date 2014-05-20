@@ -103,6 +103,14 @@ class MmdBlendShapeWindow:
     maya.cmds.setKeyframe("%s.%s" % (self.blendShapeNode, shape))
 
 
+  def _deleteKeyFrame(self, shape):
+    maya.cmds.selectKey(clear=True)
+    currentTime = (maya.cmds.currentTime(q=True),)
+    maya.cmds.selectKey("%s_%s" % (self.blendShapeNode, shape),\
+      add=True, k=True, t=currentTime)
+    maya.cmds.cutKey(animation="keys", clear=True)
+
+
   def _drawBlendShapeLine(self, shape, jpName):
     floatValue = maya.cmds.getAttr("%s.%s" % (self.blendShapeNode, shape))
     maya.cmds.floatSliderGrp(\
@@ -110,6 +118,7 @@ class MmdBlendShapeWindow:
       width=300, value=floatValue, field=True,\
       changeCommand=lambda *args:self._changeFloatSlider(shape, args[0]))
     maya.cmds.button(l="Key", w=48, command=lambda *args:self._setKeyFrame(shape))
+    maya.cmds.button(l="Delete", w=48, command=lambda *args:self._deleteKeyFrame(shape))
 
 
   def _layout(self, window, blendShapeNames):
@@ -118,7 +127,7 @@ class MmdBlendShapeWindow:
     maya.cmds.columnLayout(adj=True)
     for expType, shapes in blendShapeNames.items():
       maya.cmds.frameLayout(collapsable=True, l=expType)
-      maya.cmds.rowColumnLayout(nc=2)
+      maya.cmds.rowColumnLayout(nc=3)
       for shape, jpName in shapes.items():
         self._drawBlendShapeLine(shape, jpName)
       maya.cmds.setParent("..")
@@ -134,7 +143,6 @@ class MmdBlendShapeWindow:
     self._menu()
     self._layout(window, self.blendShapeNames)
     # TODO:
-    # ・全部にキーフレを打つ
     # ・チェックボックス全選択
     # ・チェックボックスでキーフレを打つ
     # ・チェックボックスでキーフレ全消去
