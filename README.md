@@ -56,6 +56,7 @@ MMD Transporterもそれに習い、Bulletプラグインを利用してMMDの�
 loadPlugin "bullet"
 ```
 
+たまに起動時にBulletのプラグインがIndex Out of Range（値が範囲外です）で落ちることがあります。Bulletを扱う上ではそこまで問題にならないと思うのですが、気になる場合は読みなおしてみてください。
 
 ### Human IKのテンプレートの登録
 MMD Transporterで読み込んだモデルは、テンプレートを用いることで自動的にHuman IKを設定します。そのテンプレートがMMD HumanIK.xmlです。
