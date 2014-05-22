@@ -99,8 +99,8 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
       genMaterial.generate(meshName, incandescenseFlag)
 
       # Blend Shapeの生成
-      genExp = expgen.ExpressionGenerator(mmdData, filePath)
-      blendShapeNames = genExp.generate(polyName)
+      #genExp = expgen.ExpressionGenerator(mmdData, filePath)
+      #blendShapeNames = genExp.generate(polyName)
 
       # ボーンの生成
       genBone = bonegen.BoneGenerator(mmdData, filePath)
@@ -120,8 +120,8 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
         genSkin = skingen.SkinGenerator(mmdData)
         genSkin.generate(skinCluster, jointNames, polyName)
 
-      #genRigid = rigidgen.RigidBodyGenerator(mmdData, filePath)
-      #genRigid.generate(jointNames)
+      genRigid = rigidgen.RigidBodyGenerator(mmdData, filePath)
+      genRigid.generate(jointNames)
 
       #グループ化
       mother = self._grouping(polyName, jointNames, noparentBonesIndices)

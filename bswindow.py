@@ -157,5 +157,5 @@ class MmdBlendShapeWindow:
       l=title, fl=True, content=window,\
       w=400, area="left", allowedArea=("left", "right"))
 
-w = MmdBlendShapeWindow()
-w.show()
+#w = MmdBlendShapeWindow()
+#w.show()
