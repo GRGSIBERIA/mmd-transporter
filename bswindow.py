@@ -72,6 +72,7 @@ class MmdBlendShapeWindow:
       for shape, jpName in shapes.items():
         maya.cmds.setKeyframe("%s.%s" % (self.blendShapeNode, shape))
 
+
   def _callDeleteKeyAll(self):
     maya.cmds.selectKey(clear=True)
     currentTime = (maya.cmds.currentTime(q=True),)
@@ -84,14 +85,15 @@ class MmdBlendShapeWindow:
 
 
   def _menu(self):
-    maya.cmds.menu(l="Option")
-    maya.cmds.menuItem(l="Select BlendShape Node",\
-      command=lambda *args:self._callSelectBlendShapeNode())
-    maya.cmds.menuItem(divider=True)
+    maya.cmds.menu(l="Edit")
     maya.cmds.menuItem("Set Key All at Current Frame", \
       command=lambda *args:self._callSetKeyAll())
     maya.cmds.menuItem("Delete Key All at Current Frame", \
       command=lambda *args:self._callDeleteKeyAll())
+    
+    maya.cmds.menu(l="Option")
+    maya.cmds.menuItem(l="Select BlendShape Node",\
+      command=lambda *args:self._callSelectBlendShapeNode())
 
 
   def _changeFloatSlider(self, shape, floatValue):
