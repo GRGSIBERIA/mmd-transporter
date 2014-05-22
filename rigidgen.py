@@ -2,10 +2,12 @@
 
 import maya.cmds
 import maya.app.mayabullet as bullet
+import maya.OpenMaya
 
 import filemanager
 import os.path
 import util
+
 
 class RigidBodyGenerator:
 
@@ -18,13 +20,35 @@ class RigidBodyGenerator:
 
   def _setPosture(self, shape, rigid):
     pos = rigid.shape_position
-    rot = rigid.shape_rotation
-    maya.cmds.setAttr("%s.initialTranslateX" % shape, pos.x)
-    maya.cmds.setAttr("%s.initialTranslateY" % shape, pos.y)
+    maya.cmds.setAttr("%s.initialTranslateX" % shape,  pos.x)
+    maya.cmds.setAttr("%s.initialTranslateY" % shape,  pos.y)
     maya.cmds.setAttr("%s.initialTranslateZ" % shape, -pos.z)
-    maya.cmds.setAttr("%s.initialRotateX" % shape, -rot.x)
-    maya.cmds.setAttr("%s.initialRotateY" % shape,  rot.y)
-    maya.cmds.setAttr("%s.initialRotateZ" % shape,  rot.z)
+    
+    rot = rigid.shape_rotation
+    rot = maya.OpenMaya.MEulerRotation(-rot.x, rot.y, rot.z, 4) #kYXZ
+    quat = rot.asQuaternion()
+    rot = quat.asEulerRotation()
+    print rot.order
+    maya.cmds.setAttr("%s.initialRotateX" % shape, rot.x)
+    maya.cmds.setAttr("%s.initialRotateY" % shape, rot.y)
+    maya.cmds.setAttr("%s.initialRotateZ" % shape, rot.z)
+
+
+  def _setColliderSize(self, shape, rigid):
+    maya.cmds.setAttr("%s.autoFit" % shape, 0)
+    shapeSize = rigid.shape_size
+    if rigid.shape_type == 0:   # sphere
+      maya.cmds.setAttr("%s.colliderShapeType" % shape, 2)
+      maya.cmds.setAttr("%s.radius" % shape, shapeSize[0])
+    elif rigid.shape_type == 1: # box
+      maya.cmds.setAttr("%s.colliderShapeType" % shape, 1)
+      maya.cmds.setAttr("%s.extentsX" % shape, shapeSize[0] * 2)
+      maya.cmds.setAttr("%s.extentsY" % shape, shapeSize[1] * 2)
+      maya.cmds.setAttr("%s.extentsZ" % shape, shapeSize[2] * 2)
+    elif rigid.shape_type == 2: # capsule
+      maya.cmds.setAttr("%s.colliderShapeType" % shape, 3)
+      maya.cmds.setAttr("%s.radius" % shape, shapeSize[0])
+      maya.cmds.setAttr("%s.length" % shape, shapeSize[1] + shapeSize[0] * 2)
 
 
   def _createRigidbodies(self):
@@ -33,8 +57,10 @@ class RigidBodyGenerator:
     for rigid in rigids:
       maya.cmds.select(d=True)
       shape = bullet.RigidBody.CreateRigidBody().executeCommandCB()[0]
+      maya.cmds.rename(shape, self.nameDict[rigid.name])
       util.setJpName(shape, rigid.name)
-      self._setPosture(self, shape, rigid)      
+      self._setPosture(shape, rigid)
+      self._setColliderSize(shape, rigid)
       shapes.append(shape)
     return shapes
 
