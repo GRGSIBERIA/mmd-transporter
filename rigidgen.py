@@ -27,7 +27,7 @@ class RigidBodyGenerator:
     maya.cmds.setAttr("%s.translateZ" % pCube, -pos.z)
     
     rot = rigid.shape_rotation
-    rot = maya.OpenMaya.MEulerRotation(-rot.x, rot.y, rot.z, 2) #kYXZ
+    rot = maya.OpenMaya.MEulerRotation(-rot.x, rot.y, rot.z, 4) #kYXZ
     quat = rot.asQuaternion()
     rot = quat.asEulerRotation()
     maya.cmds.setAttr("%s.rotateX" % pCube, rot.x * self.constPI)
@@ -130,7 +130,9 @@ class RigidBodyGenerator:
     maya.cmds.select(shapes[bi], tgl=True)
     constraint = bullet.RigidBodyConstraint.CreateRigidBodyConstraint().executeCommandCB()[0]
     maya.cmds.setAttr("%s.constraintType" % constraint, 5)
+    maya.cmds.rename(constraint, "joint_%s_%s" % (shapes[ai], shapes[bi]))
     return constraint
+
 
   def _constraintJointWithRigidbody(self, constraint, joint, jointNames):
     ai = joint.rigidbody_index_a
@@ -167,6 +169,7 @@ class RigidBodyGenerator:
 
   def _createJoints(self, shapes, jointNames):
     joints = self.mmdData.joints
+    constraintNames = []
     for i in range(len(joints)):
       joint = joints[i]
       constraint = self._instantiateJoint(joint, shapes)
@@ -178,9 +181,12 @@ class RigidBodyGenerator:
         self._setJointLimitation(constraint, joint.rotation_limit_min, joint.rotation_limit_max, "angular", axis[i], i)
         self._setSpringLimitation(constraint, joint.spring_constant_translation, "linear", axis[i], i)
         self._setSpringLimitation(constraint, joint.spring_constant_rotation, "angular", axis[i], i)
+      constraintNames.append(constraint)
+    return constraintNames
 
 
   def generate(self, jointNames):
     rigidShapes = self._createRigidbodies(jointNames)
-    self._createJoints(rigidShapes, jointNames)
+    constraintNames = self._createJoints(rigidShapes, jointNames)
+    return constraintNames
 
