@@ -137,11 +137,12 @@ class RigidBodyGenerator:
   def _constraintJointWithRigidbody(self, constraint, joint, jointNames):
     ai = joint.rigidbody_index_b  # bが正解
     bi = self.mmdData.rigidbodies[ai].bone_index
-    parentBoneName = jointNames[bi]
-    try:
-      maya.cmds.pointConstraint(parentBoneName, constraint)
-    except:
-      print (parentBoneName, constraint)
+    if bi >= 0 and bi < len(jointNames):
+      parentBoneName = jointNames[bi]
+      try:
+        maya.cmds.pointConstraint(parentBoneName, constraint)
+      except:
+        print "Failed point constraint for joint solver: %s" % joint.name
 
 
   def _setJointLimitation(self, constraint, minVector, maxVector, limitType, axis, i):
@@ -177,8 +178,9 @@ class RigidBodyGenerator:
       try:
         solverName = maya.cmds.rename(u"bulletRigidBodyConstraint1", "solver_%s" % self.nameDict[i])
         self._constraintJointWithRigidbody(solverName, joint, jointNames)
+        solverNames.append(solverName)
       except:
-        pass
+        print "Failed rename joint solver: %s" % joint.name
 
       axis = ["X", "Y", "Z"]
       for i in range(3):
@@ -188,7 +190,6 @@ class RigidBodyGenerator:
         self._setSpringLimitation(constraint, joint.spring_constant_rotation, "angular", axis[i], i)
       
       constraintNames.append(constraint)
-      solverNames.append(solverName)
 
     return constraintNames
 

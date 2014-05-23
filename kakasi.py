@@ -3,6 +3,7 @@
 # -*- coding: utf-8 -*-
 
 import ctypes
+import os.path
 
 class Tagger(object):
     def __init__(self, opts = []):
@@ -23,7 +24,9 @@ class Tagger(object):
         argArray = ctypes.c_char_p * len(_args)
         args = argArray(*_args)        
 
-        self.kakasi = ctypes.cdll.LoadLibrary("kakasi.dll")
+        kakasiPath = os.path.dirname(os.path.abspath(__file__)) + "\\kakasi.dll"
+
+        self.kakasi = ctypes.cdll.LoadLibrary(kakasiPath)
         self.kakasi.kakasi_getopt_argv(len(_args), args)
 
     def parse(self, ustr):

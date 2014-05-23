@@ -4,7 +4,8 @@ MayaでMikuMikuDanceするためのPythonプラグインです。
 
 ## 動作環境
 
-* Windows7
+* Windows7 64bit(推奨)
+* Python 2.7
 * Maya2014(x64)以降
 * そこそこのスペックのPC
 
@@ -16,6 +17,7 @@ MayaでMikuMikuDanceするためのPythonプラグインです。
 * ボーン/スキニングの設定/適用
 * BlendShapeの設定/適用
 * Human IKのテンプレートの同梱
+* Maya Bulletの適用
 
 ## インストール方法
 
@@ -32,6 +34,13 @@ Pythonのバージョンは2.7です。以下のリンクからインストー�
 インストール方法やパスの設定については以下のリンクを参照してください。
 
 [Python 2.7 のインストール](http://www5f.biglobe.ne.jp/~nobml/ninix/2_python.html)
+
+
+### インストールフォルダでinstall.pyを実行する
+MMD Transporterの中に、install.pyというファイルが存在します。
+このファイルはMMD Transporterのインストールをするためのファイルです。
+
+MMD Transporterをインストールしたい場所へ移したら、install.pyを実行してください。Pythonがインストールされている状態であれば、ダブルクリックでも実行できます。
 
 
 ### kakasiフォルダを移動する
@@ -84,34 +93,11 @@ C:/Users/ユーザ名/AppData/Roaming/Autodesk/HIKCharacterizationTool4/Template
 
 ## 使い方
 
-### Pythonでmakedict.pyを実行する
-mmd-transporterのフォルダ内にmakedict.pyがあります。
-これは日本語とローマ字の変換辞書を作るためのスクリプトです。
-
-まず、mmd-transporterのフォルダの上で**Shift+右クリック**を押して、「**パスとしてコピー**」を選択してください。
-これでクリップボードにmmd-transporterのフォルダのパスが残りました。
-
-次にコマンドプロンプトを開いてください。スタートメニューで「**cmd**」と検索すれば出てきます。
-コマンドプロンプトが開いたら、以下のように入力してください。
-
-```
-cd mmd-transporterのパス(右クリック→貼り付け)
-```
-
-これでmmd-transporterのフォルダへ移動します。
-
-コマンドプロンプトはそのままで、読み込みたいPMDもしくはPMXファイルのあるフォルダを開いてください。
-PMD/PMXファイルの上で**Shift+右クリック**を押し、「パスとしてコピー」を選択します。
-
-次に、コマンドプロンプトに戻って以下のように入力してください。
-
-```
-python makedict.py PMD/PMXファイルのパス(右クリック→貼り付け)
-```
-
-これで、モデルデータのあるフォルダにいくつかのCSVファイルが書き出されました。
-これは変換用の辞書ファイルなのですが、書き出したモデルにしか対応していません。
-一つのフォルダの中に複数のモデルデータが入っている場合は注意してください。
+### 辞書ファイルを作成する
+install.pyが実行され、インストールが正常に終わると、
+makedict.batというファイルがMMD Transporterの中に作成されます。
+このファイルにドラッグ＆ドロップでPMD/PMX等のモデルデータを投げると、
+モデルデータが入っているディレクトリに、自動的に辞書ファイルが作成されます。
 
 
 ### プラグインを読み込む
@@ -131,12 +117,12 @@ maya.cmds.loadPlugin("mmd-transporterのパス/mmd-transporter.py")
 maya.cmds.loadmmd()
 ```
 
+ダイアログが開くのでPMX/PMDを指定します。
+
 ### 顔の裏側や不自然に描画される等の問題を解決する
 MMDの透過テクスチャの描画順は材質順に準拠しています。一方で、MayaではZソートで描画順を決めています。この違いにより、シェーディングをTexturedの状態にすると表示が崩れてしまいます。
 
 表示が崩れてしまった場合は、カメラのパネルで[Shading]-[Polygon Transparency Sorting]をオンにするとある程度は正常に描画されるようになります。
-
-ダイアログが開くのでPMX/PMDを指定します。
 
 
 ### HumanIKの設定
