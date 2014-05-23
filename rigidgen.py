@@ -130,16 +130,16 @@ class RigidBodyGenerator:
     maya.cmds.select(shapes[bi], tgl=True)
     constraint = bullet.RigidBodyConstraint.CreateRigidBodyConstraint().executeCommandCB()[0]
     maya.cmds.setAttr("%s.constraintType" % constraint, 5)
-    maya.cmds.rename(constraint, "joint_%s_%s" % (shapes[ai], shapes[bi]))
+    constraint = maya.cmds.rename(constraint, "joint_%s_%s" % (shapes[ai], shapes[bi]))
     return constraint
 
 
   def _constraintJointWithRigidbody(self, constraint, joint, jointNames):
-    ai = joint.rigidbody_index_a
+    ai = joint.rigidbody_index_b  # bが正解
     bi = self.mmdData.rigidbodies[ai].bone_index
     parentBoneName = jointNames[bi]
     try:
-      maya.cmds.parentConstraint(parentBoneName, constraint, mo=True)
+      maya.cmds.pointConstraint(parentBoneName, constraint)
     except:
       print (parentBoneName, constraint)
 
@@ -170,10 +170,15 @@ class RigidBodyGenerator:
   def _createJoints(self, shapes, jointNames):
     joints = self.mmdData.joints
     constraintNames = []
+    solverNames = []
     for i in range(len(joints)):
       joint = joints[i]
       constraint = self._instantiateJoint(joint, shapes)
-      self._constraintJointWithRigidbody(constraint, joint, jointNames)
+      try:
+        solverName = maya.cmds.rename(u"bulletRigidBodyConstraint1", "solver_%s" % self.nameDict[i])
+        self._constraintJointWithRigidbody(solverName, joint, jointNames)
+      except:
+        pass
 
       axis = ["X", "Y", "Z"]
       for i in range(3):
@@ -181,7 +186,10 @@ class RigidBodyGenerator:
         self._setJointLimitation(constraint, joint.rotation_limit_min, joint.rotation_limit_max, "angular", axis[i], i)
         self._setSpringLimitation(constraint, joint.spring_constant_translation, "linear", axis[i], i)
         self._setSpringLimitation(constraint, joint.spring_constant_rotation, "angular", axis[i], i)
+      
       constraintNames.append(constraint)
+      solverNames.append(solverName)
+
     return constraintNames
 
 
