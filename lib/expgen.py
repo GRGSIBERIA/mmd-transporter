@@ -53,16 +53,28 @@ class ExpressionGenerator:
 
 
   def _structVertexMorph(self, morph, morphName):
+    selection = maya.OpenMaya.MSelectionList()
+    selection.add(morphName)
+    dagPath = maya.OpenMaya.MDagPath()
+    selection.getDagPath(0, dagPath)
+    meshFn = maya.OpenMaya.MFnMesh(dagPath)
+
+    points = maya.OpenMaya.MFloatPointArray()
+    meshFn.getPoints(points)
+
     for offset in morph.offsets:
-      path = "%s.vtx[%s]" % (morphName, offset.vertex_index)
+      i = offset.vertex_index
       pos = offset.position_offset
-      maya.cmds.move(pos.x, pos.y, -pos.z, path, r=True)
+      points.set(i, pos.x, pos.y, -pos.z)
+
+    meshFn.setPoints(points)
 
 
   def _structUVMorph(self, morph, morphName):
     for offset in morph.offsets:
       #path = "%s.uv[%s]" % (morphNames, offset.)  # UVモーフが実装されてなかった
       pass
+
 
   def _doOffsetsDuplicateModel(self, morphNames):
     morphs = self.mmdData.morphs
