@@ -109,6 +109,8 @@ import maya.cmds
 maya.cmds.loadPlugin("mmd-transporterのパス/mmd-transporter.py")
 ```
 
+Plugin Managerでは、LoadのほかにAuto Loadにもチェックを入れると、プラグインを読み込む操作が省けて便利です。
+
 ### モデルデータを読み込む
 
 モデルデータの読み込みは以下のコマンド（MEL/Python）で実行できます。
