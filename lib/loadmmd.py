@@ -27,6 +27,7 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
   def syntaxCreator(cls):
     syntax = maya.OpenMaya.MSyntax()
     syntax.addFlag("-inc", "-incandescense", maya.OpenMaya.MSyntax.kNoArg)
+    syntax.addFlag("-rgd", "-rigidbody", maya.OpenMaya.MSyntax.kNoArg)
     return syntax
 
 
@@ -102,6 +103,8 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
         genSkin = skingen.SkinGenerator(mmdData)
         genSkin.generate(skinCluster, jointNames, polyName)
 
+      if argData.isFlagSet("-inc"):
+        pass
       genRigid = rigidgen.RigidBodyGenerator(mmdData, filePath)
       rigidNames, constraintNames = genRigid.generate(jointNames)
 

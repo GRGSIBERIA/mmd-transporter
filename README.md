@@ -113,7 +113,7 @@ Plugin ManagerでMMD Transporterを登録するか、以下のコマンド（Pyt
 
 ```
 import maya.cmds
-maya.cmds.loadPlugin("mmd-transporterのパス/mmd-transporter.py")
+maya.cmds.loadPlugin("mmd-transporterのパス/lib/mmd-transporter.py")
 ```
 
 Plugin Managerでは、LoadのほかにAuto Loadにもチェックを入れると、プラグインを読み込む操作が省けて便利です。
