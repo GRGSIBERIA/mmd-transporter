@@ -191,11 +191,11 @@ class RigidBodyGenerator:
       
       constraintNames.append(constraint)
 
-    return constraintNames
+    return solverNames
 
 
   def generate(self, jointNames):
     rigidShapes = self._createRigidbodies(jointNames)
     constraintNames = self._createJoints(rigidShapes, jointNames)
-    return constraintNames
+    return rigidShapes, constraintNames
 

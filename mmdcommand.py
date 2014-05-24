@@ -15,7 +15,9 @@ import skingen
 import estabgen
 import expgen
 import rigidgen
+import grpgen
 import util
+
 
 class LoadMMD(maya.OpenMayaMPx.MPxCommand):
   def __init__(self):
@@ -63,25 +65,6 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
     return False
 
 
-  def _grouping(self, polyName, jointNames, noparentBonesIndices):
-    maya.cmds.select(d=True)
-    boneGroup = maya.cmds.group(n="bones", w=True, em=True)
-    group = maya.cmds.group(n="mmdModelGroup", w=True, em=True)
-    maya.cmds.parent(boneGroup, group)
-    maya.cmds.parent(polyName, group)
-    for i in noparentBonesIndices:
-      maya.cmds.parent(jointNames[i], boneGroup)
-    return group
-
-
-  def _groupExpression(self, blendShapeNames, mother):
-    expgroup = maya.cmds.group(n="blendShapes", w=True, em=True)
-    util.setString(expgroup, "nodeType", "blendShapeGroup")
-    maya.cmds.parent(expgroup, mother)
-    for gname in blendShapeNames:
-      maya.cmds.parent(gname, expgroup)
-    
-
   def _createData(self, argData):
     filePath = self._getPath()
     if filePath != None:
@@ -99,8 +82,8 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
       genMaterial.generate(meshName, incandescenseFlag)
 
       # Blend Shapeの生成
-      #genExp = expgen.ExpressionGenerator(mmdData, filePath)
-      #blendShapeNames = genExp.generate(polyName)
+      genExp = expgen.ExpressionGenerator(mmdData, filePath)
+      blendShapeNames = genExp.generate(polyName)
 
       # ボーンの生成
       genBone = bonegen.BoneGenerator(mmdData, filePath)
@@ -121,11 +104,15 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
         genSkin.generate(skinCluster, jointNames, polyName)
 
       genRigid = rigidgen.RigidBodyGenerator(mmdData, filePath)
-      genRigid.generate(jointNames)
+      rigidNames, constraintNames = genRigid.generate(jointNames)
 
       #グループ化
-      mother = self._grouping(polyName, jointNames, noparentBonesIndices)
-      #self._groupExpression(blendShapeNames, mother)
+      genGroup = grpgen.GroupGenerator()
+      genGroup.groupingStandard(polyName, jointNames, noparentBonesIndices)
+      genGroup.groupingBlendShapes(blendShapeNames)
+      genGroup.groupingRigidbodies(rigidNames)
+      genGroup.groupingConstraints(constraintNames)
+
 
 
   def doIt(self, args):
