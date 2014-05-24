@@ -2,6 +2,7 @@ MMD Transporter
 =======================
 MayaでMikuMikuDanceするためのPythonプラグインです。
 
+
 ## 動作環境
 
 * Windows7 64bit(推奨)
@@ -9,15 +10,20 @@ MayaでMikuMikuDanceするためのPythonプラグインです。
 * Maya2014(x64)以降
 * そこそこのスペックのPC
 
+
 ## 実装されている機能
 
-* PMD/PMXファイルの読み込み
-* メッシュの構築
-* マテリアルの構築/適用
-* ボーン/スキニングの設定/適用
-* BlendShapeの設定/適用
-* Human IKのテンプレートの同梱
-* Maya Bulletの適用
+* loadmmd
+  - PMD/PMXファイルの読み込み
+  - メッシュの構築
+  - マテリアルの構築/適用
+  - ボーン/スキニングの設定/適用
+  - BlendShapeの設定/適用
+  - Human IKのテンプレートの同梱
+  - Maya Bulletの適用
+* mmdbswindow
+  - BlendShape用ツール
+
 
 ## インストール方法
 
@@ -66,6 +72,7 @@ loadPlugin "bullet"
 ```
 
 たまに起動時にBulletのプラグインがIndex Out of Range（値が範囲外です）で落ちることがあります。Bulletを扱う上ではそこまで問題にならないと思うのですが、気になる場合は読みなおしてみてください。
+
 
 ### Human IKのテンプレートの登録
 MMD Transporterで読み込んだモデルは、テンプレートを用いることで自動的にHuman IKを設定します。そのテンプレートがMMD HumanIK.xmlです。
@@ -121,6 +128,7 @@ maya.cmds.loadmmd()
 
 ダイアログが開くのでPMX/PMDを指定します。
 
+
 ### 顔の裏側や不自然に描画される等の問題を解決する
 MMDの透過テクスチャの描画順は材質順に準拠しています。一方で、MayaではZソートで描画順を決めています。この違いにより、シェーディングをTexturedの状態にすると表示が崩れてしまいます。
 
@@ -139,6 +147,7 @@ Human IKは[Skeleton]-[Human IK]でペインが生成されます。Character Co
 その次にペイン上部のアイコン(Load Skeleton Definition)を押し、TemplateからMMD HumanIKを選んでください。ラジオボタンが二つありますが、そのうち下にあるMatch only selected bonesを選択してください。これでOKボタンを押すと自動的にHuman IKが適用されます。
 
 ただし、MMDではAスタンスが基本となっているため、Human IKの設定は完全に適用されません。腕を水平にすればスケルトンの定義をロックできるようになるので、**肩や鎖骨等を弄って全部緑になるように、ボーンの回転角を調整してください**。腕を水平にするのは肩の構造上あまりよろしくないため不具合が残る可能性があります。
+
 
 ## お借りしたもの
 
