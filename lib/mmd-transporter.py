@@ -1,10 +1,11 @@
 #-*- encoding: utf-8
 import sys
+import os
 import maya.OpenMaya
 import maya.OpenMayaMPx
 
 import mmdpoly as mdp
-import mmdcommand as cmd
+import loadmmd as cmd
 import bswindowcmd
 
 kPluginNodeName = 'mmdPoly'

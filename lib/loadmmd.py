@@ -18,7 +18,6 @@ import rigidgen
 import grpgen
 import util
 
-
 class LoadMMD(maya.OpenMayaMPx.MPxCommand):
   def __init__(self):
     maya.OpenMayaMPx.MPxCommand.__init__(self)
