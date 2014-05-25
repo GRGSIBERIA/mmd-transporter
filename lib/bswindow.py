@@ -17,7 +17,7 @@ class MmdBlendShapeWindow:
 
 
   def __init__(self):
-    self._reflesh()
+    self._refresh()
 
 
   def _getBlendShape(self, transform):
