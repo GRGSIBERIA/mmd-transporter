@@ -125,6 +125,7 @@ class MmdBlendShapeWindow:
     maya.cmds.floatSliderGrp(\
       l=jpName, min=0, max=1, step=0.02, fmn=0, fmx=1, fs=0.02, \
       width=300, value=floatValue, field=True,\
+      dragCommand=lambda *args:self._changeFloatSlider(shape, args[0]),\
       changeCommand=lambda *args:self._changeFloatSlider(shape, args[0]))
     maya.cmds.button(l="Key", w=48, command=lambda *args:self._setKeyFrame(shape))
     maya.cmds.button(l="Delete", w=48, command=lambda *args:self._deleteKeyFrame(shape))
