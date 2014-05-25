@@ -6,22 +6,25 @@ import maya.OpenMayaMPx
 
 import mmdpoly as mdp
 import loadmmd as cmd
-import bswindowcmd
+import windowcmd
 
 kPluginNodeName = 'mmdPoly'
 kPluginNodeId = maya.OpenMaya.MTypeId(0x03939)
 
 kPluginCmdName = "loadmmd"
-kPluginBsWindowCmdName = "mmdbswindow"
+
 
 def nodeCreator():
     return maya.OpenMayaMPx.asMPxPtr(mdp.MMDPoly())
 
+
 def createCommand():
     return maya.OpenMayaMPx.asMPxPtr(cmd.LoadMMD())
 
-def createBSWindowCommand():
-    return maya.OpenMayaMPx.asMPxPtr(bswindowcmd.MmdBlendShapeWindowCommand())
+
+def createWindowCommand():
+    return maya.OpenMayaMPx.asMPxPtr(windowcmd.MmdBlendShapeWindowCommand())
+
 
 def nodeInitializer():
     nAttr = maya.OpenMaya.MFnNumericAttribute()
@@ -39,10 +42,11 @@ def initializePlugin(mobject):
     mplugin = maya.OpenMayaMPx.MFnPlugin(mobject, "Eiichi Takebuchi(GRGSIBERIA)", "1.0")
     mplugin.registerNode(kPluginNodeName, kPluginNodeId, nodeCreator, nodeInitializer)
     mplugin.registerCommand(kPluginCmdName, createCommand, cmd.LoadMMD.syntaxCreator)
-    mplugin.registerCommand(kPluginBsWindowCmdName, createBSWindowCommand)
+    windowcmd.registerCommands(mplugin)
+
 
 def uninitializePlugin(mobject):
     mplugin = maya.OpenMayaMPx.MFnPlugin(mobject)
     mplugin.deregisterNode(kPluginNodeId)
     mplugin.deregisterCommand(kPluginCmdName)
-    mplugin.deregisterCommand(kPluginBsWindowCmdName)
+    windowcmd.deregisterCommands(mplugin)

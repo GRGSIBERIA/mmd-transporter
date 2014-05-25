@@ -5,7 +5,7 @@ import maya.mel
 import util
 
 class MmdBlendShapeWindow:
-  def __init__(self):
+  def _refresh(self):
     try:
       self.transform = maya.cmds.ls(sl=True)[0]
     except:
@@ -14,6 +14,10 @@ class MmdBlendShapeWindow:
     self.blendShapeWeights = self._getWeights(self.blendShapeNode)
     self.blendShapeGroups = self._getBlendShapeGroups(self.blendShapeNode, self.transform)
     self.blendShapeNames = self._getBlendShapeNames(self.blendShapeGroups)
+
+
+  def __init__(self):
+    self._reflesh()
 
 
   def _getBlendShape(self, transform):
@@ -147,11 +151,6 @@ class MmdBlendShapeWindow:
 
     self._menu()
     self._layout(window, self.blendShapeNames)
-    # TODO:
-    # ・チェックボックス全選択
-    # ・チェックボックスでキーフレを打つ
-    # ・チェックボックスでキーフレ全消去
-    # ・チェックボックスを全部空にする
 
     maya.cmds.dockControl(\
       l=title, fl=True, content=window,\
