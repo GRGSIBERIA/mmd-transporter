@@ -52,13 +52,17 @@ class ExpressionGenerator:
     return groups
 
 
-  def _structVertexMorph(self, morph, morphName):
+  def _getMFnMesh(self):
     selection = maya.OpenMaya.MSelectionList()
     selection.add(morphName)
     dagPath = maya.OpenMaya.MDagPath()
     selection.getDagPath(0, dagPath)
     meshFn = maya.OpenMaya.MFnMesh(dagPath)
+    return meshFn
 
+
+  def _structVertexMorph(self, morph, morphName):
+    meshFn = self._getMFnMesh()
     points = maya.OpenMaya.MFloatPointArray()
     meshFn.getPoints(points)
 
@@ -115,6 +119,7 @@ class ExpressionGenerator:
     for i in range(morphLength):
       name = morphNames[i].replace("exp_", "panel_")
       maya.cmds.addAttr(longName=name, attributeType="long", parent="panel", defaultValue=morphs[i].panel)
+
 
   def generate(self, polyName):
     self.polyName = polyName
