@@ -68,8 +68,9 @@ class ExpressionGenerator:
 
     for offset in morph.offsets:
       i = offset.vertex_index
-      pos = offset.position_offset
-      points.set(i, pos.x, pos.y, -pos.z)
+      diff = offset.position_offset
+      pos = points[i]
+      points.set(i, pos.x + diff.x, pos.y + diff.y, pos.z - diff.z)
 
     meshFn.setPoints(points)
 
