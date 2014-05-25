@@ -24,7 +24,7 @@ def setInteger(objName, attrName, number):
   setAtAttr(objName, attrName, "long", number)
 
 def setBoolean(objName, attrName, value):
-  setAtAttr(objName, attrName, "boolean", value)
+  setAtAttr(objName, attrName, "bool", value)
 
 def getString(objName, attrName):
   return maya.cmds.getAttr("%s.%s" % (objName, attrName))

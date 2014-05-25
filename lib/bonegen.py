@@ -85,7 +85,7 @@ class BoneGenerator:
         maya.cmds.setAttr("%s.rz" % jointName, lock=lockFlag, channelBox=False, keyable=False)
         maya.cmds.setAttr("%s.ry" % jointName, lock=lockFlag, channelBox=False, keyable=False)
 
-      util.setAttr(jointName, "manipulatable", bones[i].getManipulatable())
+      util.setBoolean(jointName, "manipulatable", bones[i].getManipulatable())
       #self._lockHideAttributes(jointName, "s")  # スケールは基本的に使えない
       #maya.cmds.setAttr("%s.v" % jointName, lock=True, channelBox=False, keyable=False)
 

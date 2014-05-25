@@ -52,7 +52,7 @@ class ExpressionGenerator:
     return groups
 
 
-  def _getMFnMesh(self):
+  def _getMFnMesh(self, morphName):
     selection = maya.OpenMaya.MSelectionList()
     selection.add(morphName)
     dagPath = maya.OpenMaya.MDagPath()
@@ -62,7 +62,7 @@ class ExpressionGenerator:
 
 
   def _structVertexMorph(self, morph, morphName):
-    meshFn = self._getMFnMesh()
+    meshFn = self._getMFnMesh(morphName)
     points = maya.OpenMaya.MFloatPointArray()
     meshFn.getPoints(points)
 
