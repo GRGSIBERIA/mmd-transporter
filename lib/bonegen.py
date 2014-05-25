@@ -57,10 +57,10 @@ class BoneGenerator:
           print ("topology error:", i, childBoneName, parentBoneName)
 
 
-  def _lockHideAttributes(self, jointName, disableType):
+  def _lockHideAttributes(self, jointName, disableType, lockFlag):
     axis = ["x", "y", "z"]
     for elem in axis:
-      maya.cmds.setAttr("%s.%s%s" % (jointName, disableType, elem), lock=True, channelBox=False, keyable=False)
+      maya.cmds.setAttr("%s.%s%s" % (jointName, disableType, elem), lock=lockFlag, channelBox=False, keyable=False)
 
 
   def _settingDrawStyle(self, bones, jointNames):
@@ -71,19 +71,23 @@ class BoneGenerator:
 
 
   # 回転・移動・操作フラグからLockとHideを各チャンネルに行う
-  def _inspectOperationFlag(self, bones, jointNames):
+  def _inspectOperationFlag(self, bones, jointNames, humanIkFlag):
     for i in range(len(bones)):
+      lockFlag = not humanIkFlag
+      jointName = jointNames[i]
+
       if not bones[i].getRotatable() or not bones[i].getManipulatable():
-        self._lockHideAttributes(jointName, "r")
+        self._lockHideAttributes(jointName, "r", lockFlag)
       if not bones[i].getTranslatable() or not bones[i].getManipulatable():
-        self._lockHideAttributes(jointName, "t")
+        self._lockHideAttributes(jointName, "t", lockFlag)
 
       if bones[i].getFixedAxisFlag():
-        maya.cmds.setAttr("%s.rz" % jointName, lock=True, channelBox=False, keyable=False)
-        maya.cmds.setAttr("%s.ry" % jointName, lock=True, channelBox=False, keyable=False)
+        maya.cmds.setAttr("%s.rz" % jointName, lock=lockFlag, channelBox=False, keyable=False)
+        maya.cmds.setAttr("%s.ry" % jointName, lock=lockFlag, channelBox=False, keyable=False)
 
-      self._lockHideAttributes(jointName, "s")  # スケールは基本的に使えない
-      maya.cmds.setAttr("%s.v" % jointName, lock=True, channelBox=False, keyable=False)
+      util.setAttr(jointName, "manipulatable", bones[i].getManipulatable())
+      #self._lockHideAttributes(jointName, "s")  # スケールは基本的に使えない
+      #maya.cmds.setAttr("%s.v" % jointName, lock=True, channelBox=False, keyable=False)
 
 
   # 回転行列（XYZ軸）からオイラー角を求める
@@ -232,6 +236,5 @@ class BoneGenerator:
     self._rectifyAxisLimt(bones, jointNames)
     self._rectifyEstablishAxis(bones, jointNames)
     self._connectJoints(bones, jointNames)
-    if not humanIkFlag:
-      self._inspectOperationFlag(bones, jointNames) # これを実行するとHuman IK使えなくなる
+    self._inspectOperationFlag(bones, jointNames, humanIkFlag) # これを実行するとHuman IK使えなくなる
     return jointNames, noparentBones
