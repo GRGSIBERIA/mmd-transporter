@@ -7,6 +7,7 @@ import maya.OpenMayaMPx
 import bswindow
 import blwindow
 
+
 class MmdBlendShapeWindowCommand(maya.OpenMayaMPx.MPxCommand):
 
   @classmethod
@@ -33,13 +34,3 @@ class MmdBoneListWindowCommand(maya.OpenMayaMPx.MPxCommand):
   def doIt(self, args):
     window = blwindow.MmdBoneListWindow()
     window.show()
-
-
-def registerCommands(mplugin):
-  mplugin.registerCommand("mmdbswindow", MmdBlendShapeWindowCommand.commandCreator())
-  mplugin.registerCommand("mmdblwindow", MmdBoneListWindowCommand.commandCreator())
-
-
-def deregisterCommands(mplugin):
-  mplugin.deregisterCommand("mmdbswindow")
-  mplugin.deregisterCommand("mmdblwindow")
