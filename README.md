@@ -148,6 +148,15 @@ Human IKは[Skeleton]-[Human IK]でペインが生成されます。Character Co
 
 ただし、MMDではAスタンスが基本となっているため、Human IKの設定は完全に適用されません。腕を水平にすればスケルトンの定義をロックできるようになるので、**肩や鎖骨等を弄って全部緑になるように、ボーンの回転角を調整してください**。腕を水平にするのは肩の構造上あまりよろしくないため不具合が残る可能性があります。
 
+### MMD Transporter専用Blend Shape Editor
+MMD Transporterでは、日本語を一度ローマ字にしています。これは、Mayaがオブジェクトの名前に英語しか扱えない制約があるためです。そのため、Maya付属のBlend Shape Editorでは、Blend Shape名が全てローマ字になってしまい、たいへん使いづらいです。
+
+そこで、BlendShape用の専用のエディタを作成しました。使い方はBlend Shape Editorと同じです。MMD Transporterで変換したモデルデータを選択し、以下のコマンドを実行することでエディタを呼び出します。
+
+```
+maya.cmds.mmdbswindow()
+```
+
 
 ## お借りしたもの
 
