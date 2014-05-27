@@ -150,18 +150,24 @@ MMD Transporterでは、日本語を一度ローマ字にしています。こ�
 ```
 maya.cmds.mmdbswindow()
 ```
+
+
 ## TODO
+* 辞書ファイルを作らずに済む方法を模索する
 * ボーンを日本語名で管理するためのアウトライナ
 * Rigidbodyのパラメータを調整するためのツール
+
 
 ## お借りしたもの
 
 * [KAKASI - 漢字→かな(ローマ字)変換プログラム](http://kakasi.namazu.org/)
 * [pymeshio](https://github.com/ousttrue/pymeshio)
 
+
 ## ライセンス
 
 GNU GENERAL PUBLIC LICENSE Version 2
+
 
 ## Copyright
 
