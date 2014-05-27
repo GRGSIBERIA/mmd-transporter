@@ -38,6 +38,7 @@ except Exception as e:
   print "Please remove C:/kakasi directory or copy and paste kakasi directory."
   print ""
 
-
+print ""
+print "Installing successful."
 print "Please press any key."
 raw_input()
