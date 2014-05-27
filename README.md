@@ -48,6 +48,7 @@ MMD Transporterの中に、install.pyというファイルが存在します。
 
 MMD Transporterをインストールしたい場所へ移したら、install.pyを実行してください。Pythonがインストールされている状態であれば、ダブルクリックでも実行できます。できれば、管理者権限での実行がいいです。
 
+**Installing Failedと表示されなければ大丈夫です。**
 
 ### Bulletプラグインを有効化する
 MMDでは物理演算にBulletを利用しています。
