@@ -65,12 +65,14 @@ loadPlugin "bullet"
 
 
 ### Human IKのテンプレートの登録
+** install.pyを実行すると自動的に登録が行われますが、たまに失敗することがあります。以下の手順は手動で登録を行う方法です。 **
+
 MMD Transporterで読み込んだモデルは、テンプレートを用いることで自動的にHuman IKを設定します。そのテンプレートがMMD HumanIK.xmlです。
 
 テンプレートは以下のディレクトリに保存されています。
 
 ```
-C:/Users/ユーザ名/AppData/Roaming/Autodesk/HIKCharacterizationTool4/Template
+C:/Users/ユーザ名/AppData/Roaming/Autodesk/HIKCharacterizationTool4/template
 ```
 
 この中にMMD HumanIK.xmlを入れてください。もし見つからない場合は以下の手順でテンプレートを入れることができます。

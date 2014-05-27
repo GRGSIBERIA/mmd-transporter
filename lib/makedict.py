@@ -29,7 +29,15 @@ def makeCSV(path, directory, array):
   csvfile.close()
 
 
-def main(argv):
+def makeCSVs(directory, mmdData):
+  makeCSV("\\bonedict.csv", directory, mmdData.bones)
+  makeCSV("\\skindict.csv", directory, mmdData.morphs)
+  makeCSV("\\materialdict.csv", directory, mmdData.materials)
+  makeCSV("\\rigiddict.csv", directory, mmdData.rigidbodies)
+  makeCSV("\\morphdict.csv", directory, mmdData.morphs)
+
+
+def trace(argv):
   for arg in argv:
     path, ext = os.path.splitext(arg)
     ext = ext.lower()
@@ -42,11 +50,7 @@ def main(argv):
       raise "do not PMD/PMX"
 
     directory = os.path.dirname(arg)
-    makeCSV("\\bonedict.csv", directory, mmdData.bones)
-    makeCSV("\\skindict.csv", directory, mmdData.morphs)
-    makeCSV("\\materialdict.csv", directory, mmdData.materials)
-    makeCSV("\\rigiddict.csv", directory, mmdData.rigidbodies)
-    makeCSV("\\morphdict.csv", directory, mmdData.morphs)
+    makeCSVs(directory, mmdData)
 
 if __name__ == "__main__":
-  main(sys.argv[1:])
+  trace(sys.argv[1:])
