@@ -6,6 +6,7 @@ import sys
 import os.path
 import csv
 
+
 def translate(dictionary, names):
   kana = kakasi.wakachi(names)
   romaji = kakasi.hepburn(kana).replace(u" ", u"_").replace(u"^", "_")
@@ -16,6 +17,7 @@ def translate(dictionary, names):
   for i in range(len(nameArray)):
     dictionary.writerow([nameArray[i].encode('sjis'), romajiArray[i].encode('sjis')])
 
+
 def makeCSV(path, directory, array):
   csvfile = open(directory + path, "wb")
   dictionary = csv.writer(csvfile)
@@ -25,6 +27,7 @@ def makeCSV(path, directory, array):
   allNames = ",".join(nameArray)
   translate(dictionary, allNames)
   csvfile.close()
+
 
 def main(argv):
   for arg in argv:
