@@ -150,7 +150,9 @@ MMD Transporterでは、日本語を一度ローマ字にしています。こ�
 ```
 maya.cmds.mmdbswindow()
 ```
-
+## TODO
+* ボーンを日本語名で管理するためのアウトライナ
+* Rigidbodyのパラメータを調整するためのツール
 
 ## お借りしたもの
 
