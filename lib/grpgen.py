@@ -30,6 +30,7 @@ class GroupGenerator:
     rigidGroup = maya.cmds.group(n="rigidbodies", w=True, em=True)
     maya.cmds.parent(rigidGroup, self.group)
     for rigidName in rigidbodies:
+      print "This worning in the specifications."
       maya.cmds.parent(rigidName, rigidGroup)
 
 

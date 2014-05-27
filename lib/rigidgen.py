@@ -47,15 +47,21 @@ class RigidBodyGenerator:
     if rigid.shape_type == 0:   # sphere
       maya.cmds.setAttr("%s.colliderShapeType" % shape, 2)
       maya.cmds.setAttr("%s.radius" % shape, shapeSize[0])
+      util.setFloat(shape, "defaultRadius", shapeSize[0])
     elif rigid.shape_type == 1: # box
       maya.cmds.setAttr("%s.colliderShapeType" % shape, 1)
       maya.cmds.setAttr("%s.extentsX" % shape, shapeSize[0] * 2)
       maya.cmds.setAttr("%s.extentsY" % shape, shapeSize[1] * 2)
       maya.cmds.setAttr("%s.extentsZ" % shape, shapeSize[2] * 2)
+      util.setFloat(shape, "defaultExtentsX", shapeSize[0] * 2)
+      util.setFloat(shape, "defaultExtentsY", shapeSize[1] * 2)
+      util.setFloat(shape, "defaultExtentsZ", shapeSize[2] * 2)
     elif rigid.shape_type == 2: # capsule
       maya.cmds.setAttr("%s.colliderShapeType" % shape, 3)
       maya.cmds.setAttr("%s.radius" % shape, shapeSize[0])
       maya.cmds.setAttr("%s.length" % shape, shapeSize[1] + shapeSize[0] * 2)
+      util.setFloat(shape, "defaultRadius", shapeSize[0])
+      util.setFloat(shape, "defaultLength", shapeSize[1] + shapeSize[0] * 2)
 
 
   def _setParams(self, shape, param):
@@ -64,6 +70,11 @@ class RigidBodyGenerator:
     maya.cmds.setAttr("%s.friction" % shape, param.friction)
     maya.cmds.setAttr("%s.angularDamping" % shape, param.angular_damping)
     maya.cmds.setAttr("%s.restitution" % shape, param.restitution)
+    util.setFloat(shape, "defaultMass", param.mass)
+    util.setFloat(shape, "defaultLinearDamping", param.linear_damping)
+    util.setFloat(shape, "defaultFriction", param.friction)
+    util.setFloat(shape, "defaultAngularDamping", param.angular_damping)
+    util.setFloat(shape, "defaultRestitution", param.restitution)
 
 
   def _parentConstraint(self, a, b):
@@ -72,7 +83,7 @@ class RigidBodyGenerator:
     maya.cmds.parentConstraint(mo=True)
 
 
-  def _constraintRigidbody(self, shape, rigid, jointNames):
+  def _constraintRigidbody(self, shape, pCube, rigid, jointNames):
     targetJoint = ""
     if rigid.bone_index >= 0 and len(jointNames) > rigid.bone_index:
       targetJoint = jointNames[rigid.bone_index]
@@ -80,18 +91,18 @@ class RigidBodyGenerator:
     if targetJoint != "":
       if rigid.mode == 0:   # ボーン追従
         maya.cmds.setAttr("%s.bodyType" % shape, 1)
-        maya.cmds.parentConstraint(targetJoint, shape, mo=True)
+        maya.cmds.parentConstraint(targetJoint, pCube, mo=True)
 
       elif rigid.mode == 1: # 物理演算
         maya.cmds.setAttr("%s.bodyType" % shape, 2)
-        #maya.cmds.parentConstraint(shape, targetJoint, mo=True)
-        maya.cmds.pointConstraint(targetJoint, shape, mo=True)
-        maya.cmds.orientConstraint(shape, targetJoint, mo=True)
+        #maya.cmds.parentConstraint(pCube, targetJoint, mo=True)
+        maya.cmds.pointConstraint(targetJoint, pCube, mo=True)
+        maya.cmds.orientConstraint(pCube, targetJoint, mo=True)
 
       elif rigid.mode == 2: # 位置合わせ
         maya.cmds.setAttr("%s.bodyType" % shape, 2)
-        maya.cmds.pointConstraint(targetJoint, shape, mo=True)
-        maya.cmds.orientConstraint(shape, targetJoint, mo=True)
+        maya.cmds.pointConstraint(targetJoint, pCube, mo=True)
+        maya.cmds.orientConstraint(pCube, targetJoint, mo=True)
 
 
   def _setCollisionFilter(self, shape, rigid):
@@ -111,13 +122,13 @@ class RigidBodyGenerator:
       pCube = self._createPostureCube(rigid)
       pCube = maya.cmds.rename(pCube, "rcube_" + self.nameDict[i])
       maya.cmds.select(pCube)
-      shape = bullet.RigidBody.CreateRigidBody().executeCommandCB()[0]
+      shape = bullet.RigidBody.CreateRigidBody().executeCommandCB()[1]
       shape = maya.cmds.rename(shape, "rigid_" + self.nameDict[i])
       util.setJpName(shape, rigid.name)
-      
+
       self._setColliderSize(shape, rigid)
       self._setParams(shape, rigid.param)
-      self._constraintRigidbody(shape, rigid, jointNames)
+      self._constraintRigidbody(shape, pCube, rigid, jointNames)
       self._setCollisionFilter(shape, rigid)
       shapes.append(shape)
     return shapes

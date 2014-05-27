@@ -11,7 +11,7 @@ def getJpName(objName):
 
 def setAtAttr(objName, attrName, attrType, message):
   maya.cmds.addAttr(objName, at=attrType, ln=attrName, h=False, k=False)
-  maya.cmds.setAttr("%s.%s" % (objName, attrName), message, type=attrType)
+  maya.cmds.setAttr("%s.%s" % (objName, attrName), message)
 
 def setDtAttr(objName, attrName, attrType, message):
   maya.cmds.addAttr(objName, dt=attrType, ln=attrName, h=False, k=False)
@@ -28,6 +28,9 @@ def setBoolean(objName, attrName, value):
   buf = 1 if value else 0
   maya.cmds.addAttr(objName, at="bool", ln=attrName, h=False, k=False)
   maya.cmds.setAttr("%s.%s" % (objName, attrName), buf)
+
+def setFloat(objName, attrName, value):
+  setAtAttr(objName, attrName, "float", value)
 
 def getString(objName, attrName):
   return maya.cmds.getAttr("%s.%s" % (objName, attrName))

@@ -26,6 +26,10 @@ def createBSWindowCommand():
     return maya.OpenMayaMPx.asMPxPtr(windowcmd.MmdBlendShapeWindowCommand())
 
 
+def createRAWindowCommand():
+    return maya.OpenMayaMPx.asMPxPtr(windowcmd.MmdRigidbodyAdjustWindowCommand())
+
+
 def nodeInitializer():
     nAttr = maya.OpenMaya.MFnNumericAttribute()
     mdp.MMDPoly.widthHeight = nAttr.create('widthHeight', 'wh', maya.OpenMaya.MFnNumericData.kFloat, 1.0)
@@ -43,6 +47,7 @@ def initializePlugin(mobject):
     mplugin.registerNode(kPluginNodeName, kPluginNodeId, nodeCreator, nodeInitializer)
     mplugin.registerCommand(kPluginCmdName, createLoadMmdCommand, cmd.LoadMMD.syntaxCreator)
     mplugin.registerCommand("mmdbswindow", createBSWindowCommand)
+    mplugin.registerCommand("mmdrawindow", createRAWindowCommand)
 
 
 def uninitializePlugin(mobject):
@@ -50,3 +55,4 @@ def uninitializePlugin(mobject):
     mplugin.deregisterNode(kPluginNodeId)
     mplugin.deregisterCommand(kPluginCmdName)
     mplugin.deregisterCommand("mmdbswindow")
+    mplugin.deregisterCommand("mmdrawindow")
