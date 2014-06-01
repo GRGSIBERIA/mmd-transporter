@@ -11,7 +11,7 @@ MayaでMikuMikuDanceするためのPythonプラグインです。
 * そこそこのスペックのPC
 
 
-## 実装されている機能
+## 実装されているコマンド・機能
 
 * loadmmd
   - PMD/PMXファイルの読み込み
@@ -22,7 +22,9 @@ MayaでMikuMikuDanceするためのPythonプラグインです。
   - Human IKのテンプレートの同梱
   - Maya Bulletの適用
 * mmdbswindow
-  - BlendShape用ツール
+  - BlendShapeの一覧化
+  - BlendShape名の日本語表示
+  - 対象BlendShapeのキーフレームの追加/削除
 
 
 ## インストール方法
@@ -167,6 +169,11 @@ maya.cmds.mmdbswindow()
 ## ライセンス
 
 GNU GENERAL PUBLIC LICENSE Version 2
+
+
+## 謝辞
+
+本プロジェクトは独立行政法人情報処理推進機構(IPA)の未踏IT人材発掘・育成事業の支援を受けて開発されています。
 
 
 ## Copyright
