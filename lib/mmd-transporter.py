@@ -4,8 +4,8 @@ import os
 import maya.OpenMaya
 import maya.OpenMayaMPx
 
-import mmdpoly as mdp
-import loadmmd as cmd
+import importer.mmdpoly as mdp
+import importer.loadmmd as cmd
 import windowcmd
 
 kPluginNodeName = 'mmdPoly'

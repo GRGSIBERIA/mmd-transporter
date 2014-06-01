@@ -7,6 +7,7 @@ import maya.cmds
 import pymeshio.pmx.reader
 import pymeshio.pmd.reader
 
+import dictmaker
 import mmdpoly as mpoly
 import meshgen
 import matgen
@@ -71,6 +72,7 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
       extName = self._getExt(filePath)
       mmdData = self._readData(filePath, extName)
       mpoly.MMDPoly.mmdData = mmdData
+      dmaker = dictmaker.DictMaker(mmdData)
 
       # ポリゴンの生成
       meshName, polyName = meshgen.MeshGenerator.CreatePolyNodes()
