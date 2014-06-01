@@ -19,8 +19,8 @@ class MmdBlendShapeWindowCommand(maya.OpenMayaMPx.MPxCommand):
     maya.OpenMayaMPx.MPxCommand.__init__(self)
 
   def doIt(self, args):
-    window = window.bswindow.MmdBlendShapeWindow()
-    window.show()
+    w = window.bswindow.MmdBlendShapeWindow()
+    w.show()
 
 
 class MmdBoneListWindowCommand(maya.OpenMayaMPx.MPxCommand):
@@ -33,8 +33,8 @@ class MmdBoneListWindowCommand(maya.OpenMayaMPx.MPxCommand):
     maya.OpenMayaMPx.MPxCommand.__init__(self)
 
   def doIt(self, args):
-    window = window.blwindow.MmdBoneListWindow()
-    window.show()
+    w = window.blwindow.MmdBoneListWindow()
+    w.show()
 
 
 class MmdRigidbodyAdjustWindowCommand(maya.OpenMayaMPx.MPxCommand):
@@ -47,5 +47,5 @@ class MmdRigidbodyAdjustWindowCommand(maya.OpenMayaMPx.MPxCommand):
     maya.OpenMayaMPx.MPxCommand.__init__(self)
 
   def doIt(self, args):
-    window = window.rawindow.MmdRigidbodyAdjustWindow()
-    window.show()
+    w = window.rawindow.MmdRigidbodyAdjustWindow()
+    w.show()
