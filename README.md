@@ -95,13 +95,6 @@ C:/Users/ユーザ名/AppData/Roaming/Autodesk/HIKCharacterizationTool4/template
 
 ## 使い方
 
-### 辞書ファイルを作成する
-install.pyが実行され、インストールが正常に終わると、
-makedict.batというファイルがMMD Transporterの中に作成されます。
-このファイルにドラッグ＆ドロップでPMD/PMX等のモデルデータを投げると、
-モデルデータが入っているディレクトリに、自動的に辞書ファイルが作成されます。
-
-
 ### プラグインを読み込む
 
 Plugin ManagerでMMD Transporterを登録するか、以下のコマンド（Python）を実行してプラグインとして登録してください。
@@ -137,7 +130,7 @@ Human IKは[Skeleton]-[Human IK]でペインが生成されます。Character Co
 
 まず、Human IKで最初にやることは、Defineで各種コントローラの部位とボーンを対応付けることです。MMD Transporterでは、テンプレートを事前に用意してあるため、このテンプレートを読み込むと、自動的に登録が完了します。
 
-読み込んだモデルデータの**ルートボーンを選択して、Select Hierarchyで全てのボーンを選択してある状態**にしてください。
+読み込んだモデルデータの**ルートボーンを選択し、Select Hierarchyで全てのボーンを選択してある状態**にしてください。
 
 その次にペイン上部のアイコン(Load Skeleton Definition)を押し、TemplateからMMD HumanIKを選んでください。ラジオボタンが二つありますが、そのうち下にあるMatch only selected bonesを選択してください。これでOKボタンを押すと自動的にHuman IKが適用されます。
 
