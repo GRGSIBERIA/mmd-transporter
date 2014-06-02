@@ -80,15 +80,15 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
 
       # マテリアルの生成
       incandescenseFlag = argData.isFlagSet("-inc")   # マテリアルの白熱光をMAXにするかどうか
-      genMaterial = matgen.MaterialGenerator(mmdData, filePath)
+      genMaterial = matgen.MaterialGenerator(mmdData, filePath, dmaker.materials)
       genMaterial.generate(meshName, incandescenseFlag)
 
       # Blend Shapeの生成
-      genExp = expgen.ExpressionGenerator(mmdData, filePath)
+      genExp = expgen.ExpressionGenerator(mmdData, filePath, dmaker.morphs)
       blendShapeNames = genExp.generate(polyName)
 
       # ボーンの生成
-      genBone = bonegen.BoneGenerator(mmdData, filePath)
+      genBone = bonegen.BoneGenerator(mmdData, filePath, dmaker.bones)
       jointNames, noparentBonesIndices = genBone.generate(True) #True = humanIkFlug
 
       # 付与親生成
@@ -107,7 +107,7 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
 
       if argData.isFlagSet("-inc"):
         pass
-      genRigid = rigidgen.RigidBodyGenerator(mmdData, filePath)
+      genRigid = rigidgen.RigidBodyGenerator(mmdData, filePath, dmaker.rigidbodies)
       rigidNames, constraintNames = genRigid.generate(jointNames)
 
       #グループ化

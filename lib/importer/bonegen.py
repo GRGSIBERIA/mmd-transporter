@@ -9,16 +9,16 @@ import csv
 import re
 
 import util
-import filemanager as filemng
 
 class BoneGenerator:
 
-  def __init__(self, mmdData, filePath):
+  def __init__(self, mmdData, filePath, bonedict):
     self.mmdData = mmdData
     self.constPI = 180.0 / 3.141592653589793
     directory = os.path.dirname(filePath)
-    self.nameDict, self.dictFlag = filemng.openCSV(directory, "bonedict.csv")
-
+    #self.nameDict, self.dictFlag = filemng.openCSV(directory, "bonedict.csv")
+    self.nameDict = bonedict
+    self.dictFlag = True
 
   def _createJoints(self, bones):
     noparentBones = []

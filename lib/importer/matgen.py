@@ -5,15 +5,16 @@ import maya.OpenMayaMPx
 import maya.cmds as cmds
 
 import csv
-import filemanager as filemng
 import util
 
 class MaterialGenerator:
 
-  def __init__(self, mmdData, filePath):
+  def __init__(self, mmdData, filePath, matdict):
     self.mmdData = mmdData
     self.directory = os.path.dirname(filePath)
-    self.nameDict, self.dictFlag = filemng.openCSV(self.directory, "materialdict.csv")
+    #self.nameDict, self.dictFlag = filemng.openCSV(self.directory, "materialdict.csv")
+    self.nameDict = matdict
+    self.dictFlag = True
 
 
   def _createMaterialNode(self, materialData, index):

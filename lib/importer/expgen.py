@@ -4,15 +4,16 @@ import os.path
 import maya.cmds
 import maya.OpenMaya
 
-import filemanager
 import util
 
 class ExpressionGenerator:
 
-  def __init__(self, mmdData, filePath):
+  def __init__(self, mmdData, filePath, expdict):
     self.mmdData = mmdData
     self.directory = os.path.dirname(filePath)
-    self.nameDict, self.dictFlag = filemanager.openCSV(self.directory, "morphdict.csv")
+    #self.nameDict, self.dictFlag = filemanager.openCSV(self.directory, "morphdict.csv")
+    self.nameDict = expdict
+    self.dictFlag = True
 
 
   def _duplicateMesh(self):

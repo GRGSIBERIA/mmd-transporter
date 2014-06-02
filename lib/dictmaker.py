@@ -14,31 +14,28 @@ class DictMaker:
     result = ""
     command = u"Python %s \"%s\"" % (programDirectory, path)
     process = subprocess.Popen(command.encode(locale.getpreferredencoding()), stdout=PIPE)
-    while 1:
-      line = process.stdout.readline()
-      if not line:
-        break
+    result, errData = process.communicate()
     return result
 
 
   def __divideString(self, string):
-    lines = string.split(u"\n")
+    lines = string.split("\n")
     for line in lines:
-      elems = line.split(u",")
+      elems = line.split(",")
       if len(elems) <= 1:
         continue
       t = elems[0]
       en = elems[1]
 
-      if t == u"Material":
+      if t == "Material":
         self.materials.append(en)
-      elif t == u"Bone":
+      elif t == "Bone":
         self.bones.append(en)
-      elif t == u"Joint":
+      elif t == "Joint":
         self.joints.append(en)
-      elif t == u"Rigidbody":
+      elif t == "Rigid":
         self.rigidbodies.append(en)
-      elif t == u"Morph":
+      elif t == "Morph":
         self.morphs.append(en)
 
 
@@ -50,5 +47,4 @@ class DictMaker:
     self.joints = []
     self.rigidbodies = []
     self.morphs = []
-    #print stdout
     self.__divideString(stdout)

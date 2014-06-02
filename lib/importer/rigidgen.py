@@ -4,17 +4,18 @@ import maya.cmds
 import maya.app.mayabullet as bullet
 import maya.OpenMaya
 
-import filemanager
 import os.path
 import util
 
 
 class RigidBodyGenerator:
 
-  def __init__(self, mmdData, filePath):
+  def __init__(self, mmdData, filePath, rigiddict):
     self.mmdData = mmdData
     self.directory = os.path.dirname(filePath)
-    self.nameDict, self.dictFlag = filemanager.openCSV(self.directory, "rigiddict.csv")
+    #self.nameDict, self.dictFlag = filemanager.openCSV(self.directory, "rigiddict.csv")
+    self.nameDict = rigiddict
+    self.dictFlag = True
     self.constPI = 180.0 / 3.141592653589793
 
 
