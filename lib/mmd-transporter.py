@@ -12,8 +12,6 @@ import windowcmd
 kPluginNodeName = 'mmdPoly'
 kPluginNodeId = maya.OpenMaya.MTypeId(0x03939)
 
-kPluginCmdName = 
-
 
 def nodeCreator():
     return maya.OpenMayaMPx.asMPxPtr(mdp.MMDPoly())
@@ -51,9 +49,9 @@ def initializePlugin(mobject):
     mplugin = maya.OpenMayaMPx.MFnPlugin(mobject, "Eiichi Takebuchi(GRGSIBERIA)", "1.0")
     mplugin.registerNode(kPluginNodeName, kPluginNodeId, nodeCreator, nodeInitializer)
     mplugin.registerCommand("loadmmd", createLoadMmdCommand, cmd.LoadMMD.syntaxCreator)
+    mplugin.registerCommand("savemmd", createSaveMmdCommand, svmmd.SaveMmd.syntaxCreator)
     mplugin.registerCommand("mmdbswindow", createBSWindowCommand)
     mplugin.registerCommand("mmdrawindow", createRAWindowCommand)
-    mplugin.registerCommand("savemmd", createSaveMmdCommand)
 
 
 def uninitializePlugin(mobject):

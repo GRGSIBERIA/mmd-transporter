@@ -7,6 +7,7 @@ class GroupGenerator:
 
   def __init__(self):
     self.group = maya.cmds.group(n="mmdModelGroup", w=True, em=True)
+    util.setBoolean(self.group, "mmdModel", True)
 
 
   def groupingStandard(self, polyName, jointNames, noparentBonesIndices):
