@@ -148,14 +148,24 @@ maya.cmds.mmdbswindow()
 
 
 ## TODO
-* ボーンを日本語名で管理するためのアウトライナ
-* Rigidbodyのパラメータを調整するためのツール
-
+* インポータ
+  - ボーンを日本語名で管理するためのアウトライナ
+  - Rigidbodyのパラメータを調整するためのツール
+  - HumanIKの登録を自動化（できれば）
+* エクスポータ
+  - チュートリアル付きのツールを作る
+  - 親のグループにチュートリアルのステップ用アトリビュートを追加
+* その他
+  - PyMeshIOにUVモーフの読み込みを追加してPull Request投げる
 
 ## お借りしたもの
 
 * [KAKASI - 漢字→かな(ローマ字)変換プログラム](http://kakasi.namazu.org/)
+  - Hironobu Takahashi
+  - GNU GENERAL PUBLIC LICENSE Version 2
 * [pymeshio](https://github.com/ousttrue/pymeshio)
+  - ousttrue
+  - zlib/png 1.0 
 
 
 ## ライセンス

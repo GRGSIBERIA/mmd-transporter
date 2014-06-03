@@ -4,6 +4,7 @@ import os
 import maya.OpenMaya
 import maya.OpenMayaMPx
 
+import exporter.savemmd as svmmd
 import importer.mmdpoly as mdp
 import importer.loadmmd as cmd
 import windowcmd
@@ -11,7 +12,7 @@ import windowcmd
 kPluginNodeName = 'mmdPoly'
 kPluginNodeId = maya.OpenMaya.MTypeId(0x03939)
 
-kPluginCmdName = "loadmmd"
+kPluginCmdName = 
 
 
 def nodeCreator():
@@ -30,6 +31,10 @@ def createRAWindowCommand():
     return maya.OpenMayaMPx.asMPxPtr(windowcmd.MmdRigidbodyAdjustWindowCommand())
 
 
+def createSaveMmdCommand():
+    return maya.OpenMayaMPx.asMPxPtr(svmmd.SaveMmd())
+
+
 def nodeInitializer():
     nAttr = maya.OpenMaya.MFnNumericAttribute()
     mdp.MMDPoly.widthHeight = nAttr.create('widthHeight', 'wh', maya.OpenMaya.MFnNumericData.kFloat, 1.0)
@@ -45,14 +50,16 @@ def nodeInitializer():
 def initializePlugin(mobject):
     mplugin = maya.OpenMayaMPx.MFnPlugin(mobject, "Eiichi Takebuchi(GRGSIBERIA)", "1.0")
     mplugin.registerNode(kPluginNodeName, kPluginNodeId, nodeCreator, nodeInitializer)
-    mplugin.registerCommand(kPluginCmdName, createLoadMmdCommand, cmd.LoadMMD.syntaxCreator)
+    mplugin.registerCommand("loadmmd", createLoadMmdCommand, cmd.LoadMMD.syntaxCreator)
     mplugin.registerCommand("mmdbswindow", createBSWindowCommand)
     mplugin.registerCommand("mmdrawindow", createRAWindowCommand)
+    mplugin.registerCommand("savemmd", createSaveMmdCommand)
 
 
 def uninitializePlugin(mobject):
     mplugin = maya.OpenMayaMPx.MFnPlugin(mobject)
     mplugin.deregisterNode(kPluginNodeId)
-    mplugin.deregisterCommand(kPluginCmdName)
+    mplugin.deregisterCommand("loadmmd")
     mplugin.deregisterCommand("mmdbswindow")
     mplugin.deregisterCommand("mmdrawindow")
+    mplugin.deregisterCommand("savemmd")
