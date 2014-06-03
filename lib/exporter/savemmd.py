@@ -8,6 +8,8 @@ import pymeshio.pmx
 import pymeshio.pmx.writer
 import util
 
+import outmesh
+
 class SaveMmd(maya.OpenMayaMPx.MPxCommand):
 
   def __init__(self):
@@ -22,7 +24,6 @@ class SaveMmd(maya.OpenMayaMPx.MPxCommand):
 
   def _saveFileDialog(self):
     path = maya.cmds.fileDialog2(ds=2, cap="Select Saving Directory", fm=3)
-    print path
     if path != None:
       return path[0]
     return None
@@ -31,10 +32,10 @@ class SaveMmd(maya.OpenMayaMPx.MPxCommand):
   def _searchMotherGroup(self):
     selections = maya.cmds.ls(sl=True)
     if len(selections) <= 0:
-      raise IndexOutOfRange, "Do not select object."
+      raise StandardError, "Do not select object."
 
     select = selections[0]
-    mother = maya.cmds.listRelatives(select, p=True)
+    mother = maya.cmds.listRelatives(select, p=True)[0]
     mmdFlag = util.getAttr(mother, "mmdModel")
     if not mmdFlag:
       raise StandardError, "Do not mmdModel Group"
@@ -47,6 +48,8 @@ class SaveMmd(maya.OpenMayaMPx.MPxCommand):
       mmdModel = pymeshio.pmx.Model()
       motherGroup, transform = self._searchMotherGroup()
 
+      omesh = outmesh.OutMesh(mmdModel)
+      omesh.generate(transform)
 
   def doIt(self, args):
     try:
