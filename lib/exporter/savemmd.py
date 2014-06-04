@@ -8,7 +8,9 @@ import pymeshio.pmx
 import pymeshio.pmx.writer
 import util
 
-import outmesh
+import vertex
+import mesh
+import material
 
 class SaveMmd(maya.OpenMayaMPx.MPxCommand):
 
@@ -42,15 +44,21 @@ class SaveMmd(maya.OpenMayaMPx.MPxCommand):
     return (mother, select)
 
 
+  def _searchBone(self):
+    pass
+
+
   def _createData(self, args):
     filePath = self._saveFileDialog()
     if filePath != None:
       mmdModel = pymeshio.pmx.Model()
       motherGroup, transform = self._searchMotherGroup()
 
-      omesh = outmesh.OutMesh(mmdModel, transform)
-      omesh.generate()
-      
+      mesh = mesh.Mesh(transform)
+
+      v = vertex.Vertex(mmdModel, transform, mesh)
+      m = material.Material(mmdModel, transform, filePath)
+
 
   def doIt(self, args):
     try:

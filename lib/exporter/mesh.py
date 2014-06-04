@@ -1,5 +1,8 @@
 #-*- encoding: utf-8
 
+import maya.cmds
+import maya.OpenMaya
+
 class Mesh:
   
   def _initUVs(self):
@@ -65,7 +68,7 @@ class Mesh:
       result[2] = -result[2]
       normals.append(result[:3])
     return normals
-    
+
 
   def _initializeMesh(self):
     self.uvs = self._initUVs()
@@ -73,7 +76,7 @@ class Mesh:
     self.uvToVertex = self._initUVToVertex(self.uvs)
     self.vertices = self._initVertices(self.uvToVertex)
     self.vtxToUVs = self._initVertexToUVs()
-    self.normals = self._initNormals(uvToVertex)
+    self.normals = self._initNormals(self.uvToVertex)
 
 
   def __init__(self, transform):
