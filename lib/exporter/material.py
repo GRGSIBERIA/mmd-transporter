@@ -1,9 +1,7 @@
 #-*- encoding: utf-8
 
 import maya.cmds
-import os.path
-import sys
-import shutil
+import texture
 
 class Material:
 
@@ -11,10 +9,11 @@ class Material:
     shapeNode = maya.cmds.listRelatives(self.transform, s=True, pa=True)
     shadingGroupsBuf = maya.cmds.listConnections(t="shadingEngine")
     shadingGroups = list(set(shadingGroupsBuf))
-    self.materialNames = []
+    materialNames = []
     for sg in shadingGroups:
       if sg != "initialShadingGroup":
-        self.materialNames.append(sg[:-2])
+        materialNames.append(sg[:-2])
+    return materialNames
 
 
   def _listingFacesFromMaterial(self):
@@ -32,6 +31,7 @@ class Material:
     self.transform = transform
     self.mmdData = mmdData
     self.baseDirectory = filePath
-    self._listingMaterialNode()
+    self.materialNames = self._listingMaterialNode()
+    self.texture = texture.Texture(mmdData, self.materialNames, self.baseDirectory)
 
 # hyperShade(objectName, o=True)
