@@ -48,8 +48,9 @@ class SaveMmd(maya.OpenMayaMPx.MPxCommand):
       mmdModel = pymeshio.pmx.Model()
       motherGroup, transform = self._searchMotherGroup()
 
-      omesh = outmesh.OutMesh(mmdModel)
-      omesh.generate(transform)
+      omesh = outmesh.OutMesh(mmdModel, transform)
+      omesh.generate()
+      
 
   def doIt(self, args):
     try:
