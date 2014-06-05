@@ -54,10 +54,10 @@ class SaveMmd(maya.OpenMayaMPx.MPxCommand):
       mmdModel = pymeshio.pmx.Model()
       motherGroup, transform = self._searchMotherGroup()
 
-      mesh = mesh.Mesh(transform)
-
-      v = vertex.Vertex(mmdModel, transform, mesh)
       m = material.Material(mmdModel, transform, filePath)
+
+      #meshInst = mesh.Mesh(transform)
+      #v = vertex.Vertex(mmdModel, transform, meshInst)
 
 
   def doIt(self, args):

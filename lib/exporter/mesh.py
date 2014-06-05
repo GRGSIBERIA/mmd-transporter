@@ -75,7 +75,7 @@ class Mesh:
     self.faces = self._connectFaces()
     self.uvToVertex = self._initUVToVertex(self.uvs)
     self.vertices = self._initVertices(self.uvToVertex)
-    self.vtxToUVs = self._initVertexToUVs()
+    self.vertexToUVs = self._initVertexToUVs()
     self.normals = self._initNormals(self.uvToVertex)
 
 

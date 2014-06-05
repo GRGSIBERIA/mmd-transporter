@@ -8,7 +8,7 @@ import pymeshio.pmx
 
 import mesh
 
-class vertex:
+class Vertex:
 
   def __init__(self, mmdModel, transform, mesh):
     self.mmdModel = mmdModel

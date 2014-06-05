@@ -29,6 +29,7 @@ class MaterialGenerator:
       material = cmds.shadingNode("blinn", asShader=1)  # 不正な名前のマテリアルはこれ
 
     util.setJpName(material, materialData.name)
+    util.setInteger(material, "drawOrder", index)
 
     shader_group = cmds.sets(renderable=1, noSurfaceShader=1, empty=1, name='%sSG' % material)
     #cmds.sets(model, e=1, forceElement=shader_group)   # ここは無視しておこう
@@ -95,6 +96,8 @@ class MaterialGenerator:
       cmds.connectAttr("%s.outColor" % file_node ,"%s.color" % mat_node)
     else:
       cmds.setAttr("%s.color" % mat_node, material.diffuse_color[0], material.diffuse_color[1], material.diffuse_color[2], type="double3")
+    diffuseFactor = (material.diffuse_color[0] + material.diffuse_color[1] + material.diffuse_color[2]) / 3.0
+    cmds.setAttr("%s.diffuse" % mat_node, diffuseFactor)
 
     self._setTransparency(material, texturePath, mat_node, file_node)
 
