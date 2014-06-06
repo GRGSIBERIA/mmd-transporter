@@ -4,8 +4,8 @@ import os.path
 import maya.OpenMayaMPx
 import maya.cmds as cmds
 
-import csv
 import util
+
 
 class MaterialGenerator:
 

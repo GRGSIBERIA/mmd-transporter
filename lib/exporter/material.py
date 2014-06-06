@@ -3,6 +3,9 @@
 import maya.cmds
 import texture
 
+import pymeshio.common
+import pymeshio.pmx
+
 class Material:
 
   def _listingMaterialNode(self):
@@ -19,7 +22,7 @@ class Material:
   def _listingFacesFromMaterial(self):
     materialToFaces = {}
     for m in self.materialNames:
-      maya.cmds.select(transform)
+      maya.cmds.select(self.transform)
       maya.cmds.hyperShade(m, o=True)
       maya.cmds.select(vis=True)
       targetFaces = maya.cmds.ls(sl=True, fl=True)
@@ -46,36 +49,58 @@ class Material:
 
 
   def _getAlpha(self, m):
-    textureIndex = self.material.texture.materialNameToIndex[m]
-    textureName = self.material.texture.textures[textureIndex]
+    textureIndex = self.texture.materialNameToIndex[m]
+    textureName = self.texture.textureNames[textureIndex]
     hasAlpha = maya.cmds.getAttr("%s.fileHasAlpha" % textureName)
     if hasAlpha == 1:
       return 0.98
-    return 1
+    alpha = maya.cmds.getAttr("%s.transparency" % m)[0]
+    return (alpha[0] + alpha[1] + alpha[2]) / 3.0
+
+
+  def _toRGB(self, l):
+    return pymeshio.common.RGB(l[0], l[1], l[2])
+
+
+  def _getTexture(self, materialName):
+    return self.texture.materialNameToIndex[materialName]
 
 
   def _createMaterials(self):
     for i in range(len(self.materialNames)):
       materialName = self.orderToMaterial[i]
-      jpName = maya.cmds.getAttr("%s.jpName" % materialName)
-      engName = materialName
-      diffuseColor = self._getDiffuseColor(materialName)
-      alpha = self._getAlpha(materialName)
-      specularFactor = maya.cmds.getAttr("%s.eccentricity" % materialName) * 100
-      specularColor = maya.cmds.getAttr("%s.specularColor" % materialName)[0]
-      ambientColor = maya.cmds.getAttr("%s.ambientColor" % materialName)[0]
-      flag = pymeshio.pmx.MATERIALFLAG_BOTHFACE + pymeshio.pmx.MATERIALFLAG_GROUNDSHADOW + pymeshio.pmx.MATERIALFLAG_SELFSHADOW + pymeshio.pmx.MATERIALFLAG_SELFSHADOWMAP
-      
+      materialInst = pymeshio.pmx.Material(\
+        name=maya.cmds.getAttr("%s.jpName" % materialName),
+        english_name=materialName,
+        diffuse_color=self._toRGB(self._getDiffuseColor(materialName)),
+        alpha=self._getAlpha(materialName),
+        specular_factor=maya.cmds.getAttr("%s.eccentricity" % materialName) * 100,
+        specular_color=self._toRGB(maya.cmds.getAttr("%s.specularColor" % materialName)[0]),
+        ambient_color=self._toRGB(maya.cmds.getAttr("%s.ambientColor" % materialName)[0]),
+        flag=pymeshio.pmx.MATERIALFLAG_BOTHFACE+pymeshio.pmx.MATERIALFLAG_GROUNDSHADOW+pymeshio.pmx.MATERIALFLAG_SELFSHADOW+pymeshio.pmx.MATERIALFLAG_SELFSHADOWMAP,
+        edge_color=pymeshio.common.RGBA(0, 0, 0, 0),
+        edge_size=0.0,
+        texture_index=self._getTexture(materialName),
+        sphere_texture_index=0,
+        sphere_mode=pymeshio.pmx.MATERIALSPHERE_NONE,
+        toon_sharing_flag=False,    # toon_shading_flagじゃないのコレ？
+        toon_texture_index=0,
+        comment="",
+        vertex_count=len(self.materialToFaces[materialName]))
+      self.mmdData.materials.append(materialInst)
+      print len(self.materialToFaces[materialName])
 
-  def __init__(self, mmdData, transform, filePath, material):
+
+
+  def __init__(self, mmdData, transform, filePath):
     self.transform = transform
     self.mmdData = mmdData
     self.baseDirectory = filePath
-    self.material = material
     self.materialNames = self._listingMaterialNode()
     self.orderToMaterial = self._listingOrderToMaterial()
     self.texture = texture.Texture(mmdData, self.materialNames, self.baseDirectory)
     self.orderToMaterial = self._listingOrderToMaterial()
+    self.materialToFaces = self._listingFacesFromMaterial()
     self._createMaterials()
 
 # hyperShade(objectName, o=True)
