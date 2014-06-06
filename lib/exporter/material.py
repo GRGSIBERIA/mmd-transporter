@@ -1,6 +1,7 @@
 #-*- encoding: utf-8
 
 import maya.cmds
+import maya.mel
 import texture
 
 import pymeshio.common
@@ -23,7 +24,8 @@ class Material:
     materialToFaces = {}
     for m in self.materialNames:
       maya.cmds.select(self.transform)
-      maya.cmds.hyperShade(m, o=True)
+      #maya.cmds.hyperShade(m, o=True)
+      maya.mel.eval("hyperShade -o %s" % m)
       maya.cmds.select(vis=True)
       targetFaces = maya.cmds.ls(sl=True, fl=True)
       materialToFaces[m] = targetFaces
@@ -88,8 +90,6 @@ class Material:
         comment="",
         vertex_count=len(self.materialToFaces[materialName]))
       self.mmdData.materials.append(materialInst)
-      print len(self.materialToFaces[materialName])
-
 
 
   def __init__(self, mmdData, transform, filePath):
@@ -102,5 +102,3 @@ class Material:
     self.orderToMaterial = self._listingOrderToMaterial()
     self.materialToFaces = self._listingFacesFromMaterial()
     self._createMaterials()
-
-# hyperShade(objectName, o=True)

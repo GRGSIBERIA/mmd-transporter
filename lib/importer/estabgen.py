@@ -3,6 +3,8 @@
 import maya.OpenMaya
 import maya.cmds
 
+import util
+
 class EstablishGenerator:
   
   def __init__(self, mmdData):
@@ -19,8 +21,10 @@ class EstablishGenerator:
 
   def _makeExpression(self, bones, jointNames, i, axisName):
     eIndex = bones[i].effect_index
-    expression = self._makeExpressionCode(jointNames[i], jointNames[eIndex], "rotate", bones[i].effect_factor)
+    factor = bones[i].effect_factor
+    expression = self._makeExpressionCode(jointNames[i], jointNames[eIndex], axisName, factor)
     maya.cmds.expression(s=expression, name="%s_%s_E" % (jointNames[i], axisName))
+    util.setFloat(jointNames[i], "%sFactor" % axisName, factor)
 
 
   def generate(self, jointNames):

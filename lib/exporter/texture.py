@@ -46,13 +46,6 @@ class Texture:
     return -1
 
 
-  def getTextureIndex(self, materialName):
-    path = self.getTextureFullPath(materialName)
-    if path != -1:
-      return textureToIndex[fullPath]
-    return -1
-
-
   def __init__(self, mmdData, materialNames, baseDirectory):
     self.baseDirectory = baseDirectory
     self.mmdData = mmdData
