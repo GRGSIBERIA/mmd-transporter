@@ -8,6 +8,7 @@ import pymeshio.pmx
 import pymeshio.pmx.writer
 import util
 
+import group
 import vertex
 import mesh
 import material
@@ -31,19 +32,6 @@ class SaveMmd(maya.OpenMayaMPx.MPxCommand):
     return None
 
 
-  def _searchMotherGroup(self):
-    selections = maya.cmds.ls(sl=True)
-    if len(selections) <= 0:
-      raise StandardError, "Do not select object."
-
-    select = selections[0]
-    mother = maya.cmds.listRelatives(select, p=True)[0]
-    mmdFlag = util.getAttr(mother, "mmdModel")
-    if not mmdFlag:
-      raise StandardError, "Do not mmdModel Group"
-    return (mother, select)
-
-
   def _searchBone(self):
     pass
 
@@ -52,9 +40,9 @@ class SaveMmd(maya.OpenMayaMPx.MPxCommand):
     filePath = self._saveFileDialog()
     if filePath != None:
       mmdModel = pymeshio.pmx.Model()
-      motherGroup, transform = self._searchMotherGroup()
+      g = group.Group()
 
-      m = material.Material(mmdModel, transform, filePath)
+      m = material.Material(mmdModel, g.transform, filePath)
 
       #meshInst = mesh.Mesh(transform)
       #v = vertex.Vertex(mmdModel, transform, meshInst)
