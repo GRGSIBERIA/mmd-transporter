@@ -25,6 +25,7 @@ class EstablishGenerator:
     expression = self._makeExpressionCode(jointNames[i], jointNames[eIndex], axisName, factor)
     maya.cmds.expression(s=expression, name="%s_%s_E" % (jointNames[i], axisName))
     util.setFloat(jointNames[i], "%sFactor" % axisName, factor)
+    util.setString(jointNames[i], "establishParent", jointNames[eIndex])
 
 
   def generate(self, jointNames):
