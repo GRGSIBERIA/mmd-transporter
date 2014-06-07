@@ -32,8 +32,18 @@ class Group:
         continue
 
 
+  def _getBoneNames(self):
+    boneNames = []
+    children = maya.cmds.listRelatives(self.bone, c=True)
+    for c in children:
+      maya.cmds.select(c, hierarchy=True)
+      boneNames += maya.cmds.ls(sl=True)
+    return boneNames
+
+
   def __init__(self):
     mother, transform = self._searchMother()
     self.mother = mother
     self.transform = transform
     self._divideGroups()
+    self.boneNames = self._getBoneNames()

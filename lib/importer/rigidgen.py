@@ -31,6 +31,7 @@ class RigidBodyGenerator:
     rot = maya.OpenMaya.MEulerRotation(-rot.x, rot.y, rot.z, 4) #kYXZ
     quat = rot.asQuaternion()
     rot = quat.asEulerRotation()
+    maya.cmds.setAttr("%s.rotateOrder" % pCube, 4)  # kYXZ
     maya.cmds.setAttr("%s.rotateX" % pCube, rot.x * self.constPI)
     maya.cmds.setAttr("%s.rotateY" % pCube, rot.y * self.constPI)
     maya.cmds.setAttr("%s.rotateZ" % pCube, rot.z * self.constPI)

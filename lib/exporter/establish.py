@@ -4,15 +4,6 @@ import maya.cmds
 
 class Establish:
 
-  def _selectHierarchy(self):
-    boneNames = []
-    children = maya.cmds.listRelatives(self.boneGroup, c=True)
-    for c in children:
-      maya.cmds.select(c, hierarchy=True)
-      boneNames += maya.cmds.ls(sl=True)
-    return boneNames
-
-
   def _listupExpressions(self):
     rotateExpressions = {}
     translateExpressions = {}
@@ -39,7 +30,9 @@ class Establish:
     return rotateExpressions, translateExpressions, boneNameToParentName
 
 
-  def __init__(self, boneGroup):
+  def __init__(self, boneGroup, boneNameList):
     self.boneGroup = boneGroup
-    self.boneNames = self._selectHierarchy()
+    self.boneNames = boneNameList
     self.rotate, self.translate, self.boneNameToParentName = self._listupExpressions()
+
+
