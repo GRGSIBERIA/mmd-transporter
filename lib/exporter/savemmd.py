@@ -12,6 +12,8 @@ import group
 import vertex
 import mesh
 import material
+import establish
+import axis
 
 class SaveMmd(maya.OpenMayaMPx.MPxCommand):
 
@@ -40,12 +42,16 @@ class SaveMmd(maya.OpenMayaMPx.MPxCommand):
     filePath = self._saveFileDialog()
     if filePath != None:
       mmdModel = pymeshio.pmx.Model()
-      g = group.Group()
+      grp = group.Group()
 
-      m = material.Material(mmdModel, g.transform, filePath)
+      mat = material.Material(mmdModel, grp.transform, filePath)
 
       #meshInst = mesh.Mesh(transform)
       #v = vertex.Vertex(mmdModel, transform, meshInst)
+
+      estab = establish.Establish(grp.boneGroup, grp.boneNames)
+      local = axis.LocalAxis(grp.boneNames)
+      fixed = axis.FixedAxis(grp.boneNames)
 
 
   def doIt(self, args):

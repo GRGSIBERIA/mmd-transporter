@@ -84,4 +84,4 @@ class LocalAxis(AxisBase):
   def __init__(self, boneNames):
     AxisBase.__init__(self, boneNames)
     self.enables = getEnableFlagList(self.boneNames, "LocalAxis")
-
+    self.localAxises = self._getLocalAxis()
