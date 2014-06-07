@@ -41,9 +41,18 @@ class Group:
     return boneNames
 
 
+  # ボーンの並び順が原因でイカれる可能性あり
+  def _getBoneNamesToIndex(self):
+    boneNamesToIndex = {}
+    for i in range(len(boneNames)):
+      boneNamesToIndex[boneNames[i]] = i
+    return boneNamesToIndex
+
+
   def __init__(self):
     mother, transform = self._searchMother()
     self.mother = mother
     self.transform = transform
     self._divideGroups()
     self.boneNames = self._getBoneNames()
+    self.boneNamesToIndex = self._getBoneNamesToIndex()

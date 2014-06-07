@@ -129,7 +129,7 @@ class BoneGenerator:
         zAxis = bones[i].local_z_vector
         yAxis = self._crossProduct(zAxis, xAxis)
         self._setJointOrient(self.constPI, jointNames[i], xAxis, yAxis, zAxis)
-      util.setBoolean(bones[i], "enableLocalCoordinate", bones[i].getLocalCoordinateFlag())
+      util.setBoolean(bones[i], "enableLocalAxis", bones[i].getLocalCoordinateFlag())
   
 
   # 軸制限があれば軸制限する
@@ -141,7 +141,8 @@ class BoneGenerator:
         yAxis = self._crossProduct(zAxis, xAxis)
 
         self._setJointOrient(self.constPI, jointNames[i], xAxis, yAxis, zAxis)
-      util.setBoolean(bones[i], "enableAxisLimit", bones[i].getFixedAxisFlag())
+      util.setBoolean(bones[i], "enableFixedAxis", bones[i].getFixedAxisFlag())
+
 
   def _rectifyEstablishAxis(self, bones, jointNames):
     for i in range(len(bones)):
