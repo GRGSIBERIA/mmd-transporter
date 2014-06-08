@@ -68,6 +68,8 @@ class BoneGenerator:
       visible = 0 if bones[i].getVisibleFlag() else 2
       visible = 2 if bones[i].getIkFlag() else visible
       maya.cmds.setAttr("%s.drawStyle" % jointNames[i], visible)
+      util.setBoolean(jointNames[i], "visible", bones[i].getVisibleFlag())
+      util.setBoolean(jointNames[i], "enableIK", bones[i].getIkFlag())
 
 
   # 回転・移動・操作フラグからLockとHideを各チャンネルに行う
@@ -81,13 +83,15 @@ class BoneGenerator:
       if not bones[i].getTranslatable() or not bones[i].getManipulatable():
         self._lockHideAttributes(jointName, "t", lockFlag)
 
+      util.setBoolean(jointNames[i], "rotatable", bones[i].getRotatable())
+      util.setBoolean(jointNames[i], "translatable", bones[i].getTranslatable())
+      util.setBoolean(jointNames[i], "manipulatable", bones[i].getManipulatable())
+
       if bones[i].getFixedAxisFlag():
         maya.cmds.setAttr("%s.rz" % jointName, lock=lockFlag, channelBox=False, keyable=False)
         maya.cmds.setAttr("%s.ry" % jointName, lock=lockFlag, channelBox=False, keyable=False)
 
       util.setBoolean(jointName, "manipulatable", bones[i].getManipulatable())
-      #self._lockHideAttributes(jointName, "s")  # スケールは基本的に使えない
-      #maya.cmds.setAttr("%s.v" % jointName, lock=True, channelBox=False, keyable=False)
 
 
   # 回転行列（XYZ軸）からオイラー角を求める
@@ -124,24 +128,26 @@ class BoneGenerator:
   # ローカル軸があればJoint Orientを設定する
   def _rectifyJointOrientation(self, bones, jointNames):
     for i in range(len(bones)):
-      if bones[i].getLocalCoordinateFlag():
+      flag = bones[i].getLocalCoordinateFlag()
+      if flag:
         xAxis = bones[i].local_x_vector
         zAxis = bones[i].local_z_vector
         yAxis = self._crossProduct(zAxis, xAxis)
         self._setJointOrient(self.constPI, jointNames[i], xAxis, yAxis, zAxis)
-      util.setBoolean(bones[i], "enableLocalAxis", bones[i].getLocalCoordinateFlag())
-  
+      util.setBoolean(jointNames[i], "enableLocalAxis", flag)
+
 
   # 軸制限があれば軸制限する
   def _rectifyAxisLimt(self, bones, jointNames):
     for i in range(len(bones)):
-      if bones[i].getFixedAxisFlag() and not bones[i].getLocalCoordinateFlag():
+      flag = bones[i].getFixedAxisFlag()
+      if flag:
         xAxis = bones[i].fixed_axis
         zAxis = self._crossProduct([0.0, 1.0, 0.0], xAxis)
         yAxis = self._crossProduct(zAxis, xAxis)
 
         self._setJointOrient(self.constPI, jointNames[i], xAxis, yAxis, zAxis)
-      util.setBoolean(bones[i], "enableFixedAxis", bones[i].getFixedAxisFlag())
+      util.setBoolean(jointNames[i], "enableFixedAxis", flag)
 
 
   def _rectifyEstablishAxis(self, bones, jointNames):
@@ -235,8 +241,9 @@ class BoneGenerator:
     self._settingDrawStyle(bones, jointNames)  # 本番ではコメントを消す
     self._jointLabeling(bones, jointNames)
     self._rectifyJointOrientation(bones, jointNames)
-    self._rectifyAxisLimt(bones, jointNames)
-    self._rectifyEstablishAxis(bones, jointNames)
+    #self._rectifyAxisLimt(bones, jointNames)
+    #self._rectifyEstablishAxis(bones, jointNames)
     self._connectJoints(bones, jointNames)
     self._inspectOperationFlag(bones, jointNames, humanIkFlag) # これを実行するとHuman IK使えなくなる
     return jointNames, noparentBones
+

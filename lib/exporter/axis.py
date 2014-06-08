@@ -3,6 +3,8 @@
 import maya.cmds
 import maya.OpenMaya
 
+import pymeshio.common
+
 class AxisBase:
 
   def getEnableFlagList(self, boneNames, flagType):
@@ -28,7 +30,8 @@ class AxisBase:
 
 
   def getAxis(self, matrix, col):
-    return maya.OpenMaya.MVector(matrix(col, 0), matrix(col, 1), -matrix(col, 2))
+    axis = maya.OpenMaya.MVector(matrix(col, 0), matrix(col, 1), -matrix(col, 2))
+    return pymeshio.common.Vector3(axis.x, axis.y, axis.z)
 
 
   def __init__(self, boneNames):
@@ -58,7 +61,7 @@ class FixedAxis(AxisBase):
   def __init__(self, boneNames):
     AxisBase.__init__(self, boneNames)
     self.enables = getEnableFlagList(self.boneNames, "FixedAxis")
-    self.fixedAxises = self._getFixedAxis()
+    self.axises = self._getFixedAxis()
 
 
 class LocalAxis(AxisBase):
@@ -67,7 +70,7 @@ class LocalAxis(AxisBase):
     matrix = self.getMatrix(boneName)
     vectorX = self.getAxis(matrix, 0)
     vectorZ = self.getAxis(matrix, 2)
-    return vectorX, vectorZ
+    return [vectorX, vectorZ]
     
 
   def _getLocalAxis(self):
@@ -85,4 +88,4 @@ class LocalAxis(AxisBase):
   def __init__(self, boneNames):
     AxisBase.__init__(self, boneNames)
     self.enables = getEnableFlagList(self.boneNames, "LocalAxis")
-    self.localAxises = self._getLocalAxis()
+    self.axises = self._getLocalAxis()
