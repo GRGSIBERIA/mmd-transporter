@@ -8,8 +8,9 @@ class AxisBase:
   def getEnableFlagList(self, boneNames, flagType):
     enables = []
     for bone in boneNames:
-      flag = maya.cmds.getAttr("%s.enable%s" % (bone, flagType))
-      enables += True if flag == 1 else False
+      flagBuf = maya.cmds.getAttr("%s.enable%s" % (bone, flagType))
+      flag = True if flagBuf == 1 else False
+      enables.append(flag)
     return enables
 
 

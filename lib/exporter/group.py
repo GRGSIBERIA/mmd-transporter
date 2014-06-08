@@ -55,4 +55,4 @@ class Group:
     self.transform = transform
     self._divideGroups()
     self.boneNames = self._getBoneNames()
-    self.boneNamesToIndex = self._getBoneNamesToIndex()
+    self.boneNameToIndex = self._getBoneNamesToIndex()

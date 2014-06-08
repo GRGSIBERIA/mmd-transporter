@@ -14,6 +14,7 @@ import mesh
 import material
 import establish
 import axis
+import bone
 
 class SaveMmd(maya.OpenMayaMPx.MPxCommand):
 
@@ -34,10 +35,6 @@ class SaveMmd(maya.OpenMayaMPx.MPxCommand):
     return None
 
 
-  def _searchBone(self):
-    pass
-
-
   def _createData(self, args):
     filePath = self._saveFileDialog()
     if filePath != None:
@@ -52,7 +49,7 @@ class SaveMmd(maya.OpenMayaMPx.MPxCommand):
       estab = establish.Establish(grp.boneGroup, grp.boneNames)
       local = axis.LocalAxis(grp.boneNames)
       fixed = axis.FixedAxis(grp.boneNames)
-
+      bn = bone.Bone(grp.boneNames, grp.boneNameToIndex, estab, local, fixed)
 
   def doIt(self, args):
     try:
