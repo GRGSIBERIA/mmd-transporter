@@ -68,7 +68,7 @@ class BoneGenerator:
       visible = 0 if bones[i].getVisibleFlag() else 2
       visible = 2 if bones[i].getIkFlag() else visible
       maya.cmds.setAttr("%s.drawStyle" % jointNames[i], visible)
-      util.setBoolean(jointNames[i], "visible", bones[i].getVisibleFlag())
+      util.setBoolean(jointNames[i], "drawable", bones[i].getVisibleFlag())
       util.setBoolean(jointNames[i], "enableIK", bones[i].getIkFlag())
 
 

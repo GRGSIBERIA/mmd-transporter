@@ -24,15 +24,21 @@ class EstablishGenerator:
     factor = bones[i].effect_factor
     expression = self._makeExpressionCode(jointNames[i], jointNames[eIndex], axisName, factor)
     maya.cmds.expression(s=expression, name="%s_%s_E" % (jointNames[i], axisName))
-    util.setFloat(jointNames[i], "%sFactor" % axisName, factor)
-    util.setString(jointNames[i], "establishParent", jointNames[eIndex])
 
 
   def generate(self, jointNames):
     bones = self.mmdData.bones
     for i in range(len(bones)):
+      establishFlag = False
       if bones[i].getExternalRotationFlag():
         self._makeExpression(bones, jointNames, i, "rotate")
+        establishFlag = True
 
       if bones[i].getExternalTranslationFlag():
         self._makeExpression(bones, jointNames, i, "translate")
+        establishFlag = True
+
+      util.setFloat(jointNames[i], "establishFactor", bones[i].effect_factor)
+      eIndex = bones[i].effect_index
+      util.setString(jointNames[i], "establishParent", jointNames[eIndex])
+      util.setBoolean(jointNames[i], "enableEstablish", establishFlag)

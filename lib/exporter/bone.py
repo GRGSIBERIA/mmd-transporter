@@ -49,8 +49,28 @@ class Bone:
       self.bone.fixed_axis = self.fixedAxis.axises[i]
 
 
-  def _setFlags(self, bone):
-    pass
+  def _setEstablishment(self, bone, boneName):
+    establishFlag = maya.cmds.getAttr("%s.enableEstablish" % boneName)
+    if establishFlag:
+      if establish.rotate.has_key(boneName):
+        bone.flag += pymeshio.pmx.BONEFLAG_IS_EXTERNAL_ROTATION
+      if establish.translate.has_key(boneName):
+        bone.flag += pymeshio.pmx.BONEFLAG_IS_EXTERNAL_TRANSLATION
+      parentName = maya.cmds.getAttr("%s.establishParent" % boneName)
+      effectFactor = maya.cmds.getAttr("%s.establishFactor" % boneName)
+      bone.effect_index = self.boneNameToIndex[parentName]  # 親ボーン名からインデックスへ
+      bone.effect_factor = effectFactor
+
+
+  def _setFlags(self, bone, boneName):
+    drawable = maya.cmds.getAttr("%s.drawable" % boneName)
+    manipulatable = maya.cmds.getAttr("%s.manipulatable" % boneName)
+    rotatable = maya.cmds.getAttr("%s.rotatable" % boneName)
+    translatable = maya.cmds.getAttr("%s.translatable" % boneName)
+    bone.flag += pymeshio.pmx.BONEFLAG_IS_VISIBLE if drawable else 0
+    bone.flag += pymeshio.pmx.BONEFLAG_CAN_MANIPULATE if manipulatable else 0
+    bone.flag += pymeshio.pmx.BONEFLAG_CAN_ROTATE if rotatable else 0
+    bone.flag += pymeshio.pmx.BONEFLAG_CAN_TRANSLATE if translatable else 0
 
 
   def _setBoneAttr(self):
@@ -63,6 +83,8 @@ class Bone:
       bone.parent_index = self._setParentIndex(boneName)
       bone.position = self._setBonePosition(boneName)
       self._setBoneLimitation(bone, i)
+      self._setEstablishment(bone, i)
+      self._setFlags(bone, boneName)
 
 
   def __init__(self, boneNames, establish, localAxis, fixedAxis):
