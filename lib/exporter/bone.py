@@ -43,7 +43,7 @@ class Bone:
 
 
   def _setBonePosition(self, boneName):
-    pos = maya.cmds.xform(boneName, q=True, t=True, a=True)
+    pos = maya.cmds.xform(boneName, q=True, t=True, a=True, ws=True)
     bonePos = pymeshio.common.Vector3(pos[0], pos[1], -pos[2])  # Z軸反転
     return bonePos
 

@@ -66,9 +66,13 @@ class SaveMmd(maya.OpenMayaMPx.MPxCommand):
       # テクスチャかマテリアルにバグがある
       # 修正したいけれどもどこにバグがあるのかわからない
       # ポリゴンの表示がおかしい、たぶん三角形の順序がおかしい
-      # ボーンの位置がxformで取得したのに変な位置に表示される
-      # rオプション指定してもなぜか変
-      mmdModel.textures = []
+
+      # わかっていること
+      # テクスチャの参照がおかしいことになっている
+      # 見えないFaceは法線と逆向きに構成された三角形がある
+      # 法線と三角形の向きを比較して、再構築すれば直るバグ
+
+      mmdModel.textures = []   # テクスチャにバグあり、直す必要がある
       for m in mmdModel.materials:
         m.texture_index = 0
 
