@@ -72,7 +72,7 @@ class Bone:
 
 
   def _setTail(self, bone, boneName):
-    children = maya.cmds.listRelatives(boneName, c=True)
+    children = maya.cmds.listRelatives(boneName, c=True, type="joint")
     if children != None:     # 子供がいない場合は設定しない
       if len(children) == 1:      # 単一小ボーンの場合は自動的に設定
         bone.tail_index = self.boneNameToIndex[children[0]]
