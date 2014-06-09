@@ -62,6 +62,16 @@ class SaveMmd(maya.OpenMayaMPx.MPxCommand):
       v = vertex.Vertex(mmdModel, grp.transform, meshInst, boneInst)
       f = face.Face(mmdModel, mat)
 
+      # メモ
+      # テクスチャかマテリアルにバグがある
+      # 修正したいけれどもどこにバグがあるのかわからない
+      # ポリゴンの表示がおかしい、たぶん三角形の順序がおかしい
+      # ボーンの位置がxformで取得したのに変な位置に表示される
+      # rオプション指定してもなぜか変
+      mmdModel.textures = []
+      for m in mmdModel.materials:
+        m.texture_index = 0
+
       self._saveMmdModel(mmdModel, filePath)
 
   def doIt(self, args):

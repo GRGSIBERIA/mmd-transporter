@@ -60,8 +60,8 @@ class Material:
     return (alpha[0] + alpha[1] + alpha[2]) / 3.0
 
 
-  def _toRGB(self, l):
-    return pymeshio.common.RGB(l[0], l[1], l[2])
+  def _toRGB(self, color):
+    return pymeshio.common.RGB(color[0], color[1], color[2])
 
 
   def _getTexture(self, materialName):
@@ -71,6 +71,7 @@ class Material:
   def _createMaterials(self):
     for i in range(len(self.materialNames)):
       materialName = self.orderToMaterial[i]
+      print self.materialToFaces[materialName]
       materialInst = pymeshio.pmx.Material(\
         name=maya.cmds.getAttr("%s.jpName" % materialName),
         english_name=materialName,
@@ -85,7 +86,7 @@ class Material:
         texture_index=self._getTexture(materialName),
         sphere_texture_index=0,
         sphere_mode=pymeshio.pmx.MATERIALSPHERE_NONE,
-        toon_sharing_flag=False,    # toon_shading_flagじゃないのコレ？
+        toon_sharing_flag=0,    # toon_shading_flagじゃないのコレ？
         toon_texture_index=0,
         comment="",
         vertex_count=len(self.materialToFaces[materialName]))

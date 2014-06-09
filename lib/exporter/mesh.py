@@ -44,7 +44,7 @@ class Mesh:
   def _initVertices(self, uvToVertex):
     vtxs = []
     for i in range(len(uvToVertex)):
-      vtx = list(maya.cmds.getAttr("%s.vtx[%s]" % (self.transform, uvToVertex[i]))[0])
+      vtx = maya.cmds.xform("%s.vtx[%s]" % (self.transform, uvToVertex[i]), a=True, t=True, q=True)
       vtx[2] = -vtx[2]
       vtxs.append(vtx)
     return vtxs

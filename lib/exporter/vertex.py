@@ -13,6 +13,7 @@ class Vertex:
   def _createDeform(self, i):
     # テスト中
     return pymeshio.pmx.Bdef1(0)
+    
 
   def _initVertices(self):
     vertices = []
@@ -20,11 +21,12 @@ class Vertex:
       bv = self.mesh.vertices[i]
       buv = self.mesh.uvs[i]
       bn = self.mesh.normals[i]
-      position = pymeshio.common.Vector3(bv[0], bv[1], bv[2])
-      uv = pymeshio.common.Vector2(buv[0], buv[1])
-      normal = pymeshio.common.Vector3(bn[0], bn[1], bn[2])
-      deform = self._createDeform(i)
-      vertex = pymeshio.pmx.Vertex(position, normal, uv, deform, 0) # deform, edge_factor
+      vertex = pymeshio.pmx.Vertex(None, None, None, None, 0) # 最後はedge_factor
+      vertex.position = pymeshio.common.Vector3(bv[0], bv[1], bv[2])
+      vertex.uv = pymeshio.common.Vector2(buv[0], buv[1])
+      vertex.normal = pymeshio.common.Vector3(bn[0], bn[1], bn[2])
+      vertex.deform = self._createDeform(i)
+      
       vertices.append(vertex)
     return vertices
 
