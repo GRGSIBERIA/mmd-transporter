@@ -16,6 +16,7 @@ import material
 import establish
 import axis
 import bone
+import face
 
 class SaveMmd(maya.OpenMayaMPx.MPxCommand):
 
@@ -42,6 +43,11 @@ class SaveMmd(maya.OpenMayaMPx.MPxCommand):
     f.flush()
     f.close()
 
+  def _constructBone(self, grp, mmdModel):
+    estab = establish.Establish(grp.bone, grp.boneNames)
+    local = axis.LocalAxis(grp.boneNames)
+    fixed = axis.FixedAxis(grp.boneNames)
+    return bone.Bone(mmdModel, grp.boneNames, estab, local, fixed)
 
   def _createData(self, args):
     filePath = self._saveFileDialog()
@@ -49,19 +55,13 @@ class SaveMmd(maya.OpenMayaMPx.MPxCommand):
       mmdModel = pymeshio.pmx.Model()
       grp = group.Group()
 
+      boneInst = self._constructBone(grp, mmdModel)
+
+      meshInst = mesh.Mesh(grp.transform)
       mat = material.Material(mmdModel, grp.transform, filePath)
+      v = vertex.Vertex(mmdModel, transform, meshInst, boneInst)
+      f = face.Face(mmdModel, mat)
 
-      meshInst = mesh.Mesh(transform)
-      v = vertex.Vertex(mmdModel, transform, meshInst)
-
-      estab = establish.Establish(grp.bone, grp.boneNames)
-      local = axis.LocalAxis(grp.boneNames)
-      fixed = axis.FixedAxis(grp.boneNames)
-      bn = bone.Bone(mmdModel, grp.boneNames, estab, local, fixed)
-
-      meshInst = mesh.Mesh(transform)
-      v = vertex.Vertex(mmdModel, transform, meshInst, bn)
-      
       self._saveMmdModel(mmdModel, filePath)
 
   def doIt(self, args):

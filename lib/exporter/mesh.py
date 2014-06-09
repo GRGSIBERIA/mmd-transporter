@@ -7,6 +7,7 @@ class Mesh:
   
   def _initUVs(self):
     uvs = []
+    maya.cmds.select(self.transform)
     for cnt in range(maya.cmds.polyEvaluate(v=True)):
       uv = list(maya.cmds.getAttr("%s.uv[%s]" % (self.transform, cnt))[0])
       uv[1] = 1.0 - uv[1]

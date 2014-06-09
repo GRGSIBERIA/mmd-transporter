@@ -8,7 +8,7 @@ class Face:
   def _getNumber(self, name):
     return int(name[:-1].split("[")[1])
 
-
+  # 要はindicesを作っている
   def _createLinearFaceList(self):
     linearFace = []
     for i in range(len(self.material.materialNames)):
@@ -23,6 +23,9 @@ class Face:
     return linearFace
 
 
-  def __init__(self, material):
+  def __init__(self, mmdModel, material):
+    self.mmdModel = mmdModel
     self.material = material
     self.linearFace = self._createLinearFaceList()  # 頂点番号を並べた面頂点リスト
+
+    self.mmdModel.indices = self.linearFace
