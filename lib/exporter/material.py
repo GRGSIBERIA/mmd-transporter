@@ -97,8 +97,7 @@ class Material:
     self.mmdData = mmdData
     self.baseDirectory = filePath
     self.materialNames = self._listingMaterialNode()
-    self.orderToMaterial = self._listingOrderToMaterial()
     self.texture = texture.Texture(mmdData, self.materialNames, self.baseDirectory)
     self.orderToMaterial = self._listingOrderToMaterial()
-    self.materialToFaces = self._listingFacesFromMaterial()
+    self.materialToFaces = self._listingFacesFromMaterial() # faceはattr名なので注意
     self._createMaterials()

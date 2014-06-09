@@ -1,5 +1,6 @@
 #-*- encoding: utf-8
 import sys
+import io
 import os.path
 import maya.OpenMayaMPx
 import maya.cmds
@@ -35,6 +36,13 @@ class SaveMmd(maya.OpenMayaMPx.MPxCommand):
     return None
 
 
+  def _saveMmdModel(self, mmdModel, filePath):
+    f = io.open(filePath + "/test.pmx", "wb")
+    pymeshio.pmx.writer.write(f, mmdModel)
+    f.flush()
+    f.close()
+
+
   def _createData(self, args):
     filePath = self._saveFileDialog()
     if filePath != None:
@@ -43,13 +51,18 @@ class SaveMmd(maya.OpenMayaMPx.MPxCommand):
 
       mat = material.Material(mmdModel, grp.transform, filePath)
 
-      #meshInst = mesh.Mesh(transform)
-      #v = vertex.Vertex(mmdModel, transform, meshInst)
+      meshInst = mesh.Mesh(transform)
+      v = vertex.Vertex(mmdModel, transform, meshInst)
 
       estab = establish.Establish(grp.bone, grp.boneNames)
       local = axis.LocalAxis(grp.boneNames)
       fixed = axis.FixedAxis(grp.boneNames)
-      bn = bone.Bone(grp.boneNames, estab, local, fixed)
+      bn = bone.Bone(mmdModel, grp.boneNames, estab, local, fixed)
+
+      meshInst = mesh.Mesh(transform)
+      v = vertex.Vertex(mmdModel, transform, meshInst, bn)
+      
+      self._saveMmdModel(mmdModel, filePath)
 
   def doIt(self, args):
     try:

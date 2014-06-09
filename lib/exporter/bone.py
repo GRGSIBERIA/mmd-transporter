@@ -26,7 +26,7 @@ class Bone:
   def _createBones(self):
     bones = []
     for i in range(len(self.boneNames)):
-      bone = pymeshio.pmx.Bone(None, None, None, None, None, None)
+      bone = pymeshio.pmx.Bone(None, None, None, None, 0, None)
       bones.append(bone)
     return bones
 
@@ -109,7 +109,7 @@ class Bone:
       self._setFlags(bone, boneName)
 
 
-  def __init__(self, boneNames, establish, localAxis, fixedAxis):
+  def __init__(self, mmdModel, boneNames, establish, localAxis, fixedAxis):
     self.boneNames = boneNames
     self.boneNameToIndex = self._getBoneNamesToIndex()
     self.jpNameToIndex = self._getJpNameToIndex()
@@ -119,9 +119,11 @@ class Bone:
     self.bones = self._createBones()
 
     self._setBoneAttr()
+    mmdModel.bones = self.bones
 
 # 懸念点
 # -layer
+#   layerは未設定なのでどうにかする
 #   付与親ボーンはIKの後に計算する
 # -表示先
 #   単一子ボーンは自動設定
