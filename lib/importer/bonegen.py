@@ -40,6 +40,7 @@ class BoneGenerator:
         jointName = maya.cmds.joint(p=[pos.x, pos.y, -pos.z])   # 稀に不正な名前のボーンが存在する
       
       util.setJpName(jointName, bones[i].name)
+      util.setString(jointName, "tailTargetJpName", "")
 
       jointNames.append(jointName)
     return jointNames, noparentBones
@@ -68,7 +69,7 @@ class BoneGenerator:
       visible = 0 if bones[i].getVisibleFlag() else 2
       visible = 2 if bones[i].getIkFlag() else visible
       maya.cmds.setAttr("%s.drawStyle" % jointNames[i], visible)
-      util.setBoolean(jointNames[i], "drawable", bones[i].getVisibleFlag())
+      util.setBoolean(jointNames[i], "enableDraw", bones[i].getVisibleFlag())
       util.setBoolean(jointNames[i], "enableIK", bones[i].getIkFlag())
 
 
@@ -90,8 +91,6 @@ class BoneGenerator:
       if bones[i].getFixedAxisFlag():
         maya.cmds.setAttr("%s.rz" % jointName, lock=lockFlag, channelBox=False, keyable=False)
         maya.cmds.setAttr("%s.ry" % jointName, lock=lockFlag, channelBox=False, keyable=False)
-
-      util.setBoolean(jointName, "manipulatable", bones[i].getManipulatable())
 
 
   # 回転行列（XYZ軸）からオイラー角を求める

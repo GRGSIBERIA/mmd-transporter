@@ -10,8 +10,17 @@ class Bone:
   def _getBoneNamesToIndex(self):
     boneNameToIndex = {}
     for i in range(len(self.boneNames)):
-      boneNamesToIndex[self.boneNames[i]] = i
+      boneName = self.boneNames[i]
+      boneNamesToIndex[boneName] = i
     return boneNameToIndex
+
+
+  def _getJpNameToIndex(self):
+    jpNameToIndex = {}
+    for i in range(len(self.boneNames)):
+      jpName = maya.cmds.getAttr("%s.jpName" % self.boneNames[i])
+      jpNameToIndex[jpName] = i
+    return jpNameToIndex
 
 
   def _createBones(self):
@@ -62,6 +71,17 @@ class Bone:
       bone.effect_factor = effectFactor
 
 
+  def _setTail(self, bone, boneName):
+    children = maya.cmds.listRelatives(boneName, c=True)
+    if len(children) > 0:     # 子供がいない場合は設定しない
+      if len(children) == 1:  # 単一小ボーンの場合は自動的に設定
+        bone.tail_index = self.boneNameToIndex(children[0])
+      else:
+        tailTargetJpName = maya.cmds.getAttr("%s.tailTargetJpName" % boneName)
+        index = self.jpNameToIndex[tailTargetJpName]
+        bone.tail_index = index
+
+
   def _setFlags(self, bone, boneName):
     drawable = maya.cmds.getAttr("%s.drawable" % boneName)
     manipulatable = maya.cmds.getAttr("%s.manipulatable" % boneName)
@@ -83,16 +103,24 @@ class Bone:
       bone.parent_index = self._setParentIndex(boneName)
       bone.position = self._setBonePosition(boneName)
       self._setBoneLimitation(bone, i)
-      self._setEstablishment(bone, i)
+      self._setEstablishment(bone, boneName)
       self._setFlags(bone, boneName)
 
 
   def __init__(self, boneNames, establish, localAxis, fixedAxis):
     self.boneNames = boneNames
     self.boneNameToIndex = self._getBoneNamesToIndex()
+    self.jpNameToIndex = self._getJpNameToIndex()
     self.establish = establish
     self.localAxis = self.localAxis
     self.fixedAxis = fixedAxis
     self.bones = self._createBones()
 
     self._setBoneAttr()
+
+# 懸念点
+# -layer
+#   付与親ボーンはIKの後に計算する
+# -表示先
+#   単一子ボーンは自動設定
+#   複数子ボーンは設定でどうにかしてもらう
