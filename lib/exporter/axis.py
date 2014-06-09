@@ -10,9 +10,13 @@ class AxisBase:
   def getEnableFlagList(self, boneNames, flagType):
     enables = []
     for bone in boneNames:
-      flagBuf = maya.cmds.getAttr("%s.enable%s" % (bone, flagType))
-      flag = True if flagBuf == 1 else False
-      enables.append(flag)
+      try:
+        flagBuf = maya.cmds.getAttr("%s.enable%s" % (bone, flagType))
+        flag = True if flagBuf == 1 else False
+        enables.append(flag)
+      except:
+        print "%s is not attached enable%s." % (bone, flagType)
+        enables.append(False)   # 何らかの理由でenablehogehogeが追加されてないが支障なし
     return enables
 
 
@@ -60,7 +64,7 @@ class FixedAxis(AxisBase):
 
   def __init__(self, boneNames):
     AxisBase.__init__(self, boneNames)
-    self.enables = getEnableFlagList(self.boneNames, "FixedAxis")
+    self.enables = self.getEnableFlagList(self.boneNames, "FixedAxis")
     self.axises = self._getFixedAxis()
 
 
@@ -87,5 +91,5 @@ class LocalAxis(AxisBase):
 
   def __init__(self, boneNames):
     AxisBase.__init__(self, boneNames)
-    self.enables = getEnableFlagList(self.boneNames, "LocalAxis")
+    self.enables = self.getEnableFlagList(self.boneNames, "LocalAxis")
     self.axises = self._getLocalAxis()

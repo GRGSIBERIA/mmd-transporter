@@ -38,11 +38,18 @@ class BoneGenerator:
         jointName = maya.cmds.joint(p=[pos.x, pos.y, -pos.z], name=boneName)
       except:
         jointName = maya.cmds.joint(p=[pos.x, pos.y, -pos.z])   # 稀に不正な名前のボーンが存在する
-      
-      util.setJpName(jointName, bones[i].name)
-      util.setString(jointName, "tailTargetJpName", "")
 
       jointNames.append(jointName)
+
+    # 表示先の設定
+    for i in range(len(bones)):
+      util.setJpName(jointNames[i], bones[i].name)
+      tailIndex = bones[i].tail_index
+      if tailIndex >= 0:
+        util.setString(jointNames[i], "tailTargetName", jointNames[tailIndex])
+      else:
+        util.setString(jointNames[i], "tailTargetName", "")
+
     return jointNames, noparentBones
 
 
@@ -240,8 +247,8 @@ class BoneGenerator:
     self._settingDrawStyle(bones, jointNames)  # 本番ではコメントを消す
     self._jointLabeling(bones, jointNames)
     self._rectifyJointOrientation(bones, jointNames)
-    #self._rectifyAxisLimt(bones, jointNames)
-    #self._rectifyEstablishAxis(bones, jointNames)
+    self._rectifyAxisLimt(bones, jointNames)
+    self._rectifyEstablishAxis(bones, jointNames)
     self._connectJoints(bones, jointNames)
     self._inspectOperationFlag(bones, jointNames, humanIkFlag) # これを実行するとHuman IK使えなくなる
     return jointNames, noparentBones

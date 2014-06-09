@@ -46,10 +46,10 @@ class SaveMmd(maya.OpenMayaMPx.MPxCommand):
       #meshInst = mesh.Mesh(transform)
       #v = vertex.Vertex(mmdModel, transform, meshInst)
 
-      estab = establish.Establish(grp.boneGroup, grp.boneNames)
+      estab = establish.Establish(grp.bone, grp.boneNames)
       local = axis.LocalAxis(grp.boneNames)
       fixed = axis.FixedAxis(grp.boneNames)
-      bn = bone.Bone(grp.boneNames, grp.boneNameToIndex, estab, local, fixed)
+      bn = bone.Bone(grp.boneNames, estab, local, fixed)
 
   def doIt(self, args):
     try:

@@ -2,6 +2,8 @@
 
 import maya.cmds
 
+import util
+
 class Group:
 
   def _searchMother(self):
@@ -23,11 +25,11 @@ class Group:
       try:
         t = maya.cmds.getAttr("%s.nodeType" % group)
         if t == "rigidbodyGroup":
-          self.rigidbody = t
+          self.rigidbody = group
         elif t == "constraintGroup":
-          self.constraint = t
+          self.constraint = group
         elif t == "boneGroup":
-          self.bone = t
+          self.bone = group
       except:
         continue
 
@@ -37,7 +39,8 @@ class Group:
     children = maya.cmds.listRelatives(self.bone, c=True)
     for c in children:
       maya.cmds.select(c, hierarchy=True)
-      boneNames += maya.cmds.ls(sl=True)
+      boneNames += maya.cmds.ls(sl=True, type="joint")
+
     return boneNames
 
 
