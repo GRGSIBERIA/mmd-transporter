@@ -3,7 +3,7 @@
 import maya.cmds
 import maya.OpenMaya
 
-import pymeshio
+import pymeshio.common
 import pymeshio.pmx
 
 
@@ -20,11 +20,11 @@ class Vertex:
       bv = self.mesh.vertices[i]
       buv = self.mesh.uvs[i]
       bn = self.mesh.normals[i]
-      position = pymeshio.Vector3(bv[0], bv[1], bv[2])
-      uv = pymeshio.Vector2(buv[0], buv[1])
-      normal = pymeshio.Vector3(bn[0], bn[1], bn[2])
-      deform = self._createDeform()
-      vertex = pymeshio.pmx.Vertex(position, uv, normal, deform, 0) # deform, edge_factor
+      position = pymeshio.common.Vector3(bv[0], bv[1], bv[2])
+      uv = pymeshio.common.Vector2(buv[0], buv[1])
+      normal = pymeshio.common.Vector3(bn[0], bn[1], bn[2])
+      deform = self._createDeform(i)
+      vertex = pymeshio.pmx.Vertex(position, normal, uv, deform, 0) # deform, edge_factor
       vertices.append(vertex)
     return vertices
 

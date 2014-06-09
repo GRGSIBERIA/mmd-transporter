@@ -59,7 +59,7 @@ class SaveMmd(maya.OpenMayaMPx.MPxCommand):
 
       meshInst = mesh.Mesh(grp.transform)
       mat = material.Material(mmdModel, grp.transform, filePath)
-      v = vertex.Vertex(mmdModel, transform, meshInst, boneInst)
+      v = vertex.Vertex(mmdModel, grp.transform, meshInst, boneInst)
       f = face.Face(mmdModel, mat)
 
       self._saveMmdModel(mmdModel, filePath)
