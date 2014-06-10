@@ -62,17 +62,13 @@ class SaveMmd(maya.OpenMayaMPx.MPxCommand):
       v = vertex.Vertex(mmdModel, grp.transform, meshInst, boneInst)
       f = face.Face(mmdModel, mat)
 
-      # メモ
-      # テクスチャかマテリアルにバグがある
-      # 修正したいけれどもどこにバグがあるのかわからない
-      # ポリゴンの表示がおかしい、たぶん三角形の順序がおかしい
-
       # わかっていること
       # テクスチャの参照がおかしいことになっている
-      # 見えないFaceは法線と逆向きに構成された三角形がある
-      # 法線と三角形の向きを比較して、再構築すれば直るバグ
 
-      mmdModel.textures = []   # テクスチャにバグあり、直す必要がある
+      # わからないこと
+      # 面の表示がおかしいのは法線と三角形の順番じゃなかった
+
+      #mmdModel.textures = []   # テクスチャにバグあり、直す必要がある
       for m in mmdModel.materials:
         m.texture_index = 0
         m.alpha = 1.0

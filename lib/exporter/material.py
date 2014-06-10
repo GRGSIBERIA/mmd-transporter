@@ -71,7 +71,6 @@ class Material:
   def _createMaterials(self):
     for i in range(len(self.materialNames)):
       materialName = self.orderToMaterial[i]
-      print self.materialToFaces[materialName]
       materialInst = pymeshio.pmx.Material(\
         name=maya.cmds.getAttr("%s.jpName" % materialName),
         english_name=materialName,
