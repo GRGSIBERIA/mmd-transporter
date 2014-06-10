@@ -75,6 +75,7 @@ class SaveMmd(maya.OpenMayaMPx.MPxCommand):
       mmdModel.textures = []   # テクスチャにバグあり、直す必要がある
       for m in mmdModel.materials:
         m.texture_index = 0
+        m.alpha = 1.0
 
       self._saveMmdModel(mmdModel, filePath)
 

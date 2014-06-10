@@ -71,6 +71,37 @@ class Mesh:
     return normals
 
 
+  def _toVector(self, v):
+    scriptUtil = maya.OpenMaya.MScriptUtil()
+    scriptUtil.createFromDouble(v[0], v[1], v[2])
+    ptr = scriptUtil.asDoublePtr()
+    return maya.OpenMaya.MVector(ptr)
+
+
+  def _checkBothSidesFromTriangle(self, vectors):
+    v1 = (vectors[1] - vectors[0]).normal
+    v2 = (vectors[2] - vectors[0]).normal
+    cross = v1 ^ v2   # 外積を取って三角形の向きを見る
+    noraml = self._toVector(self.normals[i])
+    dotProduct = cross * normal   # 内積を取って法線の向きと同じか確かめる
+    return dotProduct >= 0.0
+
+
+  def _arrangeTriangleStrip(self):
+    for i in range(len(self.faces)):
+      triangle = self.faces[i]
+      vectors = []
+      for vertex in triangle:
+        vectors.append(self._toVector(vertex))
+
+      bothSideFlag = self._checkBothSidesFromTriangle(vectors)
+      if not (bothSideFlag):   # 逆向きだったら並べ替える
+        tmp = triangle[1]
+        triangle[1] = triangle[2]
+        triangle[2] = tmp
+      self.faces[i] = triangle  # なんか不安になる
+
+
   def _initializeMesh(self):
     self.uvs = self._initUVs()
     self.faces = self._connectFaces()
@@ -78,7 +109,8 @@ class Mesh:
     self.vertices = self._initVertices(self.uvToVertex)
     self.vertexToUVs = self._initVertexToUVs()
     self.normals = self._initNormals(self.uvToVertex)
-
+    self._arrangeTriangleStrip()
+    
 
   def __init__(self, transform):
     self.transform = transform
