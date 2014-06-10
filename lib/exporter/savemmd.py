@@ -62,16 +62,9 @@ class SaveMmd(maya.OpenMayaMPx.MPxCommand):
       v = vertex.Vertex(mmdModel, grp.transform, meshInst, boneInst)
       f = face.Face(mmdModel, mat)
 
-      # わかっていること
-      # テクスチャの参照がおかしいことになっている
-
       # わからないこと
       # 面の表示がおかしいのは法線と三角形の順番じゃなかった
 
-      #mmdModel.textures = []   # テクスチャにバグあり、直す必要がある
-      for m in mmdModel.materials:
-        m.texture_index = 0
-        m.alpha = 1.0
 
       self._saveMmdModel(mmdModel, filePath)
 

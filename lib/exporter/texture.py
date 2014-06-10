@@ -29,21 +29,32 @@ class Texture:
       print "Exist %s/tex" % self.baseDirectory
 
 
-  def _constructTexturePath(self):
-    materialToTexturePath = {}
+  def _constructMaterialNameToTextureName(self):
+    materialNameToTextureName = {}
     for materialName in self.materialNames:
       textureName = self.getTextureName(materialName)
+      materialNameToTextureName[materialName] = textureName
+    return materialNameToTextureName
+
+
+  def _constructTexturePath(self):
+    materialToTexturePath = {}
+    self._createDirectory()
+    for materialName in self.materialNames:
+      textureName = self.materialNameToTextureName[materialName]
       fullPath = self.getTextureFullPath(textureName)
       if fullPath != -1 and textureName != -1:
         fileName = os.path.basename(fullPath)
         texturePath = "tex/" + fileName
         materialToTexturePath[materialName] = texturePath
+        # 保存先にファイルを移動させる
+        shutil.copyfile(fullPath, self.baseDirectory + "/" + texturePath)
     return materialToTexturePath
 
 
   def _constructTexturePathToMaterial(self):
     texturePathToMaterialName = {}
-    for materialName, texturePath in self.materialToTexturePath.items():
+    for materialName, texturePath in self.materialNameToTexturePath.items():
       if not texturePathToMaterialName.has_key(texturePath):
         texturePathToMaterialName[texturePath] = []
       texturePathToMaterialName[texturePath].append(materialName)
@@ -52,35 +63,33 @@ class Texture:
 
   def _constructTexturePathToIndex(self):
     texturePathToIndex = {}
+    textures = []
     cnt = 0
     for texturePath in self.texturePathToMaterialName.keys():
       texturePathToIndex[texturePath] = cnt
+      textures.append(texturePath)
       cnt += 1
-    return texturePathToIndex
+    return texturePathToIndex, textures
 
 
   def _constructMaterialToTextureIndex(self):
     materialToTextureIndex = {}
     for materialName in self.materialNames:
-      texturePath = self.materialToTexturePath[materialName]
+      texturePath = self.materialNameToTexturePath[materialName]
       textureIndex = self.texturePathToIndex[texturePath]
       materialToTextureIndex[materialName] = textureIndex
     return materialToTextureIndex
 
 
-  def _copyTextures(self):
-    self._createDirectory()
-    for texturePath in self.texturePathToMaterialName.keys():
-      # 保存先にファイルを移動させる
-      shutil.copyfile(fullPath, self.baseDirectory + "/" + texturePath)
-        
-
   def __init__(self, mmdData, materialNames, baseDirectory):
     self.baseDirectory = baseDirectory
     self.mmdData = mmdData
     self.materialNames = materialNames
-    self.materialToTexturePath = self._constructTexturePath()
+    self.materialNameToTextureName = self._constructMaterialNameToTextureName()
+    self.materialNameToTexturePath = self._constructTexturePath()
     self.texturePathToMaterialName = self._constructTexturePathToMaterial()
-    self.texturePathToIndex = self._constructTexturePathToIndex()
-    self.materialToTextureIndex = self._constructMaterialToTextureIndex()
-    self._copyTextures()
+    self.texturePathToIndex, self.textures = self._constructTexturePathToIndex()
+    self.materialNameToTextureIndex = self._constructMaterialToTextureIndex()
+
+    # self.texturesはtexturePathToIndexを構築するところで作ってます
+    self.mmdData.textures = self.textures

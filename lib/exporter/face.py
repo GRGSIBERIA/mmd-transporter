@@ -16,7 +16,7 @@ class Face:
       faces = self.material.materialToFaces[materialName]
       for face in faces:
         maya.cmds.select(face)
-        maya.mel.eval("PolySelectConvert 3")
+        maya.mel.eval("PolySelectConvert 4")
         vtxs = maya.cmds.ls(sl=True, fl=True)
         for v in vtxs:
           linearFace.append(self._getNumber(v))

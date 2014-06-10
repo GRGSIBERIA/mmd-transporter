@@ -24,7 +24,6 @@ class Material:
     materialToFaces = {}
     for m in self.materialNames:
       maya.cmds.select(self.transform)
-      #maya.cmds.hyperShade(m, o=True)
       maya.mel.eval("hyperShade -o %s" % m)
       maya.cmds.select(vis=True)
       targetFaces = maya.cmds.ls(sl=True, fl=True)
@@ -51,8 +50,7 @@ class Material:
 
 
   def _getAlpha(self, m):
-    textureIndex = self.texture.materialNameToIndex[m]
-    textureName = self.texture.textureNames[textureIndex]
+    textureName = self.texture.materialNameToTextureName[m]
     hasAlpha = maya.cmds.getAttr("%s.fileHasAlpha" % textureName)
     if hasAlpha == 1:
       return 0.98
@@ -65,7 +63,7 @@ class Material:
 
 
   def _getTexture(self, materialName):
-    return self.texture.materialNameToIndex[materialName]
+    return self.texture.materialNameToTextureIndex[materialName]
 
 
   def _createMaterials(self):
