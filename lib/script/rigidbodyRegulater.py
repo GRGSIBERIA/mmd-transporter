@@ -3,18 +3,42 @@ import string
 
 class RigidbodyRegulaterWindow:
 
-  def _getRigidbodyGroup(self):
+  def _getMotherGroup(self):
+    errorMessage = "Do not select MMD Model's transform."
     selection = maya.cmds.ls(sl=True)
     if len(selection) <= 0:
-      raise StandardError, "Do not select 'rigidbodies' Group."
-    elif len(selection) > 1:
-      raise StandardError, "You most only select 'rigidbodies' Group."
+      raise StandardError, errorMessage
 
-    group = selection[0]
-    nodeType = maya.cmds.getAttr("%s.nodeType" % group)
-    if nodeType != "rigidbodyGroup":
-      raise StandardError, "Do not select 'rigidbodies' Group."
-    return group
+    transform = selection[0]
+    try:
+      motherGroup = maya.cmds.listRelatives(transform, p=True)[0]
+    except:
+      raise StandardError, errorMessage
+    nodeType = maya.cmds.getAttr("%s.mmdModel" % motherGroup)
+    if not nodeType:
+      raise StandardError, errorMessage
+    return motherGroup
+
+
+  def _getNodeType(self, nodeType):
+    children = maya.cmds.listRelatives(self.motherGroup, c=True)
+    for child in children:
+      try:
+        nodeTypeChecker = maya.cmds.getAttr("%s.nodeType" % child)
+        if nodeTypeChecker == nodeType:
+          return child
+      except:
+        #nodeTypeが存在しない
+        pass
+    raise StandardError, "Do not found nodeType == %s." % nodeType
+
+
+  def _getRigidbodyGroup(self):
+    return self._getNodeType("rigidbodyGroup")
+
+
+  def _getConstraintGroup(self):
+    return self._getNodeType("constraintGroup")
 
 
   def _listingShapes(self):
@@ -29,10 +53,33 @@ class RigidbodyRegulaterWindow:
     return colliders
 
 
+  def _getJointFromSolver(self, solver):
+    solverChildren = maya.cmds.listRelatives(solver, c=True)
+    for schild in solverChildren:
+      nodeType = maya.cmds.nodeType(schild)
+      if nodeType == "bulletRigidBodyConstraintShape":
+        return schild
+    return None
+
+
+  def _listingJoints(self):
+    joints = []
+    children = maya.cmds.listRelatives(self.constraintGroup, c=True)
+    for child in children:
+      if "solver_" in child:
+        joint = self._getJointFromSolver(child)
+        if joint != None:
+          joints.append(joint)
+
+
   def __init__(self):
+    self.motherGroup = self._getMotherGroup()
     self.rigidbodyGroup = self._getRigidbodyGroup()
     self.rigidbodyShapes = self._listingShapes()
+    self.constraintGroup = self._getConstraintGroup()
+    self.joints = self._listingJoints()
     self.colliders = self._listingColliders()
+    self.joints = self._listingJoints()
 
 
   def _createDefaultName(self, label):
