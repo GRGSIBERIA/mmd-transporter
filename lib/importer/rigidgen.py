@@ -176,9 +176,10 @@ class RigidBodyGenerator:
   def _setSpringLimitation(self, constraint, limitVector, limitType, axis, i):
     limitValue = limitVector[i] #self._convertCoordinate(limitVector[i], limitType, axis)
     args = (constraint, limitType, axis)
-    if limitValue > 0.0 or limitValue < 0.0:
-      maya.cmds.setAttr("%s.%sSpringEnabled%s" % args, 1)
+    #if limitValue > 0.0 or limitValue < 0.0:   # この行が必要かどうかの判断がつかない
+    maya.cmds.setAttr("%s.%sSpringEnabled%s" % args, 1)
     maya.cmds.setAttr("%s.%sSpringStiffness%s" % args, limitValue)
+    util.setFloat(constraint, "default%sSpringStiffness%s" % (limitType.title(), axis), limitValue)
 
 
   def _createJoints(self, shapes, jointNames):

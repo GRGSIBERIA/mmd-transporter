@@ -70,6 +70,7 @@ class RigidbodyRegulaterWindow:
         joint = self._getJointFromSolver(child)
         if joint != None:
           joints.append(joint)
+    return joints
 
 
   def __init__(self):
@@ -91,31 +92,47 @@ class RigidbodyRegulaterWindow:
     try:
       strs = label.split(" ")   # 空白文字を削除して、先頭文字を小文字にする
       strs[0] = strs[0].lower()
-      attribute = strs[0] + strs[1]
+      attribute = ""
+      for s in strs:
+        attribute += s
     except:
       return label.lower()
     return attribute
 
 
-  def _changeFloatField(self, defaultName, attributeName, value):
+  def _changeAttribute(self, element, defaultName, attributeName, value):
+    defaultValue = maya.cmds.getAttr("%s.%s" % (element, defaultName))
+    maya.cmds.setAttr("%s.%s" % (element, attributeName), defaultValue * value)
+
+
+  def _changeColliders(self, defaultName, attributeName, value):
     for collider in self.colliders:
       try:
-        defaultValue = maya.cmds.getAttr("%s.%s" % (collider, defaultName))
-        maya.cmds.setAttr("%s.%s" % (collider, attributeName), defaultValue * value)
+        self._changeAttribute(collider, defaultName, attributeName, value)
       except:
         pass  # lengthなど存在しないColliderもあるのでパス
 
 
-  def _showLine(self, label):
+  def _changeJoints(self, defaultName, attributeName ,value):
+    for joint in self.joints:
+      self._changeAttribute(joint, defaultName + "X", attributeName + "X", value)
+      self._changeAttribute(joint, defaultName + "Y", attributeName + "Y", value)
+      self._changeAttribute(joint, defaultName + "Z", attributeName + "Z", value)
+
+
+  def _showLine(self, label, colliderFlag=True):
     width = 150
-    changeMehod = lambda *args:self._changeFloatField(defaultName, attributeName, args[0])
+    if colliderFlag:
+      changeMehod = lambda *args:self._changeColliders(defaultName, attributeName, args[0])
+    else:
+      changeMehod = lambda *args:self._changeJoints(defaultName, attributeName, args[0])
     defaultName = self._createDefaultName(label)
     attributeName = self._createAttributeName(label)
     maya.cmds.rowLayout(numberOfColumns=2, columnWidth2=(width, 200))
     maya.cmds.text(label=label,
       align="right",
       width=width-20)
-    maya.cmds.floatField(v=1.0,
+    maya.cmds.floatSliderGrp(v=1.0, field=True, min=0,
       changeCommand=changeMehod,
       dragCommand=changeMehod)
     maya.cmds.setParent("..")
@@ -130,6 +147,7 @@ class RigidbodyRegulaterWindow:
     self._showLine("Angular Damping")
     self._showLine("Friction")
     self._showLine("Restitution")
+    maya.cmds.setParent("..")
     
     maya.cmds.frameLayout(l="Collider Properties")
     self._showLine("Length")
@@ -137,8 +155,13 @@ class RigidbodyRegulaterWindow:
     self._showLine("ExtentsX")
     self._showLine("ExtentsY")
     self._showLine("ExtentsZ")
+    maya.cmds.setParent("..")
 
     # JointConstraintの設定をする
+    maya.cmds.frameLayout(l="Joint Properties")
+    self._showLine("Linear Spring Stiffness", False)
+    self._showLine("Angular Spring Stiffness", False)
+    maya.cmds.setParent("..")
 
   def show(self):
     window = maya.cmds.window(t="Rigidbody Regulater", w=400, h=300)
