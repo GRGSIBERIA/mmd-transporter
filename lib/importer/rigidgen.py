@@ -165,11 +165,11 @@ class RigidBodyGenerator:
     maxValue = maxVector[i]
 
     if minVector[i] > maxVector[i]:
-      maya.cmds.setAttr("%s.%sConstraint%s" % args, 0)
+      maya.cmds.setAttr("%s.%sConstraint%s" % args, 0)  # Free
     if minVector[i] == 0.0 and maxVector[i] == 0.0:
-      maya.cmds.setAttr("%s.%sConstraint%s" % args, 1)
+      maya.cmds.setAttr("%s.%sConstraint%s" % args, 1)  # Lock
     else:
-      maya.cmds.setAttr("%s.%sConstraint%s" % args, 2)
+      maya.cmds.setAttr("%s.%sConstraint%s" % args, 2)  # Limit
       maya.cmds.setAttr("%s.%sConstraintMin%s" % args, minValue)
       maya.cmds.setAttr("%s.%sConstraintMax%s" % args, maxValue)
 

@@ -4,6 +4,7 @@ import maya.cmds
 import maya.app.mayabullet as bullet
 import maya.OpenMaya
 
+import copy
 import os.path
 import util
 
@@ -110,9 +111,9 @@ class RigidBodyGenerator:
     maya.cmds.setAttr("%s.collisionFilterMask" % collider, noCollisionGroup)
 
 
-  def _setConstraintCollider(self, colliderShape, rigid, jointNames):
+  def _setConstraintCollider(self, colliderShape, rigid):
     if rigid.bone_index != -1:
-      targetJoint = jointNames[rigid.bone_index]
+      targetJoint = self.jointNames[rigid.bone_index]
 
       if rigid.mode == 0: # ボーン追従
         maya.cmds.parentConstraint(targetJoint, colliderShape, mo=True)
@@ -120,7 +121,7 @@ class RigidBodyGenerator:
         maya.cmds.parentConstraint(colliderShape, targetJoint, mo=True)
 
 
-  def _createRigidbodies(self, jointNames):
+  def _createRigidbodies(self):
     rigids = self.mmdData.rigidbodies
     shapes = []
     colliders = []
@@ -133,7 +134,7 @@ class RigidBodyGenerator:
       self._setParameters(collider, rigid.param)
       self._setRigidbodyType(collider, rigid)
       self._setCollisionFilter(collider, rigid)
-      self._setConstraintCollider(shape, rigid, jointNames)
+      self._setConstraintCollider(shape, rigid)
       
 
       shapes.append(shape)
@@ -155,33 +156,90 @@ class RigidBodyGenerator:
     return constraint, shape
 
 
-  def _setJointLimitation(self):
-    pass
+  def _pinnedConstraintWithBone(self, constraintShape, joint):
+    bi = joint.rigidbody_index_b
+    targetIndex = self.mmdData.rigidbodies[bi].bone_index
+    if targetIndex != -1:
+      targetName = self.jointNames[targetIndex]
+      maya.cmds.pointConstraint(targetName, constraintShape, mo=True)
 
 
-  def _createConstraints(self, jointNames):
+  def _constraintTwoCollider(self, joint):
+    ai = joint.rigidbody_index_a
+    bi = joint.rigidbody_index_b
+    colliderA = self.colliders[ai]
+    colliderB = self.colliders[bi]
+    groupB = maya.cmds.group(colliderB, n="g%s" % colliderB)
+    maya.cmds.parentConstraint(colliderA, groupB, mo=True)
+    return bi, groupB
+
+
+  def _setJointLimitation(self, constraint, minVector, maxVector, limitType, axis, i):
+    args = (constraint, limitType, axis)
+    minValue = minVector[i]
+    maxValue = maxVector[i]
+
+    if minVector[i] > maxVector[i]:
+      maya.cmds.setAttr("%s.%sConstraint%s" % args, 0)  # Free
+    if minVector[i] == 0.0 and maxVector[i] == 0.0:
+      maya.cmds.setAttr("%s.%sConstraint%s" % args, 1)  # Lock
+    else:
+      maya.cmds.setAttr("%s.%sConstraint%s" % args, 2)  # Limit
+      maya.cmds.setAttr("%s.%sConstraintMin%s" % args, minValue)
+      maya.cmds.setAttr("%s.%sConstraintMax%s" % args, maxValue)
+
+
+  def _setSpringLimitation(self, constraint, limitVector, limitType, axis, i):
+    limitValue = limitVector[i] #self._convertCoordinate(limitVector[i], limitType, axis)
+    args = (constraint, limitType, axis)
+    #if limitValue > 0.0 or limitValue < 0.0:   # この行が必要かどうかの判断がつかない
+    maya.cmds.setAttr("%s.%sSpringEnabled%s" % args, 1)   # わからないので強制Enable
+    maya.cmds.setAttr("%s.%sSpringStiffness%s" % args, limitValue)
+    util.setFloat(constraint, "default%sSpringStiffness%s" % (limitType.title(), axis), limitValue)
+
+
+  def _createConstraints(self):
     constraints = []
     constraintShapes = []
     joints = self.mmdData.joints
+    groups = {}
 
     for i in range(len(joints)):
       joint = joints[i]
       constraint, shape = self._instantiateConstraint(joint)
+      self._pinnedConstraintWithBone(shape, joint)
+      #groupIndex, group = self._constraintTwoCollider(joint)
+      #groups[groupIndex] = group
 
-      self._setJointLimitation()
+      axis = ["X", "Y", "Z"]
+      for i in range(3):
+        self._setJointLimitation(constraint, joint.translation_limit_min, joint.translation_limit_max, "linear", axis[i], i)
+        self._setJointLimitation(constraint, joint.rotation_limit_min, joint.rotation_limit_max, "angular", axis[i], i)
+        self._setSpringLimitation(constraint, joint.spring_constant_translation, "linear", axis[i], i)
+        self._setSpringLimitation(constraint, joint.spring_constant_rotation, "angular", axis[i], i)
 
       constraints.append(constraint)
       constraintShapes.append(shape)
-    return constraints, constraintShapes
+    return constraints, constraintShapes, groups
+
+
+  def _replaceColliderGroups(self, groups):
+    colliders = copy.deepcopy(self.colliders)
+    for i, group in groups.items():
+      colliders[i] = group
+    return colliders
 
 
   def generate(self, jointNames):
     self.jointNames = jointNames
-    self.colliders, self.colliderShapes = self._createRigidbodies(jointNames)
-    self.constraints, self.constraintShapes = self._createConstraints(jointNames)
+    self.colliders, self.colliderShapes = self._createRigidbodies()
+    self.constraints, self.constraintShapes, groups = self._createConstraints()
+    #self.groupedCollider = self._replaceColliderGroups(groups)
+
     return self.colliderShapes, self.constraintShapes
 
 """
 メモ
+replaceColliderGroupsにバグがある
 剛体の重心位置は関連ボーンのところ？
 """
