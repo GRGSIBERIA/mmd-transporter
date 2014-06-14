@@ -105,8 +105,6 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
         genSkin = skingen.SkinGenerator(mmdData)
         genSkin.generate(skinCluster, jointNames, polyName)
 
-      if argData.isFlagSet("-inc"):
-        pass
       genRigid = rigidgen.RigidBodyGenerator(mmdData, filePath, dmaker.rigidbodies)
       rigidNames, constraintNames = genRigid.generate(jointNames)
 

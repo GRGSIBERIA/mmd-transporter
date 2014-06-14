@@ -167,8 +167,8 @@ class RigidBodyGenerator:
   def _constraintTwoCollider(self, joint):
     ai = joint.rigidbody_index_a
     bi = joint.rigidbody_index_b
-    colliderA = self.colliders[ai]
-    colliderB = self.colliders[bi]
+    colliderA = self.colliderShapes[ai]
+    colliderB = self.colliderShapes[bi]
     groupB = maya.cmds.group(colliderB, n="g%s" % colliderB)
     maya.cmds.parentConstraint(colliderA, groupB, mo=True)
     return bi, groupB
@@ -208,8 +208,8 @@ class RigidBodyGenerator:
       joint = joints[i]
       constraint, shape = self._instantiateConstraint(joint)
       self._pinnedConstraintWithBone(shape, joint)
-      #groupIndex, group = self._constraintTwoCollider(joint)
-      #groups[groupIndex] = group
+      groupIndex, group = self._constraintTwoCollider(joint)
+      groups[groupIndex] = group
 
       axis = ["X", "Y", "Z"]
       for i in range(3):
@@ -224,7 +224,7 @@ class RigidBodyGenerator:
 
 
   def _replaceColliderGroups(self, groups):
-    colliders = copy.deepcopy(self.colliders)
+    colliders = copy.deepcopy(self.colliderShapes)
     for i, group in groups.items():
       colliders[i] = group
     return colliders
@@ -234,9 +234,8 @@ class RigidBodyGenerator:
     self.jointNames = jointNames
     self.colliders, self.colliderShapes = self._createRigidbodies()
     self.constraints, self.constraintShapes, groups = self._createConstraints()
-    #self.groupedCollider = self._replaceColliderGroups(groups)
-
-    return self.colliderShapes, self.constraintShapes
+    self.groupedCollider = self._replaceColliderGroups(groups)
+    return self.groupedCollider, self.constraintShapes
 
 """
 メモ
