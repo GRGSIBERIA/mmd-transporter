@@ -15,7 +15,7 @@ import bonegen
 import skingen
 import estabgen
 import expgen
-import rigidgen
+import rigidgen2 as rigidgen
 import grpgen
 import util
 

@@ -154,6 +154,7 @@ class RigidBodyGenerator:
       parentBoneName = jointNames[bi]
       try:
         maya.cmds.pointConstraint(parentBoneName, constraint)
+        #pass
       except:
         print "Failed point constraint for joint solver: %s" % joint.name
 
