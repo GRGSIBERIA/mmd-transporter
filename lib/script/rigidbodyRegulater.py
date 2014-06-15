@@ -50,7 +50,7 @@ class RigidbodyRegulaterWindow:
     for shape in self.rigidbodyShapes:
       if "g" in shape[0]:
         shape = shape[1:]
-      collider = shape.replace("gshape_", "rigid_")
+      collider = shape.replace("shape_", "rigid_")
       colliders.append(collider)
     return colliders
 
