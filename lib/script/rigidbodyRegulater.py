@@ -48,7 +48,9 @@ class RigidbodyRegulaterWindow:
   def _listingColliders(self):
     colliders = []
     for shape in self.rigidbodyShapes:
-      collider = shape.replace("rcube_", "rigid_")
+      if "g" in shape[0]:
+        shape = shape[1:]
+      collider = shape.replace("shape_", "rigid_")
       colliders.append(collider)
     return colliders
 
@@ -78,7 +80,6 @@ class RigidbodyRegulaterWindow:
     self.rigidbodyGroup = self._getRigidbodyGroup()
     self.rigidbodyShapes = self._listingShapes()
     self.constraintGroup = self._getConstraintGroup()
-    self.joints = self._listingJoints()
     self.colliders = self._listingColliders()
     self.joints = self._listingJoints()
 

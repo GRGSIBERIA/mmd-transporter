@@ -217,6 +217,10 @@ class RigidBodyGenerator:
         self._setJointLimitation(constraint, joint.rotation_limit_min, joint.rotation_limit_max, "angular", axis[i], i)
         self._setSpringLimitation(constraint, joint.spring_constant_translation, "linear", axis[i], i)
         self._setSpringLimitation(constraint, joint.spring_constant_rotation, "angular", axis[i], i)
+        
+        # angularだけconstPIを掛けないとconstraintが硬くなる
+        maya.cmds.setAttr("%s.angularConstraintMin%s" % (constraint, axis[i]), joint.rotation_limit_min[i] * self.constPI)
+        maya.cmds.setAttr("%s.angularConstraintMax%s" % (constraint, axis[i]), joint.rotation_limit_max[i] * self.constPI)
 
       constraints.append(constraint)
       constraintShapes.append(shape)
