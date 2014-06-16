@@ -135,7 +135,6 @@ class RigidBodyGenerator:
       self._setRigidbodyType(collider, rigid)
       self._setCollisionFilter(collider, rigid)
       self._setConstraintCollider(shape, rigid)
-      
 
       shapes.append(shape)
       colliders.append(collider)

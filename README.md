@@ -52,45 +52,14 @@ MMD Transporterをインストールしたい場所へ移したら、install.py�
 
 **Installing Failedと表示されなければ大丈夫です。**
 
+
 ### Bulletプラグインを有効化する
 MMDでは物理演算にBulletを利用しています。
 MMD Transporterもそれに習い、Bulletプラグインを利用してMMDの物理演算を再現します。
 
 [Window]-[Settings/Preferences]-[Plug-in Manager]でPlug-in Managerを開いてください。その中に、**bullet.mll**という項目がありますので、LoadedとAuto loadの両方をチェックしてください。
 
-さがすのが面倒くさい場合は、以下のMELでbullet.mllを読み込むことができます。
-
-```
-loadPlugin "bullet"
-```
-
-たまに起動時にBulletのプラグインがIndex Out of Range（値が範囲外です）で落ちることがあります。Bulletを扱う上ではそこまで問題にならないと思うのですが、気になる場合は読みなおしてみてください。
-
-
-### Human IKのテンプレートの登録
-** install.pyを実行すると自動的に登録が行われますが、たまに失敗することがあります。以下の手順は手動で登録を行う方法です。 **
-
-MMD Transporterで読み込んだモデルは、テンプレートを用いることで自動的にHuman IKを設定します。そのテンプレートがMMD HumanIK.xmlです。
-
-テンプレートは以下のディレクトリに保存されています。
-
-```
-C:/Users/ユーザ名/AppData/Roaming/Autodesk/HIKCharacterizationTool4/template
-```
-
-この中にMMD HumanIK.xmlを入れてください。もし見つからない場合は以下の手順でテンプレートを入れることができます。
-
-1. Mayaを起動する
-2. 適当にスケルトンを置く
-3. [Skeleton]-[Human IK]を選択
-4. Character ControlsのDefineからSkeletonを選択
-5. 適当に置いたスケルトンを選択
-6. Character Controlsの上部のアイコン(Load Skeleton Definition)をクリック
-7. Templateのプルダウンメニューから[Browse]を選択
-8. MMD HumanIK.xmlのファイルをコピーする
-9. 7番で表示されたダイアログで右クリックを押して貼り付け
-
-当該ディレクトリにテンプレートが保存されると、Load Skeleton DefinitionのTemplateにMMD HumanIKが追加されます。
+たまに起動時にBulletのプラグインがIndex Out of Range（値が範囲外です）で落ちることがあります。Bulletを扱う上ではそこまで問題にならないと思うのですが、気になる場合は読み直してみてください。
 
 
 ## 使い方
@@ -114,7 +83,7 @@ Plugin Managerでは、LoadのほかにAuto Loadにもチェックを入れる�
 maya.cmds.loadmmd()
 ```
 
-ダイアログが開くのでPMX/PMDを指定します。
+ダイアログが開くのでPMX/PMDを指定します。今のところPMXの読み込みのみ対応しています。UVモーフ、ボーンモーフが設定されているモデルは未対応です。
 
 
 ### 顔の裏側や不自然に描画される等の問題を解決する
@@ -124,7 +93,7 @@ MMDの透過テクスチャの描画順は材質順に準拠しています。�
 
 
 ### HumanIKの設定
-Human IKとは、Mayaのプラグインの一つです。利点は色々あるのですが、その中でもボーンの共通規格からFull Body IK（FBIK）をとリグを自動的に構築できるという点です。FBIKとは、体全体を引っ張るように操作できるIKのことです。
+Human IKとは、Mayaのプラグインの一つです。利点は色々あるのですが、その中でもボーンの共通規格からFull Body IK（FBIK）とリグを自動的に構築できるという点です。FBIKとは、体全体を引っ張るように操作できるIKのことです。
 
 Human IKは[Skeleton]-[Human IK]でペインが生成されます。Character ControlsのDefineからCreateを押すと、Human IKのキャラクターが生成されます。
 
@@ -140,7 +109,7 @@ Human IKは[Skeleton]-[Human IK]でペインが生成されます。Character Co
 ### MMD Transporter専用Blend Shape Editor
 MMD Transporterでは、日本語を一度ローマ字にしています。これは、Mayaがオブジェクトの名前に英語しか扱えない制約があるためです。そのため、Maya付属のBlend Shape Editorでは、Blend Shape名が全てローマ字になってしまい、たいへん使いづらいです。
 
-そこで、BlendShape用の専用のエディタを作成しました。使い方はBlend Shape Editorと同じです。MMD Transporterで変換したモデルデータを選択し、以下のコマンドを実行することでエディタを呼び出します。
+そこで、BlendShape用の専用のエディタを作成しました。使い方はBlend Shape Editorとだいたい同じです。MMD Transporterで変換したモデル（transform）を選択し、以下のコマンドを実行することでエディタを呼び出します。
 
 ```
 maya.cmds.mmdbswindow()
@@ -150,13 +119,13 @@ maya.cmds.mmdbswindow()
 ## TODO
 * インポータ
   - ボーンを日本語名で管理するためのアウトライナ
-  - Rigidbodyのパラメータを調整するためのツール
   - HumanIKの登録を自動化（できれば）
 * エクスポータ
   - チュートリアル付きのツールを作る
   - 親のグループにチュートリアルのステップ用アトリビュートを追加
 * その他
   - PyMeshIOにUVモーフの読み込みを追加してPull Request投げる
+
 
 ## お借りしたもの
 
