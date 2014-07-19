@@ -3,9 +3,15 @@ import maya.cmds
 import maya.OpenMaya
 
 class JointOrientAdjuster:
+
   def __init__(self):
-    self._assignedFlag = False
-    self._childJointCount = 0
+    pass
+
+
+#-----------------------------------------------------------------------
+# GUIのイベント関係
+#-----------------------------------------------------------------------
+
 
   def _checkSelectedNodeType(self, nodeType):
     try:
@@ -14,7 +20,7 @@ class JointOrientAdjuster:
       if nodeType != nodeType:
         raise
     except:
-      raise StandardError("Do not select %s." % nodeType)
+      raise "Do not select %s." % nodeType
     return targetName
 
 
@@ -29,14 +35,21 @@ class JointOrientAdjuster:
   def _assignEmpty(self):
     self._target = self._checkSelectedNodeType("joint")
     self._rootEmpty = self._createEmptyNode("JointOrientController")
-    self._assignedFlag = True
     maya.cmds.makeIdentity(apply=True, t=1, r=1, s=1, n=0, pn=1)
 
 
   def _initializeList(self):
+    # 対象の親と子のボーンを対象にする
     self._targetChildren = maya.cmds.listRelatives(self._target, c=True, typ="joint")
-    if self._targetChildren == None:
-      self._targetChildren = ["None"]
+    parent = maya.cmds.listRelatives(self._target, p=True, typ="joint")
+
+    if self._targetChildren == None and parent == None:
+      raise "%s doesn't have children and a parent." % self._target
+    elif self._targetChildren == None and parent != None:
+      self._targetChildren = parent
+    else:
+      self._targetChildren += parent
+
     for i in range(len(self._targetChildren)):
       maya.cmds.textScrollList(self._targetChildrenList, e=True, a=self._targetChildren[i])
     maya.cmds.textScrollList(self._targetChildrenList, e=True, sii=1)
@@ -69,9 +82,14 @@ class JointOrientAdjuster:
     self._prevFront = front
 
 
+#-----------------------------------------------------------------------
+# レイアウト関係
+#-----------------------------------------------------------------------
+
+
   def _layoutChildrenList(self):
     maya.cmds.rowLayout(nc=2)
-    maya.cmds.text("Target Child  ")
+    maya.cmds.text("Target     ")
     self._targetChildrenList = maya.cmds.textScrollList(h=100)
     maya.cmds.setParent("..")
 
@@ -133,9 +151,13 @@ class JointOrientAdjuster:
     self._layoutSide()
 
 
+#-----------------------------------------------------------------------
+# 実行関係
+#-----------------------------------------------------------------------
+
+
   def _adjustManual(self):
     pass
-
 
 
   def _testDirection(self, direction, axis):
@@ -146,7 +168,28 @@ class JointOrientAdjuster:
     return 0.0
 
 
-  def _getSecondaryDirection(self):
+  def _getVectorFromArray(self, array):
+    return maya.OpenMaya.MVector(array[0], array[1], array[2])
+
+
+  def _getDirectionFromTarget(self):
+    index = maya.cmds.textScrollList(self._layoutChildrenList, q=True, sl=True)
+    childName = self._targetChildrenList[index]
+    childPosB = maya.cmds.xform(childName, q=True, t=True, ws=True)
+    targetPosB = maya.cmds.xform(self._target, q=True, t=True, ws=True)
+    childPos = self._getVectorFromArray(childPosB)
+    targetPos = self._getVectorFromArray(targetPosB)
+    return (childPos - targetPos).normal()
+
+
+  def _getPrimaryDirection(self, threeDirections):
+    primaryType = maya.cmds.radioButtonGrp(self._jointFront, q=True, sl=True)
+    threeDirections[primaryType-1] = self._getDirectionFromTarget()
+    return primaryType
+
+
+  def _getSecondaryDirection(self, threeDirections):
+    second = maya.cmds.radioButtonGrp(self._secondAxis, q=True, sl=True)
     dirX = maya.cmds.radioButtonGrp(self._secondDirectionX, q=True, sl=True)
     dirY = maya.cmds.radioButtonGrp(self._secondDirectionY, q=True, sl=True)
     dirZ = maya.cmds.radioButtonGrp(self._secondDirectionZ, q=True, sl=True)
@@ -154,13 +197,29 @@ class JointOrientAdjuster:
     direction.x = self._testDirection(dirX, "X")
     direction.y = self._testDirection(dirY, "Y")
     direction.z = self._testDirection(dirZ, "Z")
-    return direction
+    threeDirections[second-1] = direction
+    return second
+
+
+  def _getThirdDirection(self, threeDirections, primary, second):
+    for i in range(3):
+      if threeDirections[i] == None:
+        threeDirections[i] = threeDirections[primary] ^ threeDirections[second]
+        return i
+
+
+  def _getTransformMatrix(self):
+    # X, Y, Zそれぞれに向きを表すベクトルを代入する
+    threeDirections = [None, None, None]    
+    primary = self._getPrimaryDirection(threeDirections)
+    second = self._getSecondaryDirection(threeDirections)
+    third = self._getThirdDirection(threeDirections, primary, second)
+    # secondaryをきちんとした向きに直す
+    threeDirections[second] = threeDirections[third] ^ threeDirections[primary]
 
 
   def _adjustUsingAxis(self):
-    primary = maya.cmds.radioButtonGrp(self._jointFront, q=True, sl=True)
-    second = maya.cmds.radioButtonGrp(self._secondAxis, q=True, sl=True)
-    direction = self._getSecondaryDirection()
+    transform = self._getTransformMatrix()
 
 
   def _doAdjustment(self, *args):
