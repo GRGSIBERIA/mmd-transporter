@@ -1,7 +1,7 @@
 import maya.cmds
 import string
 
-class RigidbodyRegulaterWindow:
+class RigidbodyRegulatorWindow:
 
   def _getMotherGroup(self):
     errorMessage = "Do not select MMD Model's transform."
@@ -165,12 +165,13 @@ class RigidbodyRegulaterWindow:
     maya.cmds.setParent("..")
 
   def show(self):
-    window = maya.cmds.window(t="Rigidbody Regulater", w=400, h=300)
+    window = maya.cmds.window(t="Rigidbody Regulator", w=400, h=300)
 
     self._layout()
 
     maya.cmds.showWindow(window)
 
-maya.cmds.select("rigidbodies")
-w = RigidbodyRegulaterWindow()
-w.show()
+def show():
+  maya.cmds.select("rigidbodies")
+  w = RigidbodyRegulatorWindow()
+  w.show()
