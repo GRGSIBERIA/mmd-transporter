@@ -28,7 +28,7 @@ class JointOrientAdjuster:
 
   def _assignEmpty(self):
     self._target = self._checkSelectedNodeType("joint")
-    self._rootEmpty = self._createEmptyNode("JointOrientAdjuster")
+    self._rootEmpty = self._createEmptyNode("JointOrientController")
     self._assignedFlag = True
     maya.cmds.makeIdentity(apply=True, t=1, r=1, s=1, n=0, pn=1)
 
@@ -46,19 +46,20 @@ class JointOrientAdjuster:
   def _createAdjuster(self, *args):
     self._assignEmpty()
     self._initializeList()
+    maya.cmds.textField(self._controllerName, e=True, text=self._target)
 
 
   def _getJointUpFront(self):
     front = maya.cmds.radioButtonGrp(self._jointFront, q=True, sl=True)
-    up = maya.cmds.radioButtonGrp(self._jointUp, q=True, sl=True)
+    up = maya.cmds.radioButtonGrp(self._secondAxis, q=True, sl=True)
     return (front, up)
 
 
   def _checkRadioButtonForJointUp(self, *args):
     front, up = self._getJointUpFront()
     if front == up:
-      maya.cmds.radioButtonGrp(self._jointUp, e=True, sl=self._prevUp)
-    self._prevUp = up
+      maya.cmds.radioButtonGrp(self._secondAxis, e=True, sl=self._prevAxis)
+    self._prevAxis = up
 
 
   def _checkRadioButtonForJointFront(self, *args):
@@ -78,20 +79,70 @@ class JointOrientAdjuster:
   def _layoutJointAxisRadioButtons(self):
     # Joint Orientの向きを決めるためのもの
     axisArray = ["X", "Y", "Z"]
+    columnWidth = [140, 64, 64, 64]
     self._jointFront = maya.cmds.radioButtonGrp(
-      l="Joint Front", nrb=3, la3=axisArray, sl=1, changeCommand=self._checkRadioButtonForJointFront)
-    self._jointUp = maya.cmds.radioButtonGrp(
-      l="Joint Up", nrb=3, la3=axisArray, sl=2, changeCommand=self._checkRadioButtonForJointUp)
+      l="Joint Front  ", nrb=3, la3=axisArray, sl=1, 
+      cw4=columnWidth,
+      changeCommand=self._checkRadioButtonForJointFront)
+    self._secondAxis = maya.cmds.radioButtonGrp(
+      l="Second Axis  ", nrb=3, la3=axisArray, sl=3, 
+      cw4=columnWidth,
+      changeCommand=self._checkRadioButtonForJointUp)
     self._prevFront = 1
-    self._prevUp = 2
+    self._prevAxis = 2
+
+
+  def _layoutSide(self):
+    columnWidth = [140, 64, 64]
+    self._secondDirectionX = maya.cmds.radioButtonGrp(
+      l="Second Direction  ", nrb=2, la2=["+X", "-X"], cw3=columnWidth)
+    self._secondDirectionY = maya.cmds.radioButtonGrp(
+      l="", scl=self._secondDirectionX, nrb=2, la2=["+Y", "-Y"], cw3=columnWidth)
+    self._secondDirectionZ = maya.cmds.radioButtonGrp(
+      l="", scl=self._secondDirectionX, nrb=2, la2=["+Z", "-Z"], cw3=columnWidth, sl=1)
+
+
+  def _changeManualFlag(self, *args):
+    flag = maya.cmds.checkBox(self._enableManual, q=True, v=True)
+    flag = False if flag else True
+    maya.cmds.textScrollList(self._targetChildrenList, e=True, enable=flag)
+    maya.cmds.radioButtonGrp(self._jointFront, e=True, enable=flag)
+    maya.cmds.radioButtonGrp(self._secondAxis, e=True, enable=flag)
+    maya.cmds.radioButtonGrp(self._secondDirectionX, e=True, enable=flag)
+    maya.cmds.radioButtonGrp(self._secondDirectionY, e=True, enable=flag)
+    maya.cmds.radioButtonGrp(self._secondDirectionZ, e=True, enable=flag)
+
+
+  def _layoutHeader(self):
+    maya.cmds.columnLayout()
+    maya.cmds.rowLayout(nc=2)
+    maya.cmds.button(l="Assign Adjuster", w=100, h=32, command=self._createAdjuster)
+    self._enableManual = maya.cmds.checkBox(l="Enable Manual Adjustment", v=False, changeCommand=self._changeManualFlag)
+    maya.cmds.setParent("..")
+    maya.cmds.rowLayout(nc=2)
+    maya.cmds.text(l="Controller Name  ")
+    self._controllerName = maya.cmds.textField(text="", editable=False)
+    maya.cmds.setParent("..")
+
+
+  def _layoutOptions(self):
+    self._layoutChildrenList()
+    maya.cmds.separator(h=8)
+    self._layoutJointAxisRadioButtons()
+    maya.cmds.separator(h=8)
+    self._layoutSide()
+
+
+  def _doAdjustment(self, *args):
+    sideX = maya.cmds.radioButtonGrp(self._secondDirectionX, q=True, sl=True)
+    sideY = maya.cmds.radioButtonGrp(self._secondDirectionY, q=True, sl=True)
+    sideZ = maya.cmds.radioButtonGrp(self._secondDirectionZ, q=True, sl=True)
 
 
   def _layout(self):
-    maya.cmds.columnLayout()
-    maya.cmds.button(l="Assign Adjuster", command=self._createAdjuster)
-
-    self._layoutChildrenList()
-    self._layoutJointAxisRadioButtons()
+    self._layoutHeader()
+    self._layoutOptions()
+    maya.cmds.button(l="Adjust", w=60, h=32, command=self._doAdjustment)
     
 
   def show(self):
