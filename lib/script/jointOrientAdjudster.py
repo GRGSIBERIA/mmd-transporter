@@ -33,17 +33,55 @@ class JointOrientAdjuster:
     maya.cmds.makeIdentity(apply=True, t=1, r=1, s=1, n=0, pn=1)
 
 
+  # プルダウンメニューにしたほうがいい
   def _createAdjuster(self, *args):
     self._assignEmpty()
-    self._childJointCount = len(maya.cmds.listRelatives(self._target, c=True, typ="joint"))
-    maya.cmds.intField(self._childCountField, e=True, v=self._childJointCount)
+    self._targetChildren = maya.cmds.listRelatives(self._target, c=True, typ="joint")
+    if self._targetChildren == None:
+      self._targetChildren = ["None"]
+    self._childJointCount = len(self._targetChildren)
+    self._targetChildIndex = 0
+    maya.cmds.textField(self._targetField, e=True, tx=self._targetChildren[0])
+
+
+  def _getTargetChild(self):
+    return self._targetChildren[self._targetChildIndex]
+
+
+  def _changeTargetFieldText(self):
+    maya.cmds.textField(self._targetField, e=True, tx=self._getTargetChild())
+
+
+  def _prevChildJoint(self, *args):
+    self._targetChildIndex -= 1
+    if self._targetChildIndex < 0:
+      self._targetChildIndex = self._childJointCount - 1
+    self._changeTargetFieldText()
+
+
+  def _nextChildJoint(self, *args):
+    self._targetChildIndex += 1
+    if self._targetChildIndex >= self._childJointCount:
+      self._targetChildIndex = 0
+    self._changeTargetFieldText()
+
 
   def _layout(self):
     maya.cmds.columnLayout()
     maya.cmds.button(l="Assign Adjuster", command=self._createAdjuster)
-    maya.cmds.rowLayout(nc=2)
-    maya.cmds.text("Number of Joint Children  ")
-    self._childCountField = maya.cmds.intField(editable=False, v=self._childJointCount)
+
+    maya.cmds.rowLayout(nc=4)
+    maya.cmds.text("Target Child  ")
+    self._targetField = maya.cmds.textField(editable=False)
+    maya.cmds.button(l="<", command=self._prevChildJoint)
+    maya.cmds.button(l=">", command=self._nextChildJoint)
+    maya.cmds.setParent("..")
+
+    maya.cmds.rowLayout(nc=4)
+    maya.cmds.text("Orient Front  ")
+    maya.cmds.button(l="X", w=24)
+    maya.cmds.button(l="Y", w=24)
+    maya.cmds.button(l="Z", w=24)
     maya.cmds.setParent("..")
 
 
