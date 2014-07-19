@@ -33,57 +33,66 @@ class JointOrientAdjuster:
     maya.cmds.makeIdentity(apply=True, t=1, r=1, s=1, n=0, pn=1)
 
 
-  # プルダウンメニューにしたほうがいい
-  def _createAdjuster(self, *args):
-    self._assignEmpty()
+  def _initializeList(self):
     self._targetChildren = maya.cmds.listRelatives(self._target, c=True, typ="joint")
     if self._targetChildren == None:
       self._targetChildren = ["None"]
-    self._childJointCount = len(self._targetChildren)
-    self._targetChildIndex = 0
-    maya.cmds.textField(self._targetField, e=True, tx=self._targetChildren[0])
+    for i in range(len(self._targetChildren)):
+      maya.cmds.textScrollList(self._targetChildrenList, e=True, a=self._targetChildren[i])
+    maya.cmds.textScrollList(self._targetChildrenList, e=True, sii=1)
 
 
-  def _getTargetChild(self):
-    return self._targetChildren[self._targetChildIndex]
+  # プルダウンメニューにしたほうがいい→コマンド名わからない
+  def _createAdjuster(self, *args):
+    self._assignEmpty()
+    self._initializeList()
 
 
-  def _changeTargetFieldText(self):
-    maya.cmds.textField(self._targetField, e=True, tx=self._getTargetChild())
+  def _getJointUpFront(self):
+    front = maya.cmds.radioButtonGrp(self._jointFront, q=True, sl=True)
+    up = maya.cmds.radioButtonGrp(self._jointUp, q=True, sl=True)
+    return (front, up)
 
 
-  def _prevChildJoint(self, *args):
-    self._targetChildIndex -= 1
-    if self._targetChildIndex < 0:
-      self._targetChildIndex = self._childJointCount - 1
-    self._changeTargetFieldText()
+  def _checkRadioButtonForJointUp(self, *args):
+    front, up = self._getJointUpFront()
+    if front == up:
+      maya.cmds.radioButtonGrp(self._jointUp, e=True, sl=self._prevUp)
+    self._prevUp = up
 
 
-  def _nextChildJoint(self, *args):
-    self._targetChildIndex += 1
-    if self._targetChildIndex >= self._childJointCount:
-      self._targetChildIndex = 0
-    self._changeTargetFieldText()
+  def _checkRadioButtonForJointFront(self, *args):
+    front, up = self._getJointUpFront()
+    if front == up:
+      maya.cmds.radioButtonGrp(self._jointFront, e=True, sl=self._prevFront)
+    self._prevFront = front
+
+
+  def _layoutChildrenList(self):
+    maya.cmds.rowLayout(nc=2)
+    maya.cmds.text("Target Child  ")
+    self._targetChildrenList = maya.cmds.textScrollList(h=100)
+    maya.cmds.setParent("..")
+
+
+  def _layoutJointAxisRadioButtons(self):
+    # Joint Orientの向きを決めるためのもの
+    axisArray = ["X", "Y", "Z"]
+    self._jointFront = maya.cmds.radioButtonGrp(
+      l="Joint Front", nrb=3, la3=axisArray, sl=1, changeCommand=self._checkRadioButtonForJointFront)
+    self._jointUp = maya.cmds.radioButtonGrp(
+      l="Joint Up", nrb=3, la3=axisArray, sl=2, changeCommand=self._checkRadioButtonForJointUp)
+    self._prevFront = 1
+    self._prevUp = 2
 
 
   def _layout(self):
     maya.cmds.columnLayout()
     maya.cmds.button(l="Assign Adjuster", command=self._createAdjuster)
 
-    maya.cmds.rowLayout(nc=4)
-    maya.cmds.text("Target Child  ")
-    self._targetField = maya.cmds.textField(editable=False)
-    maya.cmds.button(l="<", command=self._prevChildJoint)
-    maya.cmds.button(l=">", command=self._nextChildJoint)
-    maya.cmds.setParent("..")
-
-    maya.cmds.rowLayout(nc=4)
-    maya.cmds.text("Orient Front  ")
-    maya.cmds.button(l="X", w=24)
-    maya.cmds.button(l="Y", w=24)
-    maya.cmds.button(l="Z", w=24)
-    maya.cmds.setParent("..")
-
+    self._layoutChildrenList()
+    self._layoutJointAxisRadioButtons()
+    
 
   def show(self):
     self.window = maya.cmds.window(t="Joint Orient Adjuster", w=400, h=300)
