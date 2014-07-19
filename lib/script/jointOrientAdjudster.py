@@ -133,11 +133,41 @@ class JointOrientAdjuster:
     self._layoutSide()
 
 
-  def _doAdjustment(self, *args):
-    sideX = maya.cmds.radioButtonGrp(self._secondDirectionX, q=True, sl=True)
-    sideY = maya.cmds.radioButtonGrp(self._secondDirectionY, q=True, sl=True)
-    sideZ = maya.cmds.radioButtonGrp(self._secondDirectionZ, q=True, sl=True)
+  def _adjustManual(self):
+    pass
 
+
+
+  def _testDirection(self, direction, axis):
+    if direction != 0:
+      if direction == 1:
+        return 1.0
+      return -1.0
+    return 0.0
+
+
+  def _getSecondaryDirection(self):
+    dirX = maya.cmds.radioButtonGrp(self._secondDirectionX, q=True, sl=True)
+    dirY = maya.cmds.radioButtonGrp(self._secondDirectionY, q=True, sl=True)
+    dirZ = maya.cmds.radioButtonGrp(self._secondDirectionZ, q=True, sl=True)
+    direction = maya.OpenMaya.MVector()
+    direction.x = self._testDirection(dirX, "X")
+    direction.y = self._testDirection(dirY, "Y")
+    direction.z = self._testDirection(dirZ, "Z")
+    return direction
+
+
+  def _adjustUsingAxis(self):
+    primary = maya.cmds.radioButtonGrp(self._jointFront, q=True, sl=True)
+    second = maya.cmds.radioButtonGrp(self._secondAxis, q=True, sl=True)
+    direction = self._getSecondaryDirection()
+
+
+  def _doAdjustment(self, *args):
+    if maya.cmds.checkBox(self._enableManual, q=True, v=True):
+      self._adjustManual()
+    self._adjustUsingAxis()
+    
 
   def _layout(self):
     self._layoutHeader()
