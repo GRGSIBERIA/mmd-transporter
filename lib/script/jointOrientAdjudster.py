@@ -216,6 +216,7 @@ class JointOrientAdjuster:
     third = self._getThirdDirection(threeDirections, primary, second)
     # secondaryをきちんとした向きに直す
     threeDirections[second] = threeDirections[third] ^ threeDirections[primary]
+    # ここから先に回転行列を得るためのコードを書く
 
 
   def _adjustUsingAxis(self):
