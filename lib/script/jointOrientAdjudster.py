@@ -1,6 +1,7 @@
 #-*- encoding: utf-8
 import maya.cmds
 import maya.OpenMaya
+import copy
 
 class JointOrientAdjuster:
 
@@ -45,10 +46,6 @@ class JointOrientAdjuster:
 
     if self._targetChildren == None and parent == None:
       raise "%s doesn't have children and a parent." % self._target
-    elif self._targetChildren == None and parent != None:
-      self._targetChildren = parent
-    else:
-      self._targetChildren += parent
 
     for i in range(len(self._targetChildren)):
       maya.cmds.textScrollList(self._targetChildrenList, e=True, a=self._targetChildren[i])
@@ -103,7 +100,7 @@ class JointOrientAdjuster:
       cw4=columnWidth,
       changeCommand=self._checkRadioButtonForJointFront)
     self._secondAxis = maya.cmds.radioButtonGrp(
-      l="Second Axis  ", nrb=3, la3=axisArray, sl=3, 
+      l="Secondary Axis  ", nrb=3, la3=axisArray, sl=3, 
       cw4=columnWidth,
       changeCommand=self._checkRadioButtonForJointUp)
     self._prevFront = 1
@@ -113,11 +110,11 @@ class JointOrientAdjuster:
   def _layoutSide(self):
     columnWidth = [140, 64, 64]
     self._secondDirectionX = maya.cmds.radioButtonGrp(
-      l="Second Direction  ", nrb=2, la2=["+X", "-X"], cw3=columnWidth)
+      l="Secondary Orientation  ", nrb=2, la2=["Xup", "Xdown"], cw3=columnWidth)
     self._secondDirectionY = maya.cmds.radioButtonGrp(
-      l="", scl=self._secondDirectionX, nrb=2, la2=["+Y", "-Y"], cw3=columnWidth)
+      l="", scl=self._secondDirectionX, nrb=2, la2=["Yup", "Ydown"], cw3=columnWidth)
     self._secondDirectionZ = maya.cmds.radioButtonGrp(
-      l="", scl=self._secondDirectionX, nrb=2, la2=["+Z", "-Z"], cw3=columnWidth, sl=1)
+      l="", scl=self._secondDirectionX, nrb=2, la2=["Zup", "Zdown"], cw3=columnWidth, sl=1)
 
 
   def _changeManualFlag(self, *args):
@@ -160,8 +157,63 @@ class JointOrientAdjuster:
     pass
 
 
+  def _getPrimary(self):
+    primaryNum = maya.cmds.radioButtonGrp(self._jointFront, q=True, sl=True)
+    elem = ["x", "y", "z"]
+    return elem[primaryNum - 1]
+
+
+  def _getSecondary(self):
+    selectionArray = []
+    elem = ["x", "y", "z"]
+    selectionArray.append(maya.cmds.radioButtonGrp(self._secondDirectionX, q=True, sl=True))
+    selectionArray.append(maya.cmds.radioButtonGrp(self._secondDirectionY, q=True, sl=True))
+    selectionArray.append(maya.cmds.radioButtonGrp(self._secondDirectionZ, q=True, sl=True))
+    for i in range(len(selectionArray)):
+      if selectionArray[i] > 0:
+        return (elem[i], "up" if selectionArray[i] == 1 else "down")
+    raise "Do not select secondary axis. What's happen?"
+
+
+  def _getThird(self, primary, secondary):
+    selectedArray = [primary, secondary]
+    elem = ["x", "y", "z"]
+    for e in elem:
+      if e not in selectedArray:
+        return e
+    raise "Unpossible..."
+
+
+  def _getOrderAndSign(self):
+    primary = self._getPrimary()
+    secondary, secondarySign = self._getSecondary()
+    third = self._getThird(primary, secondary)
+    order = primary + secondary + third
+    sign = secondary + secondarySign
+    return (order, sign)
+
+
+  def _disconnectChildren(self):
+    selectNumber = maya.cmds.textScrollList(self._targetChildrenList, q=True, sii=True)[0] - 1
+    targetChild = self._targetChildren[selectNumber]
+    targetChildren = copy.deepcopy(self._targetChildren)
+    del targetChildren[selectNumber]
+    for joint in targetChildren:
+      maya.cmds.parent(joint, w=True)   # 対象の子ボーン以外の接続を外す
+    return targetChildren
+
+
+  def _reconnectChildren(self, targetChildren):
+    for joint in targetChildren:
+      maya.cmds.connectJoint(joint, self._target, pm=True)
+
+
   def _adjustUsingAxis(self):
-    pass
+    # 一度、対象のジョイント以外の接続を外してからOrient Jointを実行する
+    order, sign = self._getOrderAndSign()
+    targetChildren = self._disconnectChildren()
+    maya.cmds.joint(self._target, e=True, oj=order, sao=sign, zso=True)
+    self._reconnectChildren(targetChildren)
 
 
   def _doAdjustment(self, *args):
