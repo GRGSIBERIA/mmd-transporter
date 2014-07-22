@@ -17,11 +17,11 @@ class JointOrientAdjuster:
   def _checkSelectedNodeType(self, nodeType):
     try:
       targetName = maya.cmds.ls(sl=True)[0]
-      nodeType = maya.cmds.nodeType(targetName)
-      if nodeType != nodeType:
+      nodeTypeBuf = maya.cmds.nodeType(targetName)
+      if nodeType != nodeTypeBuf:
         raise
     except:
-      raise "Do not select %s." % nodeType
+      raise u"Do not select %s." % nodeType
     return targetName
 
 
@@ -29,7 +29,7 @@ class JointOrientAdjuster:
     position = maya.cmds.xform(q=True, t=True, ws=True)
     emptyNode = maya.cmds.CreateEmptyGroup()
     maya.cmds.xform(t=position, ws=True)
-    maya.cmds.rename(emptyNode, name)
+    name = maya.cmds.rename(emptyNode, name)
     return name
 
 
@@ -42,11 +42,8 @@ class JointOrientAdjuster:
   def _initializeList(self):
     # 対象の親と子のボーンを対象にする
     self._targetChildren = maya.cmds.listRelatives(self._target, c=True, typ="joint")
-    parent = maya.cmds.listRelatives(self._target, p=True, typ="joint")
 
-    if self._targetChildren == None and parent == None:
-      raise "%s doesn't have children and a parent." % self._target
-
+    maya.cmds.textScrollList(self._targetChildrenList, e=True, ra=True)
     for i in range(len(self._targetChildren)):
       maya.cmds.textScrollList(self._targetChildrenList, e=True, a=self._targetChildren[i])
     maya.cmds.textScrollList(self._targetChildrenList, e=True, sii=1)
@@ -57,6 +54,7 @@ class JointOrientAdjuster:
     self._assignEmpty()
     self._initializeList()
     maya.cmds.textField(self._controllerName, e=True, text=self._target)
+    maya.cmds.textField(self._adjusterName, e=True, text=self._rootEmpty)
 
 
   def _getJointUpFront(self):
@@ -118,7 +116,10 @@ class JointOrientAdjuster:
 
 
   def _changeManualFlag(self, *args):
-    flag = maya.cmds.checkBox(self._enableManual, q=True, v=True)
+    manual = maya.cmds.checkBox(self._enableManual, q=True, v=True)
+    world = maya.cmds.checkBox(self._worldFlag, q=True, v=True)
+    flag = manual or world
+    print flag
     flag = False if flag else True
     maya.cmds.textScrollList(self._targetChildrenList, e=True, enable=flag)
     maya.cmds.radioButtonGrp(self._jointFront, e=True, enable=flag)
@@ -130,14 +131,20 @@ class JointOrientAdjuster:
 
   def _layoutHeader(self):
     maya.cmds.columnLayout()
-    maya.cmds.rowLayout(nc=2)
-    maya.cmds.button(l="Assign Adjuster", w=100, h=32, command=self._createAdjuster)
+    maya.cmds.button(l="Assign Adjuster", w=308, h=32, command=self._createAdjuster)
+    maya.cmds.separator(h=8)
     self._enableManual = maya.cmds.checkBox(l="Enable Manual Adjustment", v=False, changeCommand=self._changeManualFlag)
+    self._worldFlag = maya.cmds.checkBox(l="Orient Joint to World", v=False, changeCommand=self._changeManualFlag)
+    maya.cmds.separator(h=8)
+    maya.cmds.rowLayout(nc=2)
+    maya.cmds.text(l="Adjuster Name   ")
+    self._adjusterName = maya.cmds.textField(text="", editable=False, w=150)
     maya.cmds.setParent("..")
     maya.cmds.rowLayout(nc=2)
     maya.cmds.text(l="Controller Name  ")
-    self._controllerName = maya.cmds.textField(text="", editable=False)
+    self._controllerName = maya.cmds.textField(text="", editable=False, w=150)
     maya.cmds.setParent("..")
+    maya.cmds.separator(h=8)
 
 
   def _layoutOptions(self):
@@ -146,6 +153,8 @@ class JointOrientAdjuster:
     self._layoutJointAxisRadioButtons()
     maya.cmds.separator(h=8)
     self._layoutSide()
+    maya.cmds.separator(h=8)
+    maya.cmds.button(l="Adjust", w=308, h=32, command=self._doAdjustment)
 
 
 #-----------------------------------------------------------------------
@@ -172,7 +181,7 @@ class JointOrientAdjuster:
     for i in range(len(selectionArray)):
       if selectionArray[i] > 0:
         return (elem[i], "up" if selectionArray[i] == 1 else "down")
-    raise "Do not select secondary axis. What's happen?"
+    raise u"Do not select secondary axis. What's happen?"
 
 
   def _getThird(self, primary, secondary):
@@ -181,7 +190,7 @@ class JointOrientAdjuster:
     for e in elem:
       if e not in selectedArray:
         return e
-    raise "Unpossible..."
+    raise u"Unpossible..."
 
 
   def _getOrderAndSign(self):
@@ -196,15 +205,13 @@ class JointOrientAdjuster:
   def _disconnectChildren(self):
     selectNumber = maya.cmds.textScrollList(self._targetChildrenList, q=True, sii=True)[0] - 1
     targetChild = self._targetChildren[selectNumber]
-    targetChildren = copy.deepcopy(self._targetChildren)
-    del targetChildren[selectNumber]
-    for joint in targetChildren:
+    for joint in self._targetChildren:
       maya.cmds.parent(joint, w=True)   # 対象の子ボーン以外の接続を外す
     return targetChildren
 
 
-  def _reconnectChildren(self, targetChildren):
-    for joint in targetChildren:
+  def _reconnectChildren(self):
+    for joint in self._targetChildren:
       maya.cmds.connectJoint(joint, self._target, pm=True)
 
 
@@ -212,24 +219,29 @@ class JointOrientAdjuster:
     # 一度、対象のジョイント以外の接続を外してからOrient Jointを実行する
     order, sign = self._getOrderAndSign()
     targetChildren = self._disconnectChildren()
-    maya.cmds.joint(self._target, e=True, oj=order, sao=sign, zso=True)
-    self._reconnectChildren(targetChildren)
+    if not maya.cmds.checkBox(self._worldFlag, q=True, v=True):
+      # Freezeさせる
+      maya.cmds.joint(self._target, e=True, o=[0, 0, 0], zso=True)
+    else:
+      maya.cmds.joint(self._target, e=True, oj=order, sao=sign, zso=True)
+    self._reconnectChildren()
 
 
   def _doAdjustment(self, *args):
     if maya.cmds.checkBox(self._enableManual, q=True, v=True):
       self._adjustManual()
-    self._adjustUsingAxis()
-    
+    else:
+      self._adjustUsingAxis()
+    maya.cmds.select(self._target)
+
 
   def _layout(self):
     self._layoutHeader()
     self._layoutOptions()
-    maya.cmds.button(l="Adjust", w=60, h=32, command=self._doAdjustment)
     
 
   def show(self):
-    self.window = maya.cmds.window(t="Joint Orient Adjuster", w=400, h=300)
+    self.window = maya.cmds.window(t="Joint Orient Adjuster", w=300, h=300)
 
     self._layout()
 
