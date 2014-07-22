@@ -160,67 +160,8 @@ class JointOrientAdjuster:
     pass
 
 
-  def _testDirection(self, direction, axis):
-    if direction != 0:
-      if direction == 1:
-        return 1.0
-      return -1.0
-    return 0.0
-
-
-  def _getVectorFromArray(self, array):
-    return maya.OpenMaya.MVector(array[0], array[1], array[2])
-
-
-  def _getDirectionFromTarget(self):
-    index = maya.cmds.textScrollList(self._layoutChildrenList, q=True, sl=True)
-    childName = self._targetChildrenList[index]
-    childPosB = maya.cmds.xform(childName, q=True, t=True, ws=True)
-    targetPosB = maya.cmds.xform(self._target, q=True, t=True, ws=True)
-    childPos = self._getVectorFromArray(childPosB)
-    targetPos = self._getVectorFromArray(targetPosB)
-    return (childPos - targetPos).normal()
-
-
-  def _getPrimaryDirection(self, threeDirections):
-    primaryType = maya.cmds.radioButtonGrp(self._jointFront, q=True, sl=True)
-    threeDirections[primaryType-1] = self._getDirectionFromTarget()
-    return primaryType
-
-
-  def _getSecondaryDirection(self, threeDirections):
-    second = maya.cmds.radioButtonGrp(self._secondAxis, q=True, sl=True)
-    dirX = maya.cmds.radioButtonGrp(self._secondDirectionX, q=True, sl=True)
-    dirY = maya.cmds.radioButtonGrp(self._secondDirectionY, q=True, sl=True)
-    dirZ = maya.cmds.radioButtonGrp(self._secondDirectionZ, q=True, sl=True)
-    direction = maya.OpenMaya.MVector()
-    direction.x = self._testDirection(dirX, "X")
-    direction.y = self._testDirection(dirY, "Y")
-    direction.z = self._testDirection(dirZ, "Z")
-    threeDirections[second-1] = direction
-    return second
-
-
-  def _getThirdDirection(self, threeDirections, primary, second):
-    for i in range(3):
-      if threeDirections[i] == None:
-        threeDirections[i] = threeDirections[primary] ^ threeDirections[second]
-        return i
-
-
-  def _getTransformMatrix(self):
-    # X, Y, Zそれぞれに向きを表すベクトルを代入する
-    threeDirections = [None, None, None]    
-    primary = self._getPrimaryDirection(threeDirections)
-    second = self._getSecondaryDirection(threeDirections)
-    third = self._getThirdDirection(threeDirections, primary, second)
-    # secondaryをきちんとした向きに直す
-    threeDirections[second] = threeDirections[third] ^ threeDirections[primary]
-    # ここから先に回転行列を得るためのコードを書く
-
-
   def _adjustUsingAxis(self):
-    transform = self._getTransformMatrix()
+    pass
 
 
   def _doAdjustment(self, *args):
