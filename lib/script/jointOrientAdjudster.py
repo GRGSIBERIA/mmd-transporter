@@ -166,40 +166,87 @@ class JointOrientAdjuster:
     pass
 
 
-  def _getPrimary(self):
-    primaryNum = maya.cmds.radioButtonGrp(self._jointFront, q=True, sl=True)
-    elem = ["x", "y", "z"]
-    return elem[primaryNum - 1]
+  def _getPrimary(self, transformArray):
+    primaryNum = maya.cmds.radioButtonGrp(self._jointFront, q=True, sl=True) - 1
+    direction = maya.OpenMaya.MVector()
+    target = maya.cmds.xform(self._target, q=True, ws=True, t=True)
+    child = maya.cmds.xform(self._targetChildren, q=True, ws=True, t=True)
+    direction.x = child[0] - target[0]
+    direction.y = child[1] - target[1]
+    direction.z = child[2] - target[2]
+    direction.normalize()
+    transformArray[primaryNum] = direction
+    return direction
 
 
-  def _getSecondary(self):
+  def _getSecondaryNumber(self):
+    return maya.cmds.radioButtonGrp(self._secondAxis, q=True, sl=True) - 1
+
+
+  def _getSecondary(self, transformArray):
     selectionArray = []
-    elem = ["x", "y", "z"]
+    vector = maya.OpenMaya.MVector()
     selectionArray.append(maya.cmds.radioButtonGrp(self._secondDirectionX, q=True, sl=True))
     selectionArray.append(maya.cmds.radioButtonGrp(self._secondDirectionY, q=True, sl=True))
     selectionArray.append(maya.cmds.radioButtonGrp(self._secondDirectionZ, q=True, sl=True))
-    for i in range(len(selectionArray)):
+    if selectionArray[0] > 0:
+      vector.x = 1.0
+    elif selectionArray[1] > 0:
+      vector.y = 1.0
+    elif selectionArray[2] > 0:
+      vector.z = 1.0
+
+    for i in range(3):
       if selectionArray[i] > 0:
-        return (elem[i], "up" if selectionArray[i] == 1 else "down")
+        if selectionArray[i] == 2:
+          vector *= -1.0
+        secondaryNumber = self._getSecondaryNumber()
+        transformArray[secondaryNumber] = vector
+        return vector
     raise u"Do not select secondary axis. What's happen?"
 
 
-  def _getThird(self, primary, secondary):
-    selectedArray = [primary, secondary]
-    elem = ["x", "y", "z"]
-    for e in elem:
-      if e not in selectedArray:
-        return e
-    raise u"Unpossible..."
+  def _getThird(self, transformArray, primary, secondary):
+    third = primary ^ secondary
+    for i in range(3):
+      try:
+        if transformArray[i] == None: # MVectorとNoneを比較すると落ちる
+          transformArray[i] = third
+          return third
+      except ValueError:
+        pass
 
 
-  def _getOrderAndSign(self):
-    primary = self._getPrimary()
-    secondary, secondarySign = self._getSecondary()
-    third = self._getThird(primary, secondary)
-    order = primary + secondary + third
-    sign = secondary + secondarySign
-    return (order, sign)
+  def _adjustSecondary(self, transformArray, primary, third):
+    secondary = third ^ primary
+    secondaryNumber = self._getSecondaryNumber()
+    transformArray[secondaryNumber] = secondary
+
+
+  def _createMatrix(self, transformArray):
+    transform = maya.OpenMaya.MMatrix()
+    for i in range(3):
+      for j in range(3):
+        # この部分でエラーを起こすので、生ポインタを使うしかない
+        # 親ボーンのJoint Orientを蓄積するの忘れた
+        # EulerRotationにして親子で足し算したほうがいいかも
+        transform[i * 4 + j] = transformArray[i][j]   # 使えない
+    return transform
+
+  def _getTransformMatrix(self):
+    transformArray = [None] * 3
+    primary = self._getPrimary(transformArray)
+    secondary = self._getSecondary(transformArray)
+    third = self._getThird(transformArray, primary, secondary)
+    self._adjustSecondary(transformArray, primary, third)
+    
+    return self._createMatrix(transformArray)
+
+
+  def _getEulerRotation(self):
+    transform = self._getTransformMatrix()
+    rotationMatrix = maya.OpenMaya.MTransformationMatrix(transform)
+    return rotationMatrix.eulerRotation()
 
 
   def _disconnectChildren(self):
@@ -207,7 +254,6 @@ class JointOrientAdjuster:
     targetChild = self._targetChildren[selectNumber]
     for joint in self._targetChildren:
       maya.cmds.parent(joint, w=True)   # 対象の子ボーン以外の接続を外す
-    return targetChildren
 
 
   def _reconnectChildren(self):
@@ -217,13 +263,14 @@ class JointOrientAdjuster:
 
   def _adjustUsingAxis(self):
     # 一度、対象のジョイント以外の接続を外してからOrient Jointを実行する
-    order, sign = self._getOrderAndSign()
+    transformMatrix = self._getTransformMatrix()
     targetChildren = self._disconnectChildren()
     if not maya.cmds.checkBox(self._worldFlag, q=True, v=True):
       # Freezeさせる
       maya.cmds.joint(self._target, e=True, o=[0, 0, 0], zso=True)
     else:
-      maya.cmds.joint(self._target, e=True, oj=order, sao=sign, zso=True)
+      eulerRotation = self._getEulerRotation()
+      print eulerRotation
     self._reconnectChildren()
 
 
