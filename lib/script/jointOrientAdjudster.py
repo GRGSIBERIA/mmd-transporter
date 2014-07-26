@@ -15,8 +15,10 @@ class JointMath:
     for i in range(3):
       direction.append(cpos[i] - ppos[i])
       direction[i] *= direction[i]
-      direction[i] = math.sqrt(direction[i])
-    return direction
+    length = 0.0
+    for d in direction:
+      length += d
+    return math.sqrt(length)
 
 
 class JointOrientControlls:
