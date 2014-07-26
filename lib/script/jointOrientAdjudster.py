@@ -1,8 +1,23 @@
 #-*- encoding: utf-8
 import maya.cmds
 import maya.OpenMaya
-import pymel.core as pm
+#import pymel.core as pm
+#import pymel.api as api
 import copy
+import math
+
+class JointMath:
+  @classmethod
+  def Length(cls, child, parent):
+    cpos = maya.cmds.xform(child, q=True, ws=True)[0]
+    ppos = maya.cmds.xform(parent, q=True, ws=True)[0]
+    direction = []
+    for i in range(3):
+      direction.append(cpos[i] - ppos[i])
+      direction[i] *= direction[i]
+      direction[i] = math.sqrt(direction[i])
+    return direction
+
 
 class JointOrientControlls:
 
