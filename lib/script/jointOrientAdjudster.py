@@ -64,11 +64,14 @@ class JointMath:
 
 
 
-class SetJointWrapper:
-  def __init__(self):
-    pass
+class JointOrientViews:
 
-  def GetJoint(self):
+  def __init__(self):
+    self.width = 340
+    self.math = JointMath()
+
+
+  def _getJoint(self):
     lsArray = maya.cmds.ls(sl=True)
     if len(lsArray) < 1 or len(lsArray) > 1:
       raise "Do not select a joint. Please, select one joint."
@@ -77,50 +80,28 @@ class SetJointWrapper:
     return lsArray[0]
 
 
-  def GetChildren(self, joint):
+  def _getChildren(self, joint):
     children = maya.cmds.listRelatives(joint, c=True, typ="joint")
     if len(children) < 1:
       raise "%s do not have children." % joint
     return children
 
 
-  def SetTextScrollList(self, scrollList, children):
+  def _setJointName(self, selectedJoint, jointName):
+    maya.cmds.textField(selectedJoint, e=True, text=jointName)
+
+
+  def _setTextScrollList(self, scrollList, children):
+    maya.cmds.textScrollList(scrollList, e=True, ra=True)
     for child in children:
       maya.cmds.textScrollList(scrollList, e=True, a=child)
 
 
-class SelectScrollWrapper:
-  
-  def GetSelectFrontDirection(self, scrollList):
-    selectIndex = maya.cmds.textScrollList(scrollList, q=True, sl=True)
-    if selectIndex == 0:
-      raise "Do not select child bones"
-    return selectIndex - 1
-  
-
-  def GetFrontDirection(self, scrollList):
-    selectIndex = self.selectScrollWrap.GetSelectFrontDirection(scrollList)
-    selectChild = self._children[selectIndex]
-    direction = self.math.Direction(selectChild, self._joint) 
-
-
-class JointOrientViews:
-
-  def __init__(self):
-    self.width = 340
-    self.math = JointMath()
-    self.selectScrollWrap = SelectScrollWrapper()
-    self.setJointWrap = SetJointWrapper()
-
-
   def _setJoint(self, *args):
-    self._joint = self.setJointWrap.GetJoint()
-    self._children = self.setJointWrap.GetChildren(self._joint)
-    self.setJointWrap.SetTextScrollList(self._scrollList, self._children)
-
-
-  def _selectScrollList(self, *args):
-    pass
+    self._joint = self._getJoint()
+    self._children = self._getChildren(self._joint)
+    self._setJointName(self._selectedJoint, self._joint)
+    self._setTextScrollList(self._scrollList, self._children)
 
 
   def _layout(self):
@@ -129,13 +110,13 @@ class JointOrientViews:
     maya.cmds.button(l="Set Joint", w=self.width, h=32, command=self._setJoint)
 
     maya.cmds.rowLayout(nc=2)
-    maya.cmds.text(l="  Selected Joint  ", w=82)
-    self._selectedJoint = maya.cmds.textField(editable=False)
+    maya.cmds.text(l="Selected Joint", w=82)
+    self._selectedJoint = maya.cmds.textField(editable=False, w=250)
     maya.cmds.setParent("..")
 
     maya.cmds.rowLayout(nc=2)
-    maya.cmds.text(l="  Front Direction  ")
-    self._scrollList = maya.cmds.textScrollList(w=250, h=128, sc=self._selectScrollList)
+    maya.cmds.text(l="Front Direction")
+    self._scrollList = maya.cmds.textScrollList(w=250, h=128)
     maya.cmds.setParent("..")
     
     maya.cmds.rowLayout(nc=5)
