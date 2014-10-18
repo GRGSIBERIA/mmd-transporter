@@ -157,7 +157,11 @@ class RigidBodyGenerator:
     ai = joint.rigidbody_index_a
     bi = joint.rigidbody_index_b
     maya.cmds.select(self.colliders[ai])
-    maya.cmds.select(self.colliders[bi], tgl=True)
+    try:
+      maya.cmds.select(self.colliders[bi], tgl=True)
+    except RuntimeError:
+      maya.cmds.warning("Jointの名前が重複しています(%s, %d, %d)" % (self.colliders[ai], ai, bi))
+      return None, None
     constraint = bullet.RigidBodyConstraint.CreateRigidBodyConstraint().executeCommandCB()[0]
     shape = constraint.replace("Shape", "")
     maya.cmds.setAttr("%s.constraintType" % constraint, 5)
@@ -180,6 +184,11 @@ class RigidBodyGenerator:
     bi = joint.rigidbody_index_b
     colliderA = self.colliderShapes[ai]
     colliderB = self.colliderShapes[bi]
+
+    if colliderA == colliderB:
+      maya.cmds.warning("剛体の名前が重複しています(%s, %d, %d)" % (colliderA, ai, bi))
+      return None, None
+
     groupB = maya.cmds.group(colliderB, n="g%s" % colliderB)
     maya.cmds.parentConstraint(colliderA, groupB, mo=True)
     return bi, groupB
@@ -217,9 +226,17 @@ class RigidBodyGenerator:
 
     for i in range(len(joints)):
       joint = joints[i]
+
       constraint, shape = self._instantiateConstraint(joint)
+      if constraint == None:
+        continue  # ジョイントの名前が重複しているパターン
+
       self._pinnedConstraintWithBone(shape, joint)
+
       groupIndex, group = self._constraintTwoCollider(joint)
+      if groupIndex == None:
+        continue  # これも剛体の名前の重複
+
       groups[groupIndex] = group
 
       axis = ["X", "Y", "Z"]
