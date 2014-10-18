@@ -82,17 +82,25 @@ class RigidBodyGenerator:
       util.setFloat(collider, "defaultRadius", colliderSize[0])
       util.setFloat(collider, "defaultLength", colliderSize[1] + colliderSize[0] * 2)
 
+  def _checkedSetAttr(self, collider, value, name):
+    if value > 1.0:
+      warning = value
+      value = 1.0
+      maya.cmds.warning("%s.%s(%f > 1.0) rounded 1.0." % (collider, name, warning))
+    return value
 
   def _setParameters(self, collider, param):
     maya.cmds.setAttr("%s.mass" % collider, param.mass)
     maya.cmds.setAttr("%s.linearDamping" % collider, param.linear_damping)
-    if param.friction > 1.0:
-      warning = param.friction
-      param.friction = 1.0
-      maya.cmds.warning("%s.friction(%f > 1.0) rounded 1.0." % (collider, warning))
+
+    param.friction = self._checkedSetAttr(collider, param.friction, "friction")
     maya.cmds.setAttr("%s.friction" % collider, param.friction)
+
     maya.cmds.setAttr("%s.angularDamping" % collider, param.angular_damping)
+
+    param.restitution = self._checkedSetAttr(collider, param.restitution, "restitution")
     maya.cmds.setAttr("%s.restitution" % collider, param.restitution)
+
     util.setFloat(collider, "defaultMass", param.mass)
     util.setFloat(collider, "defaultLinearDamping", param.linear_damping)
     util.setFloat(collider, "defaultFriction", param.friction)
