@@ -87,15 +87,22 @@ class RigidBodyGenerator:
       warning = value
       value = 1.0
       maya.cmds.warning("%s.%s(%f > 1.0) rounded 1.0." % (collider, name, warning))
+    if value < 0.0:
+      warning = value
+      value = 0.0
+      maya.cmds.warning("%s.%s(%f < 0.0) rounded 0.0." % (collider, name, warning))
     return value
 
   def _setParameters(self, collider, param):
     maya.cmds.setAttr("%s.mass" % collider, param.mass)
+
+    param.linear_damping = self._checkedSetAttr(collider, param.linear_damping)
     maya.cmds.setAttr("%s.linearDamping" % collider, param.linear_damping)
 
     param.friction = self._checkedSetAttr(collider, param.friction, "friction")
     maya.cmds.setAttr("%s.friction" % collider, param.friction)
 
+    param.angular_damping = self._checkedSetAttr(collider, param.angular_damping)
     maya.cmds.setAttr("%s.angularDamping" % collider, param.angular_damping)
 
     param.restitution = self._checkedSetAttr(collider, param.restitution, "restitution")
