@@ -96,13 +96,13 @@ class RigidBodyGenerator:
   def _setParameters(self, collider, param):
     maya.cmds.setAttr("%s.mass" % collider, param.mass)
 
-    param.linear_damping = self._checkedSetAttr(collider, param.linear_damping)
+    param.linear_damping = self._checkedSetAttr(collider, param.linear_damping, "linear_damping")
     maya.cmds.setAttr("%s.linearDamping" % collider, param.linear_damping)
 
     param.friction = self._checkedSetAttr(collider, param.friction, "friction")
     maya.cmds.setAttr("%s.friction" % collider, param.friction)
 
-    param.angular_damping = self._checkedSetAttr(collider, param.angular_damping)
+    param.angular_damping = self._checkedSetAttr(collider, param.angular_damping, "angular_damping")
     maya.cmds.setAttr("%s.angularDamping" % collider, param.angular_damping)
 
     param.restitution = self._checkedSetAttr(collider, param.restitution, "restitution")
@@ -221,7 +221,10 @@ class RigidBodyGenerator:
     args = (constraint, limitType, axis)
     #if limitValue > 0.0 or limitValue < 0.0:   # この行が必要かどうかの判断がつかない
     maya.cmds.setAttr("%s.%sSpringEnabled%s" % args, 1)   # わからないので強制Enable
+
+    limitValue = self._checkedSetAttr(constraint, limitValue, "%sSpringStiffness%s" % (args[1], args[2]))
     maya.cmds.setAttr("%s.%sSpringStiffness%s" % args, limitValue)
+    
     util.setFloat(constraint, "default%sSpringStiffness%s" % (limitType.title(), axis), limitValue)
 
 

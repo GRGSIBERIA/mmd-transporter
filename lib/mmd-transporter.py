@@ -21,10 +21,12 @@ def createLoadMmdCommand():
     return maya.OpenMayaMPx.asMPxPtr(cmd.LoadMMD())
 
 
+# blend shape
 def createBSWindowCommand():
     return maya.OpenMayaMPx.asMPxPtr(windowcmd.MmdBlendShapeWindowCommand())
 
 
+# rigidbody adjuster
 def createRAWindowCommand():
     return maya.OpenMayaMPx.asMPxPtr(windowcmd.MmdRigidbodyAdjustWindowCommand())
 
