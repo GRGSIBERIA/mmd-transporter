@@ -28,8 +28,8 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
   def syntaxCreator(cls):
     syntax = maya.OpenMaya.MSyntax()
     syntax.addFlag("-inc", "-incandescense", maya.OpenMaya.MSyntax.kNoArg)
-    syntax.addFlag("-rgd", "-rigidbody", maya.OpenMaya.MSyntax.kNoArg)
-    syntax.addFlag("-norgd", "-no-rigidbody", maya.OpenMaya.MSyntax.kNoArg)
+    #syntax.addFlag("-rgd", "-rigidbody", maya.OpenMaya.MSyntax.kNoArg) # kNoArgは2つまでしか登録できない？
+    syntax.addFlag("-nr", "-norigidbody", maya.OpenMaya.MSyntax.kNoArg)
     return syntax
 
 
@@ -106,7 +106,9 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
         genSkin = skingen.SkinGenerator(mmdData)
         genSkin.generate(skinCluster, jointNames, polyName)
 
-      if argData.isFlagSet("-norgd"):
+      noRigidbodyFlag = argData.isFlagSet("-nr")
+      
+      if noRigidbodyFlag:
         pass
       else:
         genRigid = rigidgen.RigidBodyGenerator(mmdData, filePath, dmaker.rigidbodies)
