@@ -29,6 +29,7 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
     syntax = maya.OpenMaya.MSyntax()
     syntax.addFlag("-inc", "-incandescense", maya.OpenMaya.MSyntax.kNoArg)
     syntax.addFlag("-rgd", "-rigidbody", maya.OpenMaya.MSyntax.kNoArg)
+    syntax.addFlag("-norgd", "-no-rigidbody", maya.OpenMaya.MSyntax.kNoArg)
     return syntax
 
 
@@ -105,15 +106,18 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
         genSkin = skingen.SkinGenerator(mmdData)
         genSkin.generate(skinCluster, jointNames, polyName)
 
-      genRigid = rigidgen.RigidBodyGenerator(mmdData, filePath, dmaker.rigidbodies)
-      rigidNames, constraintNames = genRigid.generate(jointNames)
+      if argData.isFlagSet("-norgd"):
+        pass
+      else:
+        genRigid = rigidgen.RigidBodyGenerator(mmdData, filePath, dmaker.rigidbodies)
+        rigidNames, constraintNames = genRigid.generate(jointNames)
 
-      #グループ化
-      genGroup = grpgen.GroupGenerator()
-      genGroup.groupingStandard(polyName, jointNames, noparentBonesIndices)
-      genGroup.groupingBlendShapes(blendShapeNames)
-      genGroup.groupingRigidbodies(rigidNames)
-      genGroup.groupingConstraints(constraintNames)
+        #グループ化
+        genGroup = grpgen.GroupGenerator()
+        genGroup.groupingStandard(polyName, jointNames, noparentBonesIndices)
+        genGroup.groupingBlendShapes(blendShapeNames)
+        genGroup.groupingRigidbodies(rigidNames)
+        genGroup.groupingConstraints(constraintNames)
 
 
 
