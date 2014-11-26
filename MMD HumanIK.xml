@@ -57,7 +57,7 @@
         <item key="LeftHandIndex1" value="hidari_nin_yubi_1" />
         <item key="LeftHandIndex2" value="hidari_nin_yubi_2" />
         <item key="LeftHandIndex3" value="hidari_nin_yubi_3" />
-        <item key="LeftHandIndex4" value="hidari_hitosashiyubi_saki" />
+        <item key="LeftHandIndex4" value="hidari_nin_yubi_saki" />
         <item key="LeftHandMiddle1" value="hidari_nakayubi_1" />
         <item key="LeftHandMiddle2" value="hidari_nakayubi_2" />
         <item key="LeftHandMiddle3" value="hidari_nakayubi_3" />
@@ -81,7 +81,7 @@
         <item key="RightHandIndex1" value="migi_nin_yubi_1" />
         <item key="RightHandIndex2" value="migi_nin_yubi_2" />
         <item key="RightHandIndex3" value="migi_nin_yubi_3" />
-        <item key="RightHandIndex4" value="migi_hitosashiyubi_saki" />
+        <item key="RightHandIndex4" value="migi_nin_yubi_saki" />
         <item key="RightHandMiddle1" value="migi_nakayubi_1" />
         <item key="RightHandMiddle2" value="migi_nakayubi_2" />
         <item key="RightHandMiddle3" value="migi_nakayubi_3" />
