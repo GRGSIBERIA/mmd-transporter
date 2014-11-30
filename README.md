@@ -44,6 +44,24 @@ Pythonのバージョンは2.7です。以下のリンクからインストー�
 [Python 2.7 のインストール](http://www5f.biglobe.ne.jp/~nobml/ninix/2_python.html)
 
 
+### Human IKプラグインの初期化を行う
+既にHuman IKを利用したことがある場合は次節を読んでください．
+
+Human IKのプラグインを読み込み，ユーザフォルダのAppDataにHuman IK用の設定フォルダを生成します．
+
+[Window]-[Settings/Preferences]-[Plug-in Manager]でプラグイン・マネージャを開いてください．
+その中に，**mayaHIK.mll**があります．
+mayaHIK.mllのloadedとauto loadにチェックを入れてHuman IKプラグインを読み込んでください．
+
+次に，Human IKを起動します．
+[Animation]-[Skeleton]-[HumanIK...]を選択します．
+Character Controllというドックが新しく作成されますので，
+その中から[Create]-[Skeleton]ボタンをクリックします．
+
+これにより，```ユーザフォルダ/AppData/Roaming/Autodesk/HIKCharacterizationTool4```というフォルダが作成されます．
+Human IKの初回起動時の設定は以上です．
+
+
 ### インストールフォルダでinstall.pyを実行する
 MMD Transporterの中に、install.pyというファイルが存在します。
 このファイルはMMD Transporterのインストールをするためのファイルです。
