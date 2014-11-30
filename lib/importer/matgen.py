@@ -104,6 +104,15 @@ class MaterialGenerator:
 
   def _generateTextureFile(self):
     fileNodeNames = []
+
+    dataFlag = False
+    for test in dir(self.mmdData):
+      if "textures" in test:
+        dataFlag = True
+
+    if dataFlag == False:
+      return fileNodeNames
+
     for i in range(len(self.mmdData.textures)):
       fileNode = self._createFileNode(self.mmdData.textures[i])
       fileNodeNames.append(fileNode)
