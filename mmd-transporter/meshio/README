@@ -1,0 +1,70 @@
+===============
+MeshIOライブラリ
+===============
+http://meshio.sourceforge.jp/
+
+これは、mqo, pmd, vmdの読み込みを機能を提供するライブラリです。
+対象のファイルをパースしてデータとして読み込むところまでを実行します。
+
+ライセンス
+==========
+zlibライセンス
+
+内容
+====
+bin
+	premake4.exeを同梱
+lua
+    luaバインディング
+src
+	MeshIOライブラリのソース
+test
+	MeshIOライブラリのユニットテスト。googletestを使用
+
+MinGWでのビルド方法
+===================
+::
+
+    $ cd MeshIO/src
+    $ ../bin/premake4.exe 
+    $ make
+
+以下のstaticライブラリが生成されます。
+debug/libmeshio.lib
+
+もしくは
+::
+
+    $ make config=release
+
+以下のstaticライブラリが生成されます。
+release/libmeshio.lib
+
+VC2008でのビルド方法
+====================
+ソリューションの生成
+--------------------
+プロジェクトの管理にpremake4(http://industriousone.com/premake)を利用しています。 Windows向けのpremake4.exeを同梱しているので以下のコマンドをDOSプロンプトで実行してください。
+::
+
+    > cd MeshIO\src
+    > bin\premake4.exe vs2008
+
+meshio.slnが生成されるのでこれをVCで開いてビルドしてください。
+
+以下のstaticライブラリが生成されます。
+debug/meshio.lib
+release/meshio.lib
+
+予定
+====
+- vpd, DirextX9のx形式, bvhへの対応
+
+履歴
+====
+2011/05/01 blenderプラグインを別プロジェクトに分離したのでpython bindingを削除。
+2010/04/30 SourceForgeに場所確保。mqo, pmd, vmdの読み込みを実装。
+2010/05/12 pythonバインディングを実装。blender24向けのmqo, pmd, vmdインポータを実装。blender25向けのmqo, pmdインポータを実装。
+2010/07/31 blenderプラグインをCモジュール無しで動かすための代替ライブラリpymeshioを追加。
+2010/12/28 blender2.55向け修正。
+
