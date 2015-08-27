@@ -44,7 +44,7 @@ mecabフォルダの中には，4つのファイルが入っています．
 次は，残りの3つのファイル（_MeCab.pyd，MeCab.py，libmecab-1.dll）を，以下のフォルダにコピー＆ペーストしてください．
 
 ```
-C:/Program Files/Autodesk/Maya2016/Python/Lib/site-packages
+Maya2016のインストールフォルダ/Python/Lib/site-packages
 ```
 
 これでMeCabのインストールは終了です．
@@ -58,6 +58,7 @@ C:/Program Files/Autodesk/Maya2016/Python/Lib/site-packages
   - ousttrue
   - zlib/png 1.0 
 * [MeCab 0.98 野良ビルド](http://d.hatena.ne.jp/fgshun/20090910/1252571625)
+  - fgshun
 
 ## ライセンス
 
