@@ -11,28 +11,43 @@ import maya.cmds
 import maya.OpenMaya as OM
 import maya.OpenMayaMPx as MPx;
 
+import loadmmd
+import savemmd
+
 kNodeName = "MMD Transporter"
 kNodeId = OM.MTypeId(0x3939)
 
-def nodeCreator():
-    pass
 
-def nodeInitializer():
-    pass
+def loadmmdCreator():
+    return MPx.asMPxPtr(loadmmd.LoadMMD())
+
+def savemmdCreator():
+    return MPx.asMPxPtr(savemmd.SaveMMD())
+
+
+def nodeRegister(commandName, nodeCreatorFunc):
+    plugin = MPx.MFnPlugin(obj)
+    try:
+        plugin.registerCommand(commandName, nodeCreatorFunc)
+    except:
+        sys.stderr.write('Failed to register command: %s' % (commandName))
+        raise
+
+def nodeDeregister(commandName):
+    plugin = MPx.MFnPlugin(obj)
+    try:
+        plugin.deregisterCommand(commandName)
+    except:
+        sys.stderr.write('Failed to register command: %s' % (commandName))
+        raise
+
 
 # プラグインの初期化
 def initializePlugin(obj):
-    plugin = MPx.MFnPlugin(obj)
-    try:
-        plugin.registerNode(kNodeName, kNodeId, nodeCreator, nodeInitializer)
-    except:
-        sys.stderr.write('Failed to register node: %s' % (kNodeName))
-        raise
+    nodeRegister("loadmmd", loadmmdCreator)
+    nodeRegister("savemmd", savemmdCreator)
 
 # プラグインの解放
 def uninitializePlugin(obj):
-    plugin = MPx.MFnPlugin(obj)
-    try:
-        plugin.deregisterNode(kNodeId)
-    except:
-        sys.stderr.write('Failed to deregister node: %s' % (kNodeName))
+    nodeDeregister("loadmmd")
+    nodeDeregister("savemmd")
