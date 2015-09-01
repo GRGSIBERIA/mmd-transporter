@@ -53,8 +53,8 @@ class MMDPoly(maya.OpenMayaMPx.MPxNode):
 
         dataCreator = maya.OpenMaya.MFnMeshData()
         newOutputData = dataCreator.create()
-        #self._createMesh(size, newOutputData, MMDPoly.mmdData)
-        self._createMesh(1.0, newOutputData, MMDPoly.mmdData)
+        self._createMesh(size, newOutputData, MMDPoly.mmdData)
+        #self._createMesh(1.0, newOutputData, MMDPoly.mmdData)
 
         outputHandle = data.outputValue(MMDPoly.outputMesh)
         outputHandle.setMObject(newOutputData)
