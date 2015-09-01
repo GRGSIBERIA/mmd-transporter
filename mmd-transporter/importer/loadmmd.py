@@ -27,9 +27,9 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
   @classmethod
   def syntaxCreator(cls):
     syntax = maya.OpenMaya.MSyntax()
-    syntax.addFlag("-inc", "-incandescense", maya.OpenMaya.MSyntax.kNoArg)
+    #syntax.addFlag("-inc", "-incandescense", maya.OpenMaya.MSyntax.kNoArg)
     #syntax.addFlag("-rgd", "-rigidbody", maya.OpenMaya.MSyntax.kNoArg) # kNoArgは2つまでしか登録できない？
-    syntax.addFlag("-nr", "-norigidbody", maya.OpenMaya.MSyntax.kNoArg)
+    #syntax.addFlag("-nr", "-norigidbody", maya.OpenMaya.MSyntax.kNoArg)
     return syntax
 
 
@@ -80,9 +80,9 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
       #maya.cmds.polyNormal(polyName, normalMode=0, userNormalMode=0, ch=1)  # 表示が変になるのでノーマルを逆転
 
       # マテリアルの生成
-      incandescenseFlag = argData.isFlagSet("-inc")   # マテリアルの白熱光をMAXにするかどうか
+      #incandescenseFlag = argData.isFlagSet("-inc")   # マテリアルの白熱光をMAXにするかどうか
       genMaterial = matgen.MaterialGenerator(mmdData, filePath, dmaker.materials)
-      genMaterial.generate(meshName, incandescenseFlag)
+      genMaterial.generate(meshName, False)
 
       # Blend Shapeの生成
       genExp = expgen.ExpressionGenerator(mmdData, filePath, dmaker.morphs)
