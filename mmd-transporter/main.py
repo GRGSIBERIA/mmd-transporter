@@ -25,7 +25,7 @@ def savemmdCreator():
     return MPx.asMPxPtr(savemmd.SaveMMD())
 
 
-def nodeRegister(commandName, nodeCreatorFunc):
+def commandRegister(commandName, nodeCreatorFunc):
     plugin = MPx.MFnPlugin(obj)
     try:
         plugin.registerCommand(commandName, nodeCreatorFunc)
@@ -33,7 +33,7 @@ def nodeRegister(commandName, nodeCreatorFunc):
         sys.stderr.write('Failed to register command: %s' % (commandName))
         raise
 
-def nodeDeregister(commandName):
+def commandDeregister(commandName):
     plugin = MPx.MFnPlugin(obj)
     try:
         plugin.deregisterCommand(commandName)
@@ -44,10 +44,10 @@ def nodeDeregister(commandName):
 
 # プラグインの初期化
 def initializePlugin(obj):
-    nodeRegister("loadmmd", loadmmdCreator)
-    nodeRegister("savemmd", savemmdCreator)
+    commandRegister("loadmmd", loadmmdCreator)
+    commandRegister("savemmd", savemmdCreator)
 
 # プラグインの解放
 def uninitializePlugin(obj):
-    nodeDeregister("loadmmd")
-    nodeDeregister("savemmd")
+    commandDeregister("loadmmd")
+    commandDeregister("savemmd")
