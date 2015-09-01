@@ -7,16 +7,16 @@ import maya.cmds
 import pymeshio.pmx.reader
 import pymeshio.pmd.reader
 
-import dictmaker
-import mmdpoly as mpoly
-import meshgen
-import matgen
-import bonegen
-import skingen
-import estabgen
-import expgen
-import rigidgen2 as rigidgen
-import grpgen
+import dictionary
+import importer.mmdpoly as mpoly
+import importer.meshgen
+import importer.matgen
+import importer.bonegen
+import importer.skingen
+import importer.estabgen
+import importer.expgen
+import importer.rigidgen2 as rigidgen
+import importer.grpgen
 import util
 
 class LoadMMD(maya.OpenMayaMPx.MPxCommand):
@@ -72,8 +72,10 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
     if filePath != None:
       extName = self._getExt(filePath)
       mmdData = self._readData(filePath, extName)
+
       mpoly.MMDPoly.mmdData = mmdData
-      dmaker = dictmaker.DictMaker(mmdData)
+
+      dict = dictionary.Dictionary(mmdData)
 
       # ポリゴンの生成
       meshName, polyName = meshgen.MeshGenerator.CreatePolyNodes()
@@ -81,15 +83,15 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
 
       # マテリアルの生成
       incandescenseFlag = argData.isFlagSet("-inc")   # マテリアルの白熱光をMAXにするかどうか
-      genMaterial = matgen.MaterialGenerator(mmdData, filePath, dmaker.materials)
+      genMaterial = matgen.MaterialGenerator(mmdData, filePath, dict.materials)
       genMaterial.generate(meshName, incandescenseFlag)
 
       # Blend Shapeの生成
-      genExp = expgen.ExpressionGenerator(mmdData, filePath, dmaker.morphs)
+      genExp = expgen.ExpressionGenerator(mmdData, filePath, dict.morphs)
       blendShapeNames = genExp.generate(polyName)
 
       # ボーンの生成
-      genBone = bonegen.BoneGenerator(mmdData, filePath, dmaker.bones)
+      genBone = bonegen.BoneGenerator(mmdData, filePath, dict.bones)
       jointNames, noparentBonesIndices = genBone.generate(True) #True = humanIkFlug
 
       # 付与親生成
@@ -111,7 +113,7 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
       if noRigidbodyFlag:
         pass
       else:
-        genRigid = rigidgen.RigidBodyGenerator(mmdData, filePath, dmaker.rigidbodies)
+        genRigid = rigidgen.RigidBodyGenerator(mmdData, filePath, dict.rigidbodies)
         rigidNames, constraintNames = genRigid.generate(jointNames)
 
         #グループ化
