@@ -6,7 +6,7 @@ import maya.OpenMaya
 import maya.OpenMayaMPx
 import maya.cmds
 
-import meshgen
+import importer.meshgen as meshgen
 
 class MMDPoly(maya.OpenMayaMPx.MPxNode):
   widthHeight = maya.OpenMaya.MObject()
