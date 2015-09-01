@@ -9,12 +9,13 @@ import maya.cmds
 import importer.meshgen as meshgen
 
 class MMDPoly(maya.OpenMayaMPx.MPxNode):
-  widthHeight = maya.OpenMaya.MObject()
   outputMesh = maya.OpenMaya.MObject()
+  meshSize = maya.OpenMaya.MObject()
   mmdData = None
 
   def __init__(self):
     maya.OpenMayaMPx.MPxNode.__init__(self)
+
 
   def _setNormals(self, meshFS, mmdData, faceConnects):
     normalLength = len(mmdData.indices)
@@ -26,6 +27,7 @@ class MMDPoly(maya.OpenMayaMPx.MPxNode):
         normal = mmdData.vertices[vtxInd].normal
         normals.set(maya.OpenMaya.MVector(normal.z, normal.x, normal.y), i)
     meshFS.setFaceVertexNormals(normals, faceInds, faceConnects)
+
 
   def _createMesh(self, planeSize, outData, mmdData):
     meshGen = meshgen.MeshGenerator(mmdData)
@@ -46,12 +48,13 @@ class MMDPoly(maya.OpenMayaMPx.MPxNode):
 
   def compute(self, plug, data):
     if plug == MMDPoly.outputMesh:
-        dataHandle = data.inputValue(MMDPoly.widthHeight)
-        size = dataHandle.asFloat()
+        #dataHandle = data.inputValue(MMDPoly.meshSize)
+        #size = dataHandle.asFloat()
 
         dataCreator = maya.OpenMaya.MFnMeshData()
         newOutputData = dataCreator.create()
-        self._createMesh(size, newOutputData, MMDPoly.mmdData)
+        #self._createMesh(size, newOutputData, MMDPoly.mmdData)
+        self._createMesh(1.0, newOutputData, MMDPoly.mmdData)
 
         outputHandle = data.outputValue(MMDPoly.outputMesh)
         outputHandle.setMObject(newOutputData)
