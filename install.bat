@@ -1,4 +1,4 @@
-mecab-0.996.exe
+mecab\mecab-0.996.exe
 
 rem MeCabのインストール先を調べる
 if "%PROCESSOR_ARCHITECTURE%" == "x86" (
