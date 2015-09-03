@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{45891342-bd7f-4c2b-9e18-9115a2749308}</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>main.py</StartupFile>
+    <StartupFile>mmd-transporter.py</StartupFile>
     <SearchPath>..\..\..\..\..\..\..\Program Files\Autodesk\Maya2016\Python\Lib\site-packages\;..\..\..\..\..\..\..\Program Files\Autodesk\Maya2016\devkit\;..\..\..\..\..\..\..\Program Files\Autodesk\Maya2016\Python\Lib\site-packages\pymel\core\;..\..\..\..\..\..\..\Program Files\Autodesk\Maya2016\lib\;..\..\..\..\..\..\..\Program Files\Autodesk\Maya2016\devkit\other\pymel\extras\completion\py\maya\;..\..\..\..\..\..\..\Program Files\Autodesk\Maya2016\devkit\other\pymel\extras\completion\py\</SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -21,16 +21,61 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="dictionary.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="hepburn.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="importer\bonegen.py" />
+    <Compile Include="importer\converter.py" />
+    <Compile Include="importer\estabgen.py" />
+    <Compile Include="importer\expgen.py" />
+    <Compile Include="importer\grpgen.py" />
+    <Compile Include="importer\matgen.py" />
+    <Compile Include="importer\meshgen.py" />
+    <Compile Include="mmdpoly.py" />
+    <Compile Include="importer\rigidgen.py" />
+    <Compile Include="importer\rigidgen2.py" />
+    <Compile Include="importer\skingen.py" />
+    <Compile Include="importer\__init__.py" />
     <Compile Include="loadmmd.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="main.py" />
+    <Compile Include="mmd-transporter.py" />
+    <Compile Include="pymeshio\common.py" />
+    <Compile Include="pymeshio\converter.py" />
+    <Compile Include="pymeshio\englishmap.py" />
+    <Compile Include="pymeshio\main.py" />
+    <Compile Include="pymeshio\mqo\reader.py" />
+    <Compile Include="pymeshio\mqo\__init__.py" />
+    <Compile Include="pymeshio\pmd\reader.py" />
+    <Compile Include="pymeshio\pmd\writer.py" />
+    <Compile Include="pymeshio\pmd\__init__.py" />
+    <Compile Include="pymeshio\pmx\reader.py" />
+    <Compile Include="pymeshio\pmx\writer.py" />
+    <Compile Include="pymeshio\pmx\__init__.py" />
+    <Compile Include="pymeshio\vmd\reader.py" />
+    <Compile Include="pymeshio\vmd\writer.py" />
+    <Compile Include="pymeshio\vmd\__init__.py" />
+    <Compile Include="pymeshio\vpd.py" />
+    <Compile Include="pymeshio\x\reader.py" />
+    <Compile Include="pymeshio\x\writer.py" />
+    <Compile Include="pymeshio\x\__init__.py" />
+    <Compile Include="pymeshio\__init__.py" />
     <Compile Include="savemmd.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="util.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="importer\" />
+    <Folder Include="pymeshio\" />
+    <Folder Include="pymeshio\mqo\" />
+    <Folder Include="pymeshio\pmd\" />
+    <Folder Include="pymeshio\pmx\" />
+    <Folder Include="pymeshio\vmd\" />
+    <Folder Include="pymeshio\x\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
