@@ -9,9 +9,10 @@ class Dictionary:
 
     def __getNames(self, datas):
         string = self.__toString(datas)
+        hepped = hepburn(string)
 
         dict = []
-        for data in string.split(u","):
+        for data in hepped.split(u","):
             dict.append(data)
         return dict
 
