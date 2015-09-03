@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import MeCab
+import mecab
 import re
 
 """かな⇔ローマ字を変換する"""
@@ -190,7 +190,7 @@ romaji2katakana, romaji2hiragana, kana2romaji = _make_romaji_convertor()
 
 ################################################################################
 
-def hepburn(name):
-	yomi = MeCab.Tagger("-Oyomi")
-	return kana2romaji(name)
+def hepburn(strings):
+	binding = mecab.MeCabBinding()
+	return kana2romaji(binding.doHepburn(strings))
 
