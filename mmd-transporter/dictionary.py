@@ -3,10 +3,16 @@
 from hepburn import *
 
 class Dictionary:
-    def __getNames(datas):
+    def __toString(self, datas):
+        str_arr = [x.name for x in datas]
+        return reduce(lambda x,y:x+u","+y, str_arr)
+
+    def __getNames(self, datas):
+        string = self.__toString(datas)
+
         dict = []
-        for data in datas:
-            dict.append(hepburn(data.name))
+        for data in string.split(u","):
+            dict.append(data)
         return dict
 
     def __init__(self, mmdData):
