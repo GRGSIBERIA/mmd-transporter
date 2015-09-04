@@ -1,24 +1,19 @@
 mecab\mecab-0.996.exe
 
-rem MeCabã®ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«å…ˆã‚’èª¿ã¹ã‚‹
-if "%PROCESSOR_ARCHITECTURE%" == "x86" (
-    SET REG_UNINSTALL_KEY=HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall
+rem MeCab‚ÌƒCƒ“ƒXƒg[ƒ‹æ‚ğ’²‚×‚é
+
+if exist "C:\Program Files (x86)\MeCab" (
+	setx MECAB_PATH "C:\Program Files (x86)\MeCab"
+) else if exist "C:\Program Files\MeCab" (
+	setx MECAB_PATH "C:\Program Files\MeCab"
+) else if exist "C:\MeCab" (
+	setx MECAB_PATH "C:\MeCab"
 ) else (
-    SET REG_UNINSTALL_KEY=HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall
-)
-for /f "tokens=1,2*" %%A in ('reg query "%REG_UNINSTALL_KEY%"') do (
-    reg query "%%A" /v DisplayName 2>NUL | findstr /c:"MeCab" 2>NUL
-    if not errorlevel 1 (
-    	for /f "usebackq tokens=1,2,3*" %%a in (`reg query "%%A" /v InstallLocation`) do (
-    		set MECAB_PATH=%%c
-    	)
-        goto OUT
-    )
+	echo "MeCab‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ‚Å‚µ‚½"
+	echo "è“®‚ÅŠÂ‹«•Ï”MECAB_PATH‚ğİ’è‚µ‚Ä‚­‚¾‚³‚¢"
+	pause
+	exit
 )
 
-:OUT
-cd %MECAB_PATH%
-setx MECAB_PATH %MECAB_PATH%
-
-echo "ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ãŒå®Œäº†ã—ã¾ã—ãŸ"
+echo "ƒCƒ“ƒXƒg[ƒ‹‚ªŠ®—¹‚µ‚Ü‚µ‚½"
 pause
