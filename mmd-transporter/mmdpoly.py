@@ -48,8 +48,8 @@ class MMDPoly(maya.OpenMayaMPx.MPxNode):
 
   def compute(self, plug, data):
     if plug == MMDPoly.outputMesh:
-        #dataHandle = data.inputValue(MMDPoly.meshSize)
-        #size = dataHandle.asFloat()
+        dataHandle = data.inputValue(MMDPoly.meshSize)
+        size = dataHandle.asFloat()
 
         dataCreator = maya.OpenMaya.MFnMeshData()
         newOutputData = dataCreator.create()

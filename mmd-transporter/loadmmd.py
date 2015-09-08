@@ -9,14 +9,14 @@ import pymeshio.pmd.reader
 
 import dictionary
 import mmdpoly
-import importer.meshgen
-import importer.matgen
-import importer.bonegen
-import importer.skingen
-import importer.estabgen
-import importer.expgen
+import importer.meshgen as meshgen
+import importer.matgen as matgen
+import importer.bonegen as bonegen
+import importer.skingen as skingen
+import importer.estabgen as estabgen
+import importer.expgen as expgen
 import importer.rigidgen2 as rigidgen
-import importer.grpgen
+import importer.grpgen as grpgen
 import util
 
 class LoadMMD(maya.OpenMayaMPx.MPxCommand):
@@ -28,7 +28,7 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
   def syntaxCreator(cls):
     syntax = maya.OpenMaya.MSyntax()
     #syntax.addFlag("-inc", "-incandescense", maya.OpenMaya.MSyntax.kNoArg)
-    #syntax.addFlag("-rgd", "-rigidbody", maya.OpenMaya.MSyntax.kNoArg) # kNoArgは2つまでしか登録できない？
+    syntax.addFlag("-r", "-rigidbody", maya.OpenMaya.MSyntax.kNoArg) # kNoArgは2つまでしか登録できない？
     #syntax.addFlag("-nr", "-norigidbody", maya.OpenMaya.MSyntax.kNoArg)
     return syntax
 
@@ -69,12 +69,14 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
 
   def _createData(self, argData):
     filePath = self._getPath()
+
     print filePath
+
     if filePath != None:
       extName = self._getExt(filePath)
       mmdData = self._readData(filePath, extName)
 
-      mpoly.MMDPoly.mmdData = mmdData
+      mmdpoly.MMDPoly.mmdData = mmdData
 
       dict = dictionary.Dictionary(mmdData)
 
@@ -83,9 +85,10 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
       #maya.cmds.polyNormal(polyName, normalMode=0, userNormalMode=0, ch=1)  # 表示が変になるのでノーマルを逆転
 
       # マテリアルの生成
-      incandescenseFlag = argData.isFlagSet("-inc")   # マテリアルの白熱光をMAXにするかどうか
+      #incandescenseFlag = argData.isFlagSet("-inc")   # マテリアルの白熱光をMAXにするかどうか
       genMaterial = matgen.MaterialGenerator(mmdData, filePath, dict.materials)
-      genMaterial.generate(meshName, incandescenseFlag)
+      #genMaterial.generate(meshName, incandescenseFlag)
+      genMaterial.generate(meshName, False)
 
       # Blend Shapeの生成
       genExp = expgen.ExpressionGenerator(mmdData, filePath, dict.morphs)
@@ -109,11 +112,10 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
         genSkin = skingen.SkinGenerator(mmdData)
         genSkin.generate(skinCluster, jointNames, polyName)
 
-      noRigidbodyFlag = argData.isFlagSet("-nr")
+      rigidbodyFlag = argData.isFlagSet("-r")
+      #rigidbodyFlag = False     # 
       
-      if noRigidbodyFlag:
-        pass
-      else:
+      if rigidbodyFlag:
         genRigid = rigidgen.RigidBodyGenerator(mmdData, filePath, dict.rigidbodies)
         rigidNames, constraintNames = genRigid.generate(jointNames)
 
@@ -128,8 +130,9 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
 
   def doIt(self, args):
     try:
-      argData = maya.OpenMaya.MArgDatabase(self.syntax(), args)
+      self.argData = maya.OpenMaya.MArgDatabase(self.syntax(), args)    # このコードを実行するとなぜか落ちる
     except:
       pass
     else:
-      self._createData(argData)
+      self._createData(self.argData)
+      pass

@@ -30,9 +30,9 @@ def mmdpolyCreator():
     return MPx.asMPxPtr(mmdpoly.MMDPoly())
 
 
-def commandRegister(plugin, commandName, nodeCreatorFunc):
+def commandRegister(plugin, commandName, nodeCreatorFunc, syntaxCreator=None):
     try:
-        plugin.registerCommand(commandName, nodeCreatorFunc)
+        plugin.registerCommand(commandName, nodeCreatorFunc, syntaxCreator)
     except:
         sys.stderr.write('Failed to register command: %s' % (commandName))
         raise
@@ -62,16 +62,16 @@ def nodeInitializer():
 # プラグインの初期化
 def initializePlugin(obj):
     plugin = MPx.MFnPlugin(obj, "Eiichi Takebuchi(GRGSIBERIA)", "1.0")
-    commandRegister(plugin, "loadmmd", loadmmdCreator)
-    commandRegister(plugin, "savemmd", savemmdCreator)
+    commandRegister(plugin, "loadmmd", loadmmdCreator, loadmmd.LoadMMD.syntaxCreator)
+    #commandRegister(plugin, "savemmd", savemmdCreator)
 
-    plugin.registerNode("MMD Poly", kMMDPolyNodeId, mmdpolyCreator, nodeInitializer)
+    plugin.registerNode("mmdPoly", kMMDPolyNodeId, mmdpolyCreator, nodeInitializer)
 
 
 # プラグインの解放
 def uninitializePlugin(obj):
     plugin = MPx.MFnPlugin(obj);
     commandDeregister(plugin, "loadmmd")
-    commandDeregister(plugin, "savemmd")
+    #commandDeregister(plugin, "savemmd")
 
     plugin.deregisterNode(kMMDPolyNodeId)

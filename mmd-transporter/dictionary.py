@@ -12,13 +12,13 @@ class Dictionary:
         hepped = hepburn(string)
 
         dict = []
-        for data in hepped.split(u","):
+        for data in hepped.split(","):
             dict.append(data)
         return dict
 
     def __init__(self, mmdData):
-        self.materials  = __getNames(mmdData.materials)
-        self.bones      = __getNames(mmdData.bones)
-        self.joints     = __getNames(mmdData.joints)
-        self.rigidbodies= __getNames(mmdData.rigidbodies)
-        self.morphs     = __getNames(mmdData.morphs)
+        self.materials  = self.__getNames(mmdData.materials)
+        self.bones      = self.__getNames(mmdData.bones)
+        self.joints     = self.__getNames(mmdData.joints)
+        self.rigidbodies= self.__getNames(mmdData.rigidbodies)
+        self.morphs     = self.__getNames(mmdData.morphs)
