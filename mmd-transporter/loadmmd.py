@@ -8,7 +8,7 @@ import pymeshio.pmx.reader
 import pymeshio.pmd.reader
 
 import dictionary
-import importer.mmdpoly as mpoly
+import mmdpoly
 import importer.meshgen
 import importer.matgen
 import importer.bonegen
@@ -35,9 +35,9 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
 
   def _getPath(self):
     filterName = "PMD/PMX (*.pmd *pmx);;PMD (*.pmd);;PMX (*.pmx)"
-    path = maya.cmds.fileDialog2(ds=2, cap="Selet PMD/PMX", ff=filterName, fm=1)
-    if path != None:
-      return path[0]
+    fpath = maya.cmds.fileDialog2(ds=2, cap="Selet PMD/PMX", ff=filterName, fm=1)
+    if fpath != None:
+      return fpath[0]
     return None
 
 
@@ -69,6 +69,7 @@ class LoadMMD(maya.OpenMayaMPx.MPxCommand):
 
   def _createData(self, argData):
     filePath = self._getPath()
+    print filePath
     if filePath != None:
       extName = self._getExt(filePath)
       mmdData = self._readData(filePath, extName)

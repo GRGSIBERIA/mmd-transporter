@@ -65,7 +65,7 @@ def initializePlugin(obj):
     commandRegister(plugin, "loadmmd", loadmmdCreator)
     commandRegister(plugin, "savemmd", savemmdCreator)
 
-    plugin.registerNode("MMD Poly", kMMDPolyNodeId, mmdpolyCreater, nodeInitializer)
+    plugin.registerNode("MMD Poly", kMMDPolyNodeId, mmdpolyCreator, nodeInitializer)
 
 
 # プラグインの解放

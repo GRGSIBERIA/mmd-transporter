@@ -34,6 +34,9 @@
     <Compile Include="importer\grpgen.py" />
     <Compile Include="importer\matgen.py" />
     <Compile Include="importer\meshgen.py" />
+    <Compile Include="mecab.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="mmdpoly.py" />
     <Compile Include="importer\rigidgen.py" />
     <Compile Include="importer\rigidgen2.py" />
