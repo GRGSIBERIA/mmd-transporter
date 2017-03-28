@@ -8,7 +8,7 @@ class Dictionary:
         return reduce(lambda x,y:x+u","+y, str_arr)
 
     def __getNames(self, datas):
-        string = self.__toString(datas)
+        string = self.__toString(datas).replace(" ", "_")
         hepped = hepburn(string)
 
         dict = []
@@ -23,10 +23,3 @@ class Dictionary:
         self.joints     = self.__getNames(mmdData.joints)
         self.rigidbodies= self.__getNames(mmdData.rigidbodies)
         self.morphs     = self.__getNames(mmdData.morphs)
-
-        #target = self.bones[0]
-        #print "=========================="
-        #print target
-        #print type(target)
-        #print hepburn(target)
-        #print type(hepburn(target))
