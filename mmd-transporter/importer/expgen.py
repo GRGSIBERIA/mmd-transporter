@@ -47,10 +47,13 @@ class ExpressionGenerator:
       for i in range(len(morphs)):
         if morphs[i].panel == panel + 1:
           maya.cmds.select(morphNames[i], tgl=True)
-      groupName = maya.cmds.group(name=panels[panel])
-      util.setString(groupName, "expression", panelJpNames[panel])
-      maya.cmds.setAttr("%s.v" % groupName, 0)
-      groups.append(groupName)
+      
+      # モーフグループを形成できない場合は，グループ化を無視する
+      if len(maya.cmds.ls(sl=True)) > 0:
+        groupName = maya.cmds.group(name=panels[panel])
+        util.setString(groupName, "expression", panelJpNames[panel])
+        maya.cmds.setAttr("%s.v" % groupName, 0)
+        groups.append(groupName)
     return groups
 
 

@@ -14,6 +14,7 @@ class Dictionary:
         dict = []
         for data in hepped.split(","):
             dict.append(data)
+        print dict
         return dict
 
     def __init__(self, mmdData):
@@ -23,4 +24,9 @@ class Dictionary:
         self.rigidbodies= self.__getNames(mmdData.rigidbodies)
         self.morphs     = self.__getNames(mmdData.morphs)
 
-        print hepburn(u"あいうえお")
+        #target = self.bones[0]
+        #print "=========================="
+        #print target
+        #print type(target)
+        #print hepburn(target)
+        #print type(hepburn(target))

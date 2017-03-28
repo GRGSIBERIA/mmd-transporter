@@ -2,16 +2,26 @@
 # 下記サイトから拝借
 # http://d.hatena.ne.jp/mohayonao/20091129/1259505966
 
+from __future__ import unicode_literals
 import mecab
 import re
 import sys
+import unicodedata
+import converter2
+
+
+def _convert_utf8_from_dict(dict):
+    newdic = {}
+    for k, v in dict.items():
+        newdic[k.encode("utf-8")] = v.encode("utf-8")
+    return newdic
+
 
 
 """かな⇔ローマ字を変換する"""
-
 def _make_kana_convertor():
     """ひらがな⇔カタカナ変換器を作る"""
-    kata = {
+    buf_kata = {
         'ア':'あ', 'イ':'い', 'ウ':'う', 'エ':'え', 'オ':'お',
         'カ':'か', 'キ':'き', 'ク':'く', 'ケ':'け', 'コ':'こ',
         'サ':'さ', 'シ':'し', 'ス':'す', 'セ':'せ', 'ソ':'そ',
@@ -33,6 +43,9 @@ def _make_kana_convertor():
         'ャ':'ゃ', 'ュ':'ゅ', 'ョ':'ょ',
         'ヴ':'&#12436;', 'ッ':'っ', 'ヰ':'ゐ', 'ヱ':'ゑ',
         }
+
+    #kata = _convert_utf8_from_dict(buf_kata)
+    kata = buf_kata
     
     # ひらがな → カタカナ のディクショナリをつくる
     hira = dict([(v, k) for k, v in kata.items() ])
@@ -55,7 +68,7 @@ hiragana2katakana, katakana2hiragana = _make_kana_convertor()
 
 def _make_romaji_convertor():
     """ローマ字⇔かな変換器を作る"""
-    master = {
+    master_buf = {
         'a'  :'ア', 'i'  :'イ', 'u'  :'ウ', 'e'  :'エ', 'o'  :'オ',
         'ka' :'カ', 'ki' :'キ', 'ku' :'ク', 'ke' :'ケ', 'ko' :'コ',
         'sa' :'サ', 'shi':'シ', 'su' :'ス', 'se' :'セ', 'so' :'ソ',
@@ -104,7 +117,7 @@ def _make_romaji_convertor():
         }
     
     
-    romaji_asist = {
+    romaji_asist_buf = {
         'si' :'シ'  , 'ti' :'チ'  , 'hu' :'フ' , 'zi':'ジ',
         'sya':'シャ', 'syu':'シュ', 'syo':'ショ',
         'tya':'チャ', 'tyu':'チュ', 'tyo':'チョ',
@@ -126,8 +139,14 @@ def _make_romaji_convertor():
         }
     
 
-    kana_asist = { 'a':'ァ', 'i':'ィ', 'u':'ゥ', 'e':'ェ', 'o':'ォ', }
+    kana_asist_buf = { 'a':'ァ', 'i':'ィ', 'u':'ゥ', 'e':'ェ', 'o':'ォ', }
     
+    #master = _convert_utf8_from_dict(master_buf)
+    #romaji_asist = _convert_utf8_from_dict(romaji_asist_buf)
+    #kana_asist = _convert_utf8_from_dict(kana_asist_buf)
+    master = master_buf
+    romaji_asist = romaji_asist_buf
+    kana_asist = kana_asist_buf
     
     def __romaji2kana():
         romaji_dict = {}
@@ -194,12 +213,15 @@ def _make_romaji_convertor():
 romaji2katakana, romaji2hiragana, kana2romaji = _make_romaji_convertor()
 
 
+
 def _convert2hepburn(string):
-    print type(string)
-    return kana2romaji(string.encode("utf-8")).decode("utf-8")
+    result = kana2romaji(string.decode("utf-8"))
+    return result
 
 
 def hepburn(strings):
-	binding = mecab.MeCabBinding()
-	return _convert2hepburn(binding.doHepburn(strings))
+    binding = mecab.MeCabBinding()
+    kana_result = binding.doHepburn(strings)
+    hepped_string = _convert2hepburn(kana_result)
+    return converter2.z2h(hepped_string)
 
