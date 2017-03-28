@@ -5,6 +5,7 @@ import maya.cmds
 import maya.OpenMaya
 
 import util
+import hepburn
 
 class ExpressionGenerator:
 

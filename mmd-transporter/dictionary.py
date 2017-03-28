@@ -22,3 +22,5 @@ class Dictionary:
         self.joints     = self.__getNames(mmdData.joints)
         self.rigidbodies= self.__getNames(mmdData.rigidbodies)
         self.morphs     = self.__getNames(mmdData.morphs)
+
+        print hepburn(u"あいうえお")
