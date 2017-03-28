@@ -59,9 +59,8 @@ Maya2016のインストールフォルダ/Python/Lib/site-packages
   - zlib/png 1.0 
 * [MeCab 0.98 野良ビルド](http://d.hatena.ne.jp/fgshun/20090910/1252571625)
   - fgshun
-* [zenhan 0.5](https://pypi.python.org/pypi/zenhan)
-  - SETOGUCHI Mitsuhiro
-  - MITライセンス
+* [zenhan-py](https://github.com/MiCHiLU/zenhan-py)
+  - ENDOH takanao
 
 ## ライセンス
 
