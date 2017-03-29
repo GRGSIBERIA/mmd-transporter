@@ -69,6 +69,7 @@ class SkinGenerator:
             boneId = inWeight[targetJonit]
             maya.cmds.setAttr("%s.weightList[%s].weights[%s]" % (scluster, vtxId, boneId), weights[bwi])
           except KeyError as e:
+            print "%s, has not weight value. Please, confirm with PMX Editor." % e.message
 
 
 
