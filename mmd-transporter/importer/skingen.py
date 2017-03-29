@@ -56,6 +56,8 @@ class SkinGenerator:
     weightListPlug = skinFn.findPlug("weightList")
     weightPlug = skinFn.findPlug("weights")
 
+    print type(inWeight)
+
     vertices = self.mmdData.vertices
     bones = self.mmdData.bones
     for vtxId in range(weightListPlug.numElements()):

@@ -14,7 +14,6 @@ class Dictionary:
         dict = []
         for data in hepped.split(","):
             dict.append(data)
-        print dict
         return dict
 
     def __init__(self, mmdData):
