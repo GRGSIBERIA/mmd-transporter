@@ -5,6 +5,7 @@ import subprocess
 import locale
 from subprocess import PIPE, Popen
 import codecs
+import re
 
 
 
@@ -25,4 +26,5 @@ class MeCabBinding:
         result = f.read()
         f.close()
 
-        return result.replace("\r\n", "")
+        # 不要な改行コードを削除
+        return result.replace("\r\n", "")       # str型

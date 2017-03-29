@@ -216,7 +216,8 @@ romaji2katakana, romaji2hiragana, kana2romaji = _make_romaji_convertor()
 
 def _convert2hepburn(string):
     result = kana2romaji(string.decode("utf-8"))
-    return result
+    result = re.sub(ur"[^0-9a-zA-Z\,\_]*", u"", result)     # 非ASCII文字を削除
+    return result       # unicode
 
 
 def hepburn(strings):
