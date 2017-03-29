@@ -25,4 +25,4 @@ class MeCabBinding:
         result = f.read()
         f.close()
 
-        return result
+        return result.replace("\r\n", "")
