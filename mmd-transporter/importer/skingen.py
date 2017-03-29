@@ -56,8 +56,6 @@ class SkinGenerator:
     weightListPlug = skinFn.findPlug("weightList")
     weightPlug = skinFn.findPlug("weights")
 
-    print type(inWeight)
-
     vertices = self.mmdData.vertices
     bones = self.mmdData.bones
     for vtxId in range(weightListPlug.numElements()):
@@ -65,10 +63,13 @@ class SkinGenerator:
       indices, weights = self._getWeightList(deform)
       for bwi in range(len(indices)):
         if indices[bwi] != -1 and weights[bwi]:
-          index = indices[bwi]
-          targetJonit = jointNames[index]
-          boneId = inWeight[targetJonit]
-          maya.cmds.setAttr("%s.weightList[%s].weights[%s]" % (scluster, vtxId, boneId), weights[bwi])
+          try:
+            index = indices[bwi]
+            targetJonit = jointNames[index]
+            boneId = inWeight[targetJonit]
+            maya.cmds.setAttr("%s.weightList[%s].weights[%s]" % (scluster, vtxId, boneId), weights[bwi])
+          except KeyError as e:
+
 
 
   def generate(self, skinCluster, jointNames, polyName):
@@ -78,7 +79,7 @@ class SkinGenerator:
 
     infIdPath = {}
     inWeight = {}
-    for x in range(infDags.length()):
+    for x in xrange(infDags.length()):
       boneFullPath = infDags[x].fullPathName()
       infId = int(skinFn.indexForInfluenceObject(infDags[x]))
       infIdPath[infId] = boneFullPath
