@@ -49,6 +49,18 @@ Maya2016のインストールフォルダ/Python/Lib/site-packages
 
 これでMeCabのインストールは終了です．
 
+## よくある質問
+
+### 顔の裏側が見える，透明なオブジェクトのレンダリングが変
+
+Maya 2016では，デフォルトの設定で透明なオブジェクトを簡易的に表示しています．
+Maya 2016以前では，カメラの[Shading]-[Polygon Transparency Sorting]で正しく描画することができます．
+Maya 2016からViewport 2.0が導入されてオプションの位置が変わりました．
+
+カメラの[Renderer]-[Viewport 2.0]のオプションから[Hardware Renderer 2.0 Settings]を開きます．
+[Performance]パネルから，[Transparency Algorithm]-[Depth Peeling]を選択し，[Transparency Quality]を1.0に設定します．
+これで，透明なオブジェクトも正常にレンダリングされるようになります．
+
 ## お借りしたもの
 
 * [MeCab](http://taku910.github.io/mecab/)
@@ -59,6 +71,8 @@ Maya2016のインストールフォルダ/Python/Lib/site-packages
   - zlib/png 1.0 
 * [MeCab 0.98 野良ビルド](http://d.hatena.ne.jp/fgshun/20090910/1252571625)
   - fgshun
+* [zenhan-py](https://github.com/MiCHiLU/zenhan-py)
+  - ENDOH takanao
 
 ## ライセンス
 

@@ -8,7 +8,7 @@ class Dictionary:
         return reduce(lambda x,y:x+u","+y, str_arr)
 
     def __getNames(self, datas):
-        string = self.__toString(datas)
+        string = self.__toString(datas).replace(" ", "_")
         hepped = hepburn(string)
 
         dict = []

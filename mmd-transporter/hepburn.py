@@ -1,266 +1,228 @@
 # -*- coding: utf-8 -*-
+# 下記サイトから拝借
+# http://d.hatena.ne.jp/mohayonao/20091129/1259505966
+
+from __future__ import unicode_literals
 import mecab
 import re
 import sys
+import unicodedata
+import converter2
+
+
+def _convert_utf8_from_dict(dict):
+    newdic = {}
+    for k, v in dict.items():
+        newdic[k.encode("utf-8")] = v.encode("utf-8")
+    return newdic
+
+
+
+"""かな⇔ローマ字を変換する"""
+def _make_kana_convertor():
+    """ひらがな⇔カタカナ変換器を作る"""
+    buf_kata = {
+        'ア':'あ', 'イ':'い', 'ウ':'う', 'エ':'え', 'オ':'お',
+        'カ':'か', 'キ':'き', 'ク':'く', 'ケ':'け', 'コ':'こ',
+        'サ':'さ', 'シ':'し', 'ス':'す', 'セ':'せ', 'ソ':'そ',
+        'タ':'た', 'チ':'ち', 'ツ':'つ', 'テ':'て', 'ト':'と',
+        'ナ':'な', 'ニ':'に', 'ヌ':'ぬ', 'ネ':'ね', 'ノ':'の',
+        'ハ':'は', 'ヒ':'ひ', 'フ':'ふ', 'ヘ':'へ', 'ホ':'ほ',
+        'マ':'ま', 'ミ':'み', 'ム':'む', 'メ':'め', 'モ':'も',
+        'ヤ':'や', 'ユ':'ゆ', 'ヨ':'よ', 'ラ':'ら', 'リ':'り',
+        'ル':'る', 'レ':'れ', 'ロ':'ろ', 'ワ':'わ', 'ヲ':'を',
+        'ン':'ん',
+        
+        'ガ':'が', 'ギ':'ぎ', 'グ':'ぐ', 'ゲ':'げ', 'ゴ':'ご',
+        'ザ':'ざ', 'ジ':'じ', 'ズ':'ず', 'ゼ':'ぜ', 'ゾ':'ぞ',
+        'ダ':'だ', 'ヂ':'ぢ', 'ヅ':'づ', 'デ':'で', 'ド':'ど',
+        'バ':'ば', 'ビ':'び', 'ブ':'ぶ', 'ベ':'べ', 'ボ':'ぼ',
+        'パ':'ぱ', 'ピ':'ぴ', 'プ':'ぷ', 'ペ':'ぺ', 'ポ':'ぽ',
+        
+        'ァ':'ぁ', 'ィ':'ぃ', 'ゥ':'ぅ', 'ェ':'ぇ', 'ォ':'ぉ',
+        'ャ':'ゃ', 'ュ':'ゅ', 'ョ':'ょ',
+        'ヴ':'&#12436;', 'ッ':'っ', 'ヰ':'ゐ', 'ヱ':'ゑ',
+        }
+
+    #kata = _convert_utf8_from_dict(buf_kata)
+    kata = buf_kata
+    
+    # ひらがな → カタカナ のディクショナリをつくる
+    hira = dict([(v, k) for k, v in kata.items() ])
+    
+    re_hira2kata = re.compile("|".join(map(re.escape, hira)))
+    re_kata2hira = re.compile("|".join(map(re.escape, kata)))
+    
+    def _hiragana2katakana(text):
+        return re_hira2kata.sub(lambda x: hira[x.group(0)], text)
+    
+    def _katakana2hiragana(text):
+        return re_kata2hira.sub(lambda x: kata[x.group(0)], text)
+    
+    return (_hiragana2katakana, _katakana2hiragana)
+
+
+hiragana2katakana, katakana2hiragana = _make_kana_convertor()
 
 ################################################################################
 
-#
-# Ruby/Romkan - a Romaji <-> Kana conversion library for Ruby.
-#
-# Copyright (C) 2001 Satoru Takabayashi <satoru@namazu.org>
-#     All rights reserved.
-#     This is free software with ABSOLUTELY NO WARRANTY.
-#
-# You can redistribute it and/or modify it under the terms of 
-# the Ruby's licence.
-#
-# NOTE: Ruby/Romkan can work only with EUC_JP encoding. ($KCODE="e")
-#
-
-# This table is imported from KAKASI <http://kakasi.namazu.org/> and modified.
-
-def pairs(arr, size=2):
-    for i in range(0, len(arr)-1, size):
-        yield arr[i:i+size]
-
-KUNREITAB = u"""ァ       xa      ア       a       ィ       xi      イ       i       ゥ       xu
-ウ       u       ヴ       vu      ヴァ      va      ヴィ      vi      ヴェ      ve
-ヴォ      vo      ェ       xe      エ       e       ォ       xo      オ       o 
-
-カ       ka      ガ       ga      キ       ki      キャ      kya     キュ      kyu 
-キョ      kyo     ギ       gi      ギャ      gya     ギュ      gyu     ギョ      gyo 
-ク       ku      グ       gu      ケ       ke      ゲ       ge      コ       ko
-ゴ       go 
-
-サ       sa      ザ       za      シ       si      シャ      sya     シュ      syu 
-ショ      syo     シェ    sye
-ジ       zi      ジャ      zya     ジュ      zyu     ジョ      zyo 
-ス       su      ズ       zu      セ       se      ゼ       ze      ソ       so
-ゾ       zo 
-
-タ       ta      ダ       da      チ       ti      チャ      tya     チュ      tyu 
-チョ      tyo     ヂ       di      ヂャ      dya     ヂュ      dyu     ヂョ      dyo 
-ティ    ti
-
-ッ       xtu 
-ッヴ      vvu     ッヴァ     vva     ッヴィ     vvi 
-ッヴェ     vve     ッヴォ     vvo 
-ッカ      kka     ッガ      gga     ッキ      kki     ッキャ     kkya 
-ッキュ     kkyu    ッキョ     kkyo    ッギ      ggi     ッギャ     ggya 
-ッギュ     ggyu    ッギョ     ggyo    ック      kku     ッグ      ggu 
-ッケ      kke     ッゲ      gge     ッコ      kko     ッゴ      ggo     ッサ      ssa 
-ッザ      zza     ッシ      ssi     ッシャ     ssya 
-ッシュ     ssyu    ッショ     ssho    ッシェ     ssye
-ッジ      zzi     ッジャ     zzya    ッジュ     zzyu    ッジョ     zzyo
-ッス      ssu     ッズ      zzu     ッセ      sse     ッゼ      zze     ッソ      sso 
-ッゾ      zzo     ッタ      tta     ッダ      dda     ッチ      tti     ッティ  tti
-ッチャ     ttya    ッチュ     ttyu    ッチョ     ttyo    ッヂ      ddi 
-ッヂャ     ddya    ッヂュ     ddyu    ッヂョ     ddyo    ッツ      ttu 
-ッヅ      ddu     ッテ      tte     ッデ      dde     ット      tto     ッド      ddo 
-ッドゥ  ddu
-ッハ      hha     ッバ      bba     ッパ      ppa     ッヒ      hhi 
-ッヒャ     hhya    ッヒュ     hhyu    ッヒョ     hhyo    ッビ      bbi 
-ッビャ     bbya    ッビュ     bbyu    ッビョ     bbyo    ッピ      ppi 
-ッピャ     ppya    ッピュ     ppyu    ッピョ     ppyo    ッフ      hhu     ッフュ  ffu
-ッファ     ffa     ッフィ     ffi     ッフェ     ffe     ッフォ     ffo 
-ッブ      bbu     ップ      ppu     ッヘ      hhe     ッベ      bbe     ッペ    ppe
-ッホ      hho     ッボ      bbo     ッポ      ppo     ッヤ      yya     ッユ      yyu 
-ッヨ      yyo     ッラ      rra     ッリ      rri     ッリャ     rrya 
-ッリュ     rryu    ッリョ     rryo    ッル      rru     ッレ      rre 
-ッロ      rro 
-
-ツ       tu      ヅ       du      テ       te      デ       de      ト       to
-ド       do      ドゥ    du
-
-ナ       na      ニ       ni      ニャ      nya     ニュ      nyu     ニョ      nyo 
-ヌ       nu      ネ       ne      ノ       no 
-
-ハ       ha      バ       ba      パ       pa      ヒ       hi      ヒャ      hya 
-ヒュ      hyu     ヒョ      hyo     ビ       bi      ビャ      bya     ビュ      byu 
-ビョ      byo     ピ       pi      ピャ      pya     ピュ      pyu     ピョ      pyo 
-フ       hu      ファ      fa      フィ      fi      フェ      fe      フォ      fo
-フュ    fu
-ブ       bu      プ       pu      ヘ       he      ベ       be      ペ       pe
-ホ       ho      ボ       bo      ポ       po 
-
-マ       ma      ミ       mi      ミャ      mya     ミュ      myu     ミョ      myo 
-ム       mu      メ       me      モ       mo 
-
-ャ       xya     ヤ       ya      ュ       xyu     ユ       yu      ョ       xyo
-ヨ       yo
-
-ラ       ra      リ       ri      リャ      rya     リュ      ryu     リョ      ryo 
-ル       ru      レ       re      ロ       ro 
-
-ヮ       xwa     ワ       wa      ウィ    wi      ヰ wi      ヱ       we      ウェ      we
-ヲ       wo      ウォ    wo      ン n 
-
-ン     n'
-ディ   dyi
-ー     -
-チェ    tye
-ッチェ     ttye
-ジェ      zye
-"""
-
-HEPBURNTAB = u"""ァ      xa      ア       a       ィ       xi      イ       i       ゥ       xu
-ウ       u       ヴ       vu      ヴァ      va      ヴィ      vi      ヴェ      ve
-ヴォ      vo      ェ       xe      エ       e       ォ       xo      オ       o
+def _make_romaji_convertor():
+    """ローマ字⇔かな変換器を作る"""
+    master_buf = {
+        'a'  :'ア', 'i'  :'イ', 'u'  :'ウ', 'e'  :'エ', 'o'  :'オ',
+        'ka' :'カ', 'ki' :'キ', 'ku' :'ク', 'ke' :'ケ', 'ko' :'コ',
+        'sa' :'サ', 'shi':'シ', 'su' :'ス', 'se' :'セ', 'so' :'ソ',
+        'ta' :'タ', 'chi':'チ', 'tu' :'ツ', 'te' :'テ', 'to' :'ト',
+        'na' :'ナ', 'ni' :'ニ', 'nu' :'ヌ', 'ne' :'ネ', 'no' :'ノ',
+        'ha' :'ハ', 'hi' :'ヒ', 'fu' :'フ', 'he' :'ヘ', 'ho' :'ホ',
+        'ma' :'マ', 'mi' :'ミ', 'mu' :'ム', 'me' :'メ', 'mo' :'モ',
+        'ya' :'ヤ', 'yu' :'ユ', 'yo' :'ヨ',
+        'ra' :'ラ', 'ri' :'リ', 'ru' :'ル', 're' :'レ', 'ro' :'ロ',
+        'wa' :'ワ', 'wo' :'ヲ', 'n'  :'ン', 'vu' :'ヴ',
+        'ga' :'ガ', 'gi' :'ギ', 'gu' :'グ', 'ge' :'ゲ', 'go' :'ゴ',
+        'za' :'ザ', 'ji' :'ジ', 'zu' :'ズ', 'ze' :'ゼ', 'zo' :'ゾ',
+        'da' :'ダ', 'di' :'ヂ', 'du' :'ヅ', 'de' :'デ', 'do' :'ド',
+        'ba' :'バ', 'bi' :'ビ', 'bu' :'ブ', 'be' :'ベ', 'bo' :'ボ',
+        'pa' :'パ', 'pi' :'ピ', 'pu' :'プ', 'pe' :'ペ', 'po' :'ポ',
         
+        'kya':'キャ', 'kyi':'キィ', 'kyu':'キュ', 'kye':'キェ', 'kyo':'キョ',
+        'gya':'ギャ', 'gyi':'ギィ', 'gyu':'ギュ', 'gye':'ギェ', 'gyo':'ギョ',
+        'sha':'シャ',               'shu':'シュ', 'she':'シェ', 'sho':'ショ',
+        'ja' :'ジャ',               'ju' :'ジュ', 'je' :'ジェ', 'jo' :'ジョ',
+        'cha':'チャ',               'chu':'チュ', 'che':'チェ', 'cho':'チョ',
+        'dya':'ヂャ', 'dyi':'ヂィ', 'dyu':'ヂュ', 'dhe':'デェ', 'dyo':'ヂョ',
+        'nya':'ニャ', 'nyi':'ニィ', 'nyu':'ニュ', 'nye':'ニェ', 'nyo':'ニョ',
+        'hya':'ヒャ', 'hyi':'ヒィ', 'hyu':'ヒュ', 'hye':'ヒェ', 'hyo':'ヒョ',
+        'bya':'ビャ', 'byi':'ビィ', 'byu':'ビュ', 'bye':'ビェ', 'byo':'ビョ',
+        'pya':'ピャ', 'pyi':'ピィ', 'pyu':'ピュ', 'pye':'ピェ', 'pyo':'ピョ',
+        'mya':'ミャ', 'myi':'ミィ', 'myu':'ミュ', 'mye':'ミェ', 'myo':'ミョ',
+        'rya':'リャ', 'ryi':'リィ', 'ryu':'リュ', 'rye':'リェ', 'ryo':'リョ',
+        'fa' :'ファ', 'fi' :'フィ',               'fe' :'フェ', 'fo' :'フォ',
+        'wi' :'ウィ', 'we' :'ウェ', 
+        'va' :'ヴァ', 'vi' :'ヴィ', 've' :'ヴェ', 'vo' :'ヴォ',
+        
+        'kwa':'クァ', 'kwi':'クィ', 'kwu':'クゥ', 'kwe':'クェ', 'kwo':'クォ',
+        'kha':'クァ', 'khi':'クィ', 'khu':'クゥ', 'khe':'クェ', 'kho':'クォ',
+        'gwa':'グァ', 'gwi':'グィ', 'gwu':'グゥ', 'gwe':'グェ', 'gwo':'グォ',
+        'gha':'グァ', 'ghi':'グィ', 'ghu':'グゥ', 'ghe':'グェ', 'gho':'グォ',
+        'swa':'スァ', 'swi':'スィ', 'swu':'スゥ', 'swe':'スェ', 'swo':'スォ',
+        'swa':'スァ', 'swi':'スィ', 'swu':'スゥ', 'swe':'スェ', 'swo':'スォ',
+        'zwa':'ズヮ', 'zwi':'ズィ', 'zwu':'ズゥ', 'zwe':'ズェ', 'zwo':'ズォ',
+        'twa':'トァ', 'twi':'トィ', 'twu':'トゥ', 'twe':'トェ', 'two':'トォ',
+        'dwa':'ドァ', 'dwi':'ドィ', 'dwu':'ドゥ', 'dwe':'ドェ', 'dwo':'ドォ',
+        'mwa':'ムヮ', 'mwi':'ムィ', 'mwu':'ムゥ', 'mwe':'ムェ', 'mwo':'ムォ',
+        'bwa':'ビヮ', 'bwi':'ビィ', 'bwu':'ビゥ', 'bwe':'ビェ', 'bwo':'ビォ',
+        'pwa':'プヮ', 'pwi':'プィ', 'pwu':'プゥ', 'pwe':'プェ', 'pwo':'プォ',
+        'phi':'プィ', 'phu':'プゥ', 'phe':'プェ', 'pho':'フォ',
+        }
+    
+    
+    romaji_asist_buf = {
+        'si' :'シ'  , 'ti' :'チ'  , 'hu' :'フ' , 'zi':'ジ',
+        'sya':'シャ', 'syu':'シュ', 'syo':'ショ',
+        'tya':'チャ', 'tyu':'チュ', 'tyo':'チョ',
+        'cya':'チャ', 'cyu':'チュ', 'cyo':'チョ',
+        'jya':'ジャ', 'jyu':'ジュ', 'jyo':'ジョ', 'pha':'ファ', 
+        'qa' :'クァ', 'qi' :'クィ', 'qu' :'クゥ', 'qe' :'クェ', 'qo':'クォ',
+        
+        'ca' :'カ', 'ci':'シ', 'cu':'ク', 'ce':'セ', 'co':'コ',
+        'la' :'ラ', 'li':'リ', 'lu':'ル', 'le':'レ', 'lo':'ロ',
 
-カ       ka      ガ       ga      キ       ki      キャ      kya     キュ      kyu
-キョ      kyo     ギ       gi      ギャ      gya     ギュ      gyu     ギョ      gyo
-ク       ku      グ       gu      ケ       ke      ゲ       ge      コ       ko
-ゴ       go      
+        'mb' :'ム', 'py':'パイ', 'tho': 'ソ', 'thy':'ティ', 'oh':'オウ',
+        'by':'ビィ', 'cy':'シィ', 'dy':'ディ', 'fy':'フィ', 'gy':'ジィ',
+        'hy':'シー', 'ly':'リィ', 'ny':'ニィ', 'my':'ミィ', 'ry':'リィ',
+        'ty':'ティ', 'vy':'ヴィ', 'zy':'ジィ',
+        
+        'b':'ブ', 'c':'ク', 'd':'ド', 'f':'フ'  , 'g':'グ', 'h':'フ', 'j':'ジ',
+        'k':'ク', 'l':'ル', 'm':'ム', 'p':'プ'  , 'q':'ク', 'r':'ル', 's':'ス',
+        't':'ト', 'v':'ヴ', 'w':'ゥ', 'x':'クス', 'y':'ィ', 'z':'ズ',
+        }
+    
 
-サ       sa      ザ       za      シ       shi     シャ      sha     シュ      shu
-ショ      sho     シェ    she
-ジ       ji      ジャ      ja      ジュ      ju      ジョ      jo
-ス       su      ズ       zu      セ       se      ゼ       ze      ソ       so
-ゾ       zo
+    kana_asist_buf = { 'a':'ァ', 'i':'ィ', 'u':'ゥ', 'e':'ェ', 'o':'ォ', }
+    
+    #master = _convert_utf8_from_dict(master_buf)
+    #romaji_asist = _convert_utf8_from_dict(romaji_asist_buf)
+    #kana_asist = _convert_utf8_from_dict(kana_asist_buf)
+    master = master_buf
+    romaji_asist = romaji_asist_buf
+    kana_asist = kana_asist_buf
+    
+    def __romaji2kana():
+        romaji_dict = {}
+        for tbl in master, romaji_asist:
+            for k, v in tbl.items(): romaji_dict[k] = v
+        
+        romaji_keys = romaji_dict.keys()
+        romaji_keys.sort(key=lambda x:len(x), reverse=True)
+        
+        re_roma2kana = re.compile("|".join(map(re.escape, romaji_keys)))
+        # m の後ろにバ行、パ行のときは "ン" と変換
+        rx_mba = re.compile("m(b|p)([aiueo])")
+        # 子音が続く時は "ッ" と変換
+        rx_xtu = re.compile(r"([bcdfghjklmpqrstvwxyz])\1")
+        # 母音が続く時は "ー" と変換
+        rx_a__ = re.compile(r"([aiueo])\1")
+        
+        def _romaji2katakana(text):
+            result = text.lower()
+            result = rx_mba.sub(r"ン\1\2", result)
+            result = rx_xtu.sub(r"ッ\1"  , result)
+            result = rx_a__.sub(r"\1ー"  , result)
+            return re_roma2kana.sub(lambda x: romaji_dict[x.group(0)], result)
+        
+        def _romaji2hiragana(text):
+            result = _romaji2katakana(text)
+            return katakana2hiragana(result)
+        
+        return _romaji2katakana, _romaji2hiragana
+    
+    
+    def __kana2romaji():
+        kana_dict = {}
+        for tbl in master, kana_asist:
+            for k, v in tbl.items(): kana_dict[v] = k
 
-タ       ta      ダ       da      チ       chi     チャ      cha     チュ      chu
-チョ      cho     ヂ       di      ヂャ      dya     ヂュ      dyu     ヂョ      dyo
-ティ    ti
-
-ッ       xtsu    
-ッヴ      vvu     ッヴァ     vva     ッヴィ     vvi     
-ッヴェ     vve     ッヴォ     vvo     
-ッカ      kka     ッガ      gga     ッキ      kki     ッキャ     kkya    
-ッキュ     kkyu    ッキョ     kkyo    ッギ      ggi     ッギャ     ggya    
-ッギュ     ggyu    ッギョ     ggyo    ック      kku     ッグ      ggu     
-ッケ      kke     ッゲ      gge     ッコ      kko     ッゴ      ggo     ッサ      ssa
-ッザ      zza     ッシ      sshi    ッシャ     ssha    
-ッシュ     sshu    ッショ     ssho    ッシェ  sshe
-ッジ      jji     ッジャ     jja     ッジュ     jju     ッジョ     jjo     
-ッス      ssu     ッズ      zzu     ッセ      sse     ッゼ      zze     ッソ      sso
-ッゾ      zzo     ッタ      tta     ッダ      dda     ッチ      cchi    ッティ  tti
-ッチャ     ccha    ッチュ     cchu    ッチョ     ccho    ッヂ      ddi     
-ッヂャ     ddya    ッヂュ     ddyu    ッヂョ     ddyo    ッツ      ttsu    
-ッヅ      ddu     ッテ      tte     ッデ      dde     ット      tto     ッド      ddo
-ッドゥ  ddu
-ッハ      hha     ッバ      bba     ッパ      ppa     ッヒ      hhi     
-ッヒャ     hhya    ッヒュ     hhyu    ッヒョ     hhyo    ッビ      bbi     
-ッビャ     bbya    ッビュ     bbyu    ッビョ     bbyo    ッピ      ppi     
-ッピャ     ppya    ッピュ     ppyu    ッピョ     ppyo    ッフ      ffu     ッフュ  ffu
-ッファ     ffa     ッフィ     ffi     ッフェ     ffe     ッフォ     ffo     
-ッブ      bbu     ップ      ppu     ッヘ      hhe     ッベ      bbe     ッペ      ppe
-ッホ      hho     ッボ      bbo     ッポ      ppo     ッヤ      yya     ッユ      yyu
-ッヨ      yyo     ッラ      rra     ッリ      rri     ッリャ     rrya    
-ッリュ     rryu    ッリョ     rryo    ッル      rru     ッレ      rre     
-ッロ      rro     
-
-ツ       tsu     ヅ       du      テ       te      デ       de      ト       to
-ド       do      ドゥ    du
-
-ナ       na      ニ       ni      ニャ      nya     ニュ      nyu     ニョ      nyo
-ヌ       nu      ネ       ne      ノ       no      
-
-ハ       ha      バ       ba      パ       pa      ヒ       hi      ヒャ      hya
-ヒュ      hyu     ヒョ      hyo     ビ       bi      ビャ      bya     ビュ      byu
-ビョ      byo     ピ       pi      ピャ      pya     ピュ      pyu     ピョ      pyo
-フ       fu      ファ      fa      フィ      fi      フェ      fe      フォ      fo
-フュ    fu
-ブ       bu      プ       pu      ヘ       he      ベ       be      ペ       pe
-ホ       ho      ボ       bo      ポ       po      
-
-マ       ma      ミ       mi      ミャ      mya     ミュ      myu     ミョ      myo
-ム       mu      メ       me      モ       mo
-
-ャ       xya     ヤ       ya      ュ       xyu     ユ       yu      ョ       xyo
-ヨ       yo      
-
-ラ       ra      リ       ri      リャ      rya     リュ      ryu     リョ      ryo
-ル       ru      レ       re      ロ       ro      
-
-ヮ       xwa     ワ       wa      ウィ    wi      ヰ wi      ヱ       we      ウェ    we
-ヲ       wo      ウォ    wo      ン n       
-
-ン     n'
-ディ   di
-ー     -
-チェ    che
-ッチェ     cche
-ジェ      je"""
-
-KANROM = {}
-ROMKAN = {}
-
-for pair in pairs(re.split("\s+", KUNREITAB + HEPBURNTAB)):
-    kana, roma = pair
-    KANROM[kana] = roma
-    ROMKAN[roma] = kana
-
-# special modification
-# wo -> ヲ, but ヲ/ウォ -> wo
-# du -> ヅ, but ヅ/ドゥ -> du
-# we -> ウェ, ウェ -> we
-ROMKAN.update( {"du": u"ヅ", "di": u"ヂ", "fu": u"フ", "ti": u"チ",
-                "wi": u"ウィ", "we": u"ウェ", "wo": u"ヲ" } )
-
-# Sort in long order so that a longer Romaji sequence precedes.
-
-_len_cmp = lambda x: -len(x)
-ROMPAT = re.compile("|".join(sorted(ROMKAN.keys(), key=_len_cmp)) )
-
-_kanpat_cmp = lambda x, y: cmp(len(y), len(x)) or cmp(len(KANROM[x]), len(KANROM[x]))
-KANPAT = re.compile( u"|".join(sorted(KANROM.keys(), cmp=_kanpat_cmp )) )
-
-KUNREI = [y for (x, y) in pairs(re.split("\s+", KUNREITAB)) ]
-HEPBURN = [y for (x, y) in pairs(re.split("\s+", HEPBURNTAB) )]
-
-KUNPAT = re.compile( u"|".join(sorted(KUNREI, key=_len_cmp)) )
-HEPPAT = re.compile( u"|".join(sorted(HEPBURN, key=_len_cmp)) )
-
-TO_HEPBURN = {}
-TO_KUNREI =  {}
-
-for kun, hep in zip(KUNREI, HEPBURN):
-    TO_HEPBURN[kun] = hep
-    TO_KUNREI[hep] = kun
-
-TO_HEPBURN.update( {'ti': 'chi' })
-
-def normalize_double_n(str):
-    str = re.sub("nn", "n'", str)
-    str = re.sub("n'(?=[^aiueoyn]|$)", "n", str)
-    return str
-
-def to_kana(str):
-    tmp = normalize_double_n(str)
-    tmp = ROMPAT.sub(lambda x: ROMKAN[x.group(0)], tmp)
-    return tmp
-
-def to_hepburn(str):
-    tmp = normalize_double_n(str)
-    tmp = KUNPAT.sub(lambda x: TO_HEPBURN[x.group(0)], tmp)
-    return tmp
-
-def to_kunrei(str):
-    tmp = normalize_double_n(str)
-    tmp = HEPPAT.sub(lambda x: TO_KUNREI[x.group(0)], tmp)
-    return tmp
-
-def to_roma(str):
-    tmp = KANPAT.sub(lambda x: KANROM[x.group(0)], str)
-    tmp = re.sub("n'(?=[^aeiuoyn]|$)", "n", tmp)
-    return tmp
-
-def is_consonant(str):
-    return re.match("[ckgszjtdhfpbmyrwxn]", str)
-
-def is_vowel(str):
-    return re.match("[aeiou]", str)
-
-# `z' => (za ze zi zo zu)
-def expand_consonant(str):
-    return [x for x in ROMKAN.keys() if re.match("^%s.$"%str, x)]
+        kana_keys = kana_dict.keys()
+        kana_keys.sort(key=lambda x:len(x), reverse=True)
+        
+        re_kana2roma = re.compile("|".join(map(re.escape, kana_keys)))
+        rx_xtu = re.compile("ッ(.)") # 小さい "ッ" は直後の文字を２回に変換
+        rx_ltu = re.compile("ッ$"  ) # 最後の小さい "ッ" は消去(?)
+        rx_er  = re.compile("(.)ー") # "ー"は直前の文字を２回に変換
+        rx_n   = re.compile(r"n(b|p)([aiueo])") # n の後ろが バ行、パ行 なら m に修正
+        rx_oo  = re.compile(r"([aiueo])\1")      # oosaka → osaka
+        
+        def _kana2romaji(text):
+            result = hiragana2katakana(text)
+            result = re_kana2roma.sub(lambda x: kana_dict[x.group(0)], result)
+            result = rx_xtu.sub(r"\1\1" , result)
+            result = rx_ltu.sub(r""     , result)
+            result = rx_er.sub (r"\1\1" , result)
+            result = rx_n.sub  (r"m\1\2", result)
+            result = rx_oo.sub (r"\1"   , result)
+            return result
+        return _kana2romaji
+    
+    a, b = __romaji2kana()
+    c    = __kana2romaji()
+    
+    return  a, b, c
 
 
+romaji2katakana, romaji2hiragana, kana2romaji = _make_romaji_convertor()
+
+
+
+def _convert2hepburn(string):
+    result = kana2romaji(string.decode("utf-8"))
+    result = re.sub(ur"[^0-9a-zA-Z\,\_]*", u"", result)     # 非ASCII文字を削除
+    return result       # unicode
 
 
 def hepburn(strings):
-	binding = mecab.MeCabBinding()
-	return to_roma(binding.doHepburn(strings))
+    binding = mecab.MeCabBinding()
+    kana_result = binding.doHepburn(strings)
+    hepped_string = _convert2hepburn(kana_result)
+    return converter2.z2h(hepped_string)
 

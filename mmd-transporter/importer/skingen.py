@@ -63,10 +63,14 @@ class SkinGenerator:
       indices, weights = self._getWeightList(deform)
       for bwi in range(len(indices)):
         if indices[bwi] != -1 and weights[bwi]:
-          index = indices[bwi]
-          targetJonit = jointNames[index]
-          boneId = inWeight[targetJonit]
-          maya.cmds.setAttr("%s.weightList[%s].weights[%s]" % (scluster, vtxId, boneId), weights[bwi])
+          try:
+            index = indices[bwi]
+            targetJonit = jointNames[index]
+            boneId = inWeight[targetJonit]
+            maya.cmds.setAttr("%s.weightList[%s].weights[%s]" % (scluster, vtxId, boneId), weights[bwi])
+          except KeyError as e:
+            print "%s, has not weight value. Please, confirm with PMX Editor." % e.message
+
 
 
   def generate(self, skinCluster, jointNames, polyName):
@@ -76,7 +80,7 @@ class SkinGenerator:
 
     infIdPath = {}
     inWeight = {}
-    for x in range(infDags.length()):
+    for x in xrange(infDags.length()):
       boneFullPath = infDags[x].fullPathName()
       infId = int(skinFn.indexForInfluenceObject(infDags[x]))
       infIdPath[infId] = boneFullPath
