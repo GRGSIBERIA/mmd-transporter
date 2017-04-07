@@ -38,28 +38,13 @@ install.batを**管理者権限で実行**するとMeCabのインストールが
 
 
 ### Human IKプラグインの初期化
-既にHuman IKを利用したことがある場合は飛ばして下さい．
-
-Human IKのプラグインを読み込み，ユーザフォルダのAppDataにHuman IK用の設定フォルダを生成します．
-
 [Window]-[Settings/Preferences]-[Plug-in Manager]でプラグイン・マネージャを開いてください．
 その中に，**mayaHIK.mll**があります．
 mayaHIK.mllのloadedとauto loadにチェックを入れてHuman IKプラグインを読み込んでください．
 
-次に，Human IKを起動します．
-[Animation]-[Skeleton]-[HumanIK...]を選択します．
-Character Controllというドックが新しく作成されますので，
-その中から[Create]-[Skeleton]ボタンをクリックします．
-
-これにより，```ユーザフォルダ/AppData/Roaming/Autodesk/HIKCharacterizationTool4```というフォルダが作成されます．
-Human IKの初回起動時の設定は以上です．
-
 
 
 ### Bulletプラグインを有効化する
-MMDでは物理演算にBulletを利用しています。
-MMD Transporterもそれに習い、Bulletプラグインを利用してMMDの物理演算を再現します。
-
 [Window]-[Settings/Preferences]-[Plug-in Manager]でPlug-in Managerを開いてください。その中に、**bullet.mll**という項目がありますので、LoadedとAuto loadの両方をチェックしてください。
 
 たまに起動時にBulletのプラグインがIndex Out of Range（値が範囲外です）で落ちることがあります。Bulletを扱う上ではそこまで問題にならないと思うのですが、気になる場合は読み直してみてください。
