@@ -21,7 +21,7 @@ if exist %HIK_PATH% (
 	rem ‰½‚à‚µ‚È‚­‚Ä‚¢‚¢‚æ
 ) else (
 	mkdir %HIK_PATH%
-	copy "MMD HumanIK.xml" %HIK_PATH%
+	copy /Y "MMD HumanIK.xml" %HIK_PATH%
 )
 
 
