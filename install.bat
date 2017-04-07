@@ -15,5 +15,15 @@ if exist "C:\Program Files (x86)\MeCab" (
 	exit
 )
 
+echo "MMD HumanIK.xmlの移動"
+set HIK_PATH=%USERPROFILE%\AppData\Roaming\Autodesk\HIKCharacterizationTool4\template
+if exist %HIK_PATH% (
+	rem 何もしなくていいよ
+) else (
+	mkdir %HIK_PATH%
+	copy "MMD HumanIK.xml" %HIK_PATH%
+)
+
+
 echo "インストールが完了しました"
 pause
