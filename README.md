@@ -5,10 +5,11 @@ MayaでMikuMikuDanceするためのPythonプラグインです。
 
 ## 動作環境
 
-* Windows7 64bit(推奨)
+* **Windows7 64bit(推奨)**
 * Maya2016(x64)以降
 * そこそこのスペックのPC
 
+※Windows10だとinstall.batが動作しないことを確認しています．Windows10ではinstall.batを読んで手動でインストールして下さい．
 
 ## 実装されているコマンド・機能
 
