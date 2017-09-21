@@ -9,7 +9,9 @@ MayaでMikuMikuDanceするためのPythonプラグインです。
 * Maya2016(x64)以降
 * そこそこのスペックのPC
 
-※Windows10だとinstall.batが動作しないことを確認しています．Windows10ではinstall.batを読んで手動でインストールして下さい．
+※
+Windows10だとinstall.batが動作しないことを確認しています．
+Windows10ではinstall.batを読んで手動でインストールして下さい．
 
 ## 実装されているコマンド・機能
 
@@ -26,9 +28,11 @@ MayaでMikuMikuDanceするためのPythonプラグインです。
   - BlendShape名の日本語表示
   - 対象BlendShapeのキーフレームの追加/削除
 
+## 自動インストール
+install.batを実行して下さい．
+MeCabのインストールが始まりますが，辞書の文字エンコードは**UTF-8を指定してください**．
 
-
-## インストール方法
+## 手動インストール
 
 ### MeCabのインストール
 MMD Transporterでは，MeCabで日本語文字列を英語に仮変換します．
@@ -36,13 +40,17 @@ MMD Transporterでは，MeCabで日本語文字列を英語に仮変換します
 install.batを**管理者権限で実行**するとMeCabのインストールが始まります．
 使用する辞書は，**UTF-8を指定してください**．
 
-
+インストールが終了したら，環境変数```MECAB_PATH```を追加します．
+```MECAB_PATH```には，MeCabのインストールフォルダを指定してください．
 
 ### Human IKプラグインの初期化
 [Window]-[Settings/Preferences]-[Plug-in Manager]でプラグイン・マネージャを開いてください．
 その中に，**mayaHIK.mll**があります．
 mayaHIK.mllのloadedとauto loadにチェックを入れてHuman IKプラグインを読み込んでください．
 
+次に，MMD HumanIK.xmlを次のフォルダへコピーしてください．
+
+```%USERPROFILE%\AppData\Roaming\Autodesk\HIKCharacterizationTool4\template```
 
 
 ### Bulletプラグインを有効化する
@@ -62,6 +70,10 @@ Plugin ManagerでMMD Transporterを登録するか、以下のコマンド（Pyt
 import maya.cmds
 maya.cmds.loadPlugin("mmd-transporterのパス/mmd-transporter.py")
 ```
+
+mmd-transporterのパスは，\(円マーク，バックスラッシュ)ではなく，/（スラッシュ）に置換してください．
+また，パスに日本語が含まれていると動作しません．
+mmd-transporterのフォルダを，英数字のみのフォルダへ移動してください．
 
 Plugin Managerでは、LoadのほかにAuto Loadにもチェックを入れると、プラグインを読み込む操作が省けて便利です。
 
@@ -124,8 +136,6 @@ Maya 2016からViewport 2.0が導入されてオプションの位置が変わ�
 * [pymeshio](https://github.com/ousttrue/pymeshio)
   - ousttrue
   - zlib/png 1.0 
-* [MeCab 0.98 野良ビルド](http://d.hatena.ne.jp/fgshun/20090910/1252571625)
-  - fgshun
 * [zenhan-py](https://github.com/MiCHiLU/zenhan-py)
   - ENDOH takanao
 
